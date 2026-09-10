@@ -31,4 +31,12 @@ export const banners: Banner[] = [
     linkUrl: "/category/shoes-sandals",
     buttonText: "مشاهده محصولات",
   },
+  {
+    id: "banner-3",
+    title: "استایل‌های خاص و اکسسوری",
+    subtitle: "جدیدترین کالکشن شال، کیف و زیورآلات",
+    imageUrl: "/images/category-4.webp",
+    linkUrl: "/category/accessories",
+    buttonText: "مشاهده کالکشن",
+  },
 ];
