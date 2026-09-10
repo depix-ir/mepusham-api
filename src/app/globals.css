@@ -1,0 +1,109 @@
+@import "tailwindcss";
+
+@theme {
+  --font-peyda: var(--font-peyda), sans-serif;
+  --font-sans: var(--font-peyda), sans-serif;
+
+  /* Color System */
+  --color-primary-50: #f0f6ff;
+  --color-primary-100: #e0edff;
+  --color-primary-200: #c2dcff;
+  --color-primary-300: #93c2ff;
+  --color-primary-400: #5d9eff;
+  --color-primary-500: #357afd;
+  --color-primary: #1C68CC;
+  --color-primary-hover: #1554a6;
+  --color-primary-active: #104182;
+  --color-primary-900: #0d3161;
+  --color-primary-foreground: #ffffff;
+
+  --color-background: #ffffff;
+  --color-foreground: #000000;
+
+  --color-surface: #ffffff;
+  --color-surface-muted: #f8f9fa;
+  --color-surface-subtle: #f1f3f5;
+
+  --color-muted: #6c757d;
+  --color-muted-foreground: #666666;
+
+  --color-border-product: #eeeeee;
+  --color-border: #eeeeee;
+  --color-border-strong: #d1d5db;
+
+  --color-success: #10b981;
+  --color-success-foreground: #ffffff;
+  --color-warning: #f59e0b;
+  --color-warning-foreground: #ffffff;
+  --color-error: #ef4444;
+  --color-error-foreground: #ffffff;
+  --color-info: #3b82f6;
+  --color-info-foreground: #ffffff;
+
+  /* Radius Tokens */
+  --radius-none: 0px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+
+  /* Spacing Scale Tokens */
+  --spacing-0: 0px;
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 16px;
+  --spacing-4: 24px;
+  --spacing-5: 36px;
+}
+
+/* CSS Custom Properties for Global Design Tokens */
+:root {
+  --primary: #1C68CC;
+  --primary-hover: #1554a6;
+  --primary-active: #104182;
+  --primary-foreground: #ffffff;
+
+  --background: #ffffff;
+  --foreground: #000000;
+
+  --surface: #ffffff;
+  --surface-muted: #f8f9fa;
+
+  --border-product: #eeeeee;
+  --border-default: #eeeeee;
+
+  --text-primary: #000000;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+
+  --font-peyda-family: var(--font-peyda), system-ui, sans-serif;
+}
+
+/* Custom Base resets */
+html {
+  direction: rtl;
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-peyda-family);
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-peyda-family);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Custom scrollbar behavior for RTL carousels */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
