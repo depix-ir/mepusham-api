@@ -97,7 +97,7 @@ export function HeroSection({
             <button
               type="button"
               aria-label="اسلاید قبلی"
-              className="hero-swiper-button-prev absolute right-3 md:right-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full bg-background/85 hover:bg-background text-foreground shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 cursor-pointer backdrop-blur-sm opacity-90 hover:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed"
+              className="hero-swiper-button-prev hidden absolute right-3 md:right-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full bg-background/85 hover:bg-background text-foreground shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 cursor-pointer backdrop-blur-sm opacity-90 hover:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <ChevronRightIcon size={24} />
             </button>
@@ -105,7 +105,7 @@ export function HeroSection({
             <button
               type="button"
               aria-label="اسلاید بعدی"
-              className="hero-swiper-button-next absolute left-3 md:left-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full bg-background/85 hover:bg-background text-foreground shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 cursor-pointer backdrop-blur-sm opacity-90 hover:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed"
+              className="hero-swiper-button-next hidden absolute left-3 md:left-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full bg-background/85 hover:bg-background text-foreground shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 cursor-pointer backdrop-blur-sm opacity-90 hover:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <ChevronLeftIcon size={24} />
             </button>

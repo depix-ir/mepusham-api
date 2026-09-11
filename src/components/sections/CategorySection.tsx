@@ -29,7 +29,7 @@ export function CategorySection({
               </h2>
             </div>
           )}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 md:gap-5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4 md:gap-5">
             {categories.map((category) => {
               const fallbackImg = "/images/category-1.webp";
               const imgSrc = category.imageUrl || fallbackImg;
@@ -71,7 +71,7 @@ export function CategorySection({
             {title || "دسته‌بندی‌های محبوب"}
           </h2>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 sm:gap-8 md:gap-10 justify-items-center">
+        <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-8 md:gap-10 justify-items-center">
           {categories.map((category) => {
             const fallbackImg = "/images/category-1.webp";
             const imgSrc = category.imageUrl || fallbackImg;

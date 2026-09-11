@@ -74,7 +74,7 @@ export function ProductCard({
 
         {/* Discount Badge */}
         {pricing.hasDiscount && pricing.discountPercent && !isOutOfStock && (
-          <div className="absolute top-2 right-2 z-10 shadow-sm">
+          <div className="absolute top-2 right-2 z-10 ">
             <Badge variant="primary" size="md" className="bg-primary text-primary-foreground font-bold">
               {formatPercent(pricing.discountPercent)}
             </Badge>

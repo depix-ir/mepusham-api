@@ -12,7 +12,7 @@ export function Container({
   clean = false,
   ...props
 }: ContainerProps) {
-  const basePadding = clean ? "" : "px-4 md:px-14 lg:px-24";
+  const basePadding = clean ? "" : "px-3 md:px-14 lg:px-24";
 
   return (
     <div
