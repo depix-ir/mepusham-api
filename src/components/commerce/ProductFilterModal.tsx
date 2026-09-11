@@ -24,9 +24,13 @@ export function ProductFilterModal({
   allProducts,
   matchingCount,
 }: ProductFilterModalProps) {
-  // Prevent background scrolling when modal is open
+  // Local temporary filter state for mobile modal batching
+  const [tempFilters, setTempFilters] = React.useState<FilterState>(filters);
+
+  // Sync temp filters when modal opens or external filters change
   useEffect(() => {
     if (isOpen) {
+      setTempFilters(filters);
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
@@ -34,87 +38,131 @@ export function ProductFilterModal({
     return () => {
       document.body.style.overflow = "";
     };
-  }, [isOpen]);
+  }, [isOpen, filters]);
+
+  // Calculate matching count dynamically for temp filters
+  const tempMatchingCount = React.useMemo(() => {
+    let list = [...allProducts];
+
+    if (tempFilters.category) {
+      list = list.filter((p) => p.category.slug === tempFilters.category);
+    }
+    if (tempFilters.brands.length > 0) {
+      list = list.filter((p) => p.brand?.slug && tempFilters.brands.includes(p.brand.slug));
+    }
+    if (tempFilters.minPrice !== undefined && !isNaN(Number(tempFilters.minPrice))) {
+      list = list.filter((p) => p.pricing.minPrice >= Number(tempFilters.minPrice));
+    }
+    if (tempFilters.maxPrice !== undefined && !isNaN(Number(tempFilters.maxPrice))) {
+      list = list.filter((p) => p.pricing.minPrice <= Number(tempFilters.maxPrice));
+    }
+    if (tempFilters.inStock) {
+      list = list.filter((p) => p.inventory.totalStock > 0);
+    }
+    if (tempFilters.hasDiscount) {
+      list = list.filter((p) => p.pricing.hasDiscount);
+    }
+    if (tempFilters.q && tempFilters.q.trim() !== "") {
+      const q = tempFilters.q.trim().toLowerCase();
+      list = list.filter(
+        (p) =>
+          p.title.toLowerCase().includes(q) ||
+          (p.description && p.description.toLowerCase().includes(q)) ||
+          p.category.name.toLowerCase().includes(q) ||
+          (p.brand?.name && p.brand.name.toLowerCase().includes(q)) ||
+          (p.tags && p.tags.some((tag) => tag.toLowerCase().includes(q)))
+      );
+    }
+
+    return list.length;
+  }, [allProducts, tempFilters]);
 
   if (!isOpen) return null;
 
+  const handleApply = () => {
+    onFilterChange(tempFilters);
+    onClose();
+  };
+
+  const handleClear = () => {
+    onClearFilters();
+    onClose();
+  };
+
   const activeFilterCount =
-    (filters.category ? 1 : 0) +
-    filters.brands.length +
-    (filters.minPrice ? 1 : 0) +
-    (filters.maxPrice ? 1 : 0) +
-    (filters.inStock ? 1 : 0) +
-    (filters.hasDiscount ? 1 : 0) +
-    (filters.q ? 1 : 0);
+    (tempFilters.category ? 1 : 0) +
+    tempFilters.brands.length +
+    (tempFilters.minPrice ? 1 : 0) +
+    (tempFilters.maxPrice ? 1 : 0) +
+    (tempFilters.inStock ? 1 : 0) +
+    (tempFilters.hasDiscount ? 1 : 0) +
+    (tempFilters.q ? 1 : 0);
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col justify-end md:hidden">
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
-        onClick={onClose}
-        aria-hidden="true"
-      />
-
-      {/* Modal / Drawer Sheet */}
-      <div className="relative z-10 w-full max-h-[90vh] bg-background rounded-t-2xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom duration-300">
-        {/* Drag handle & Header */}
-        <div className="pt-3 pb-2 px-4 flex flex-col border-b border-border-product bg-background">
-          <div className="w-12 h-1 bg-border rounded-full self-center mb-2" />
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <FilterIcon size={18} className="text-primary" />
-              <h2 className="font-bold text-base text-foreground">فیلتر پیشرفته</h2>
-              {activeFilterCount > 0 && (
-                <span className="bg-primary/10 text-primary text-xs font-semibold px-2 py-0.5 rounded-full">
-                  {activeFilterCount}
-                </span>
-              )}
-            </div>
-            <div className="flex items-center gap-3">
-              {activeFilterCount > 0 && (
-                <button
-                  type="button"
-                  onClick={onClearFilters}
-                  className="text-xs font-medium text-error flex items-center gap-1 cursor-pointer"
-                >
-                  <TrashIcon size={14} />
-                  <span>حذف همه</span>
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={onClose}
-                className="w-8 h-8 rounded-full bg-surface-subtle flex items-center justify-center text-foreground hover:bg-surface-muted transition-colors cursor-pointer"
-                aria-label="بستن"
-              >
-                <XIcon size={18} />
-              </button>
-            </div>
-          </div>
+    <div className="fixed inset-0 z-[60] flex flex-col bg-background md:hidden animate-in fade-in duration-200">
+      {/* Fullscreen Header */}
+      <div className="h-14 px-4 flex items-center justify-between border-b border-border-product bg-background shrink-0">
+        <div className="flex items-center gap-2">
+          <FilterIcon size={20} className="text-primary" />
+          <h2 className="font-bold text-base text-foreground">فیلتر محصولات</h2>
+          {activeFilterCount > 0 && (
+            <span className="bg-primary/10 text-primary text-xs font-semibold px-2 py-0.5 rounded-full">
+              {activeFilterCount}
+            </span>
+          )}
         </div>
-
-        {/* Filter Content */}
-        <div className="p-4 overflow-y-auto flex-1">
-          <ProductFilterPanel
-            filters={filters}
-            onFilterChange={onFilterChange}
-            onClearFilters={onClearFilters}
-            allProducts={allProducts}
-            className="border-none p-0 rounded-none shadow-none"
-          />
-        </div>
-
-        {/* Sticky Action Footer */}
-        <div className="p-4 border-t border-border-product bg-background flex items-center gap-3">
+        <div className="flex items-center gap-3">
+          {activeFilterCount > 0 && (
+            <button
+              type="button"
+              onClick={handleClear}
+              className="text-xs font-medium text-error flex items-center gap-1 cursor-pointer"
+            >
+              <TrashIcon size={14} />
+              <span>پاک‌کردن</span>
+            </button>
+          )}
           <button
             type="button"
             onClick={onClose}
-            className="w-full h-12 bg-primary hover:bg-primary-hover active:bg-primary-active text-primary-foreground font-semibold text-sm rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2 shadow-sm"
+            className="w-9 h-9 rounded-full bg-surface-subtle flex items-center justify-center text-foreground hover:bg-surface-muted transition-colors cursor-pointer"
+            aria-label="بستن"
           >
-            <span>مشاهده ({matchingCount.toLocaleString("fa-IR")}) محصول</span>
+            <XIcon size={20} />
           </button>
         </div>
+      </div>
+
+      {/* Filter Content Area */}
+      <div className="p-4 overflow-y-auto flex-1">
+        <ProductFilterPanel
+          filters={tempFilters}
+          onFilterChange={(newFilters) => setTempFilters(newFilters)}
+          onClearFilters={() =>
+            setTempFilters({
+              category: undefined,
+              brands: [],
+              minPrice: undefined,
+              maxPrice: undefined,
+              inStock: false,
+              hasDiscount: false,
+              q: undefined,
+            })
+          }
+          allProducts={allProducts}
+          className="border-none p-0 rounded-none shadow-none"
+        />
+      </div>
+
+      {/* Fullscreen Sticky Action Footer (Applies filters on click) */}
+      <div className="p-4 border-t border-border-product bg-background flex items-center gap-3 shrink-0 pb-[max(1rem,env(safe-area-inset-bottom,1rem))]">
+        <button
+          type="button"
+          onClick={handleApply}
+          className="w-full h-12 bg-primary hover:bg-primary-hover active:bg-primary-active text-primary-foreground font-semibold text-sm rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2 shadow-sm"
+        >
+          <span>اعمال فیلترها ({tempMatchingCount.toLocaleString("fa-IR")} کالا)</span>
+        </button>
       </div>
     </div>
   );

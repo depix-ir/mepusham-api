@@ -79,6 +79,13 @@ export function ProductsClientPage() {
     });
   };
 
+  const sortOptions = [
+    { id: "newest", label: "جدیدترین" },
+    { id: "price_asc", label: "ارزان‌ترین" },
+    { id: "price_desc", label: "گران‌ترین" },
+    { id: "discount", label: "بیشترین تخفیف" },
+  ];
+
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     updateUrlFilters(filters, e.target.value);
   };
@@ -179,21 +186,47 @@ export function ProductsClientPage() {
           </p>
         </div>
 
-        {/* Mobile Filter Button (Full-width button for mobile modal trigger) */}
-        <div className="block md:hidden mb-4">
+        {/* Mobile Action Bar: Minimal Filter Button & Styled Sort Dropdown in 1 Row */}
+        <div className="grid grid-cols-2 gap-2.5 md:hidden mb-4">
+          {/* Filter Modal Trigger */}
           <button
             type="button"
             onClick={() => setIsFilterModalOpen(true)}
-            className="w-full h-12 bg-primary hover:bg-primary-hover active:bg-primary-active text-primary-foreground font-semibold text-sm rounded-xl flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-sm"
+            className="h-11 px-3 bg-surface-subtle hover:bg-surface-muted border border-border-product rounded-xl flex items-center justify-center gap-2 text-xs font-medium text-foreground transition-all cursor-pointer shadow-2xs active:scale-[0.98]"
           >
-            <FilterIcon size={18} />
-            <span>فیلتر و مرتب‌سازی محصولات</span>
+            <FilterIcon size={16} className="text-primary shrink-0" />
+            <span>فیلترها</span>
             {activeFilterCount > 0 && (
-              <span className="bg-white text-primary text-xs font-bold px-2 py-0.5 rounded-full mr-1">
+              <span className="bg-primary text-primary-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full">
                 {activeFilterCount}
               </span>
             )}
           </button>
+
+          {/* Styled Minimal Sort Dropdown */}
+          <div className="relative h-11">
+            <div className="absolute inset-0 bg-surface-subtle border border-border-product rounded-xl flex items-center justify-between px-3 pointer-events-none">
+              <div className="flex items-center gap-1.5 text-xs font-medium text-foreground truncate">
+                <SortIcon size={16} className="text-primary shrink-0" />
+                <span className="truncate">
+                  {sortOptions.find((o) => o.id === sortParam)?.label || "جدیدترین"}
+                </span>
+              </div>
+              <span className="text-muted text-[10px]">▼</span>
+            </div>
+            <select
+              value={sortParam}
+              aria-label="مرتب‌سازی محصولات"
+              onChange={handleSortChange}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer text-xs"
+            >
+              {sortOptions.map((option) => (
+                <option key={option.id} value={option.id}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         {/* Active Filter Badges Bar */}
@@ -319,23 +352,39 @@ export function ProductsClientPage() {
 
           {/* Product Grid Area (Left side) */}
           <div className="md:col-span-3 flex flex-col gap-4">
-            {/* Top Toolbar (Sort dropdown & result count) */}
-            <div className="bg-background border border-border-product rounded-xl px-4 py-2.5 flex items-center justify-between gap-4 text-xs md:text-sm">
-              <div className="flex items-center gap-2 text-muted">
-                <SortIcon size={18} />
-                <span className="hidden sm:inline">مرتب‌سازی بر اساس:</span>
+            {/* Top Toolbar (Desktop Horizontal Sort Links & result count) */}
+            <div className="hidden md:flex bg-background border border-border-product rounded-xl px-4 py-2.5 items-center justify-between gap-4 text-xs md:text-sm">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1.5 text-muted font-medium shrink-0">
+                  <SortIcon size={18} />
+                  <span>مرتب‌سازی بر اساس:</span>
+                </div>
+
+                {/* Horizontal Link-style buttons for Desktop */}
+                <div className="flex items-center gap-1">
+                  {sortOptions.map((option) => {
+                    const isActive = sortParam === option.id;
+                    return (
+                      <button
+                        key={option.id}
+                        type="button"
+                        onClick={() => updateUrlFilters(filters, option.id)}
+                        className={`px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-all cursor-pointer ${
+                          isActive
+                            ? "bg-primary text-primary-foreground font-semibold shadow-2xs"
+                            : "text-muted hover:text-foreground hover:bg-surface-subtle"
+                        }`}
+                      >
+                        {option.label}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
-              <select
-                value={sortParam}
-                onChange={handleSortChange}
-                className="bg-surface-subtle border border-border-product rounded-lg px-3 py-1.5 text-xs md:text-sm text-foreground focus:outline-none focus:border-primary cursor-pointer"
-              >
-                <option value="newest">جدیدترین</option>
-                <option value="price_asc">ارزان‌ترین</option>
-                <option value="price_desc">گران‌ترین</option>
-                <option value="discount">بیشترین تخفیف</option>
-              </select>
+              <span className="text-xs text-muted font-normal shrink-0">
+                {filteredProducts.length.toLocaleString("fa-IR")} کالا
+              </span>
             </div>
 
             {/* Product Grid */}
