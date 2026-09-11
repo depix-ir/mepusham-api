@@ -181,9 +181,7 @@ export function ProductsClientPage() {
           <h1 className="text-xl md:text-2xl font-bold text-foreground">
             {activeCategoryName}
           </h1>
-          <p className="text-xs md:text-sm text-muted">
-            نمایش {filteredProducts.length.toLocaleString("fa-IR")} کالا در این بخش
-          </p>
+
         </div>
 
         {/* Mobile Action Bar: Minimal Filter Button & Styled Sort Dropdown in 1 Row */}
@@ -229,114 +227,7 @@ export function ProductsClientPage() {
           </div>
         </div>
 
-        {/* Active Filter Badges Bar */}
-        {activeFilterCount > 0 && (
-          <div className="flex items-center gap-2 flex-wrap mb-4 pb-2 border-b border-border-product text-xs">
-            <span className="text-muted font-medium ml-1">فیلترهای فعال:</span>
 
-            {filters.category && activeCategoryObj && (
-              <span className="inline-flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-1 rounded-full font-medium">
-                دسته‌بندی: {activeCategoryObj.name}
-                <button
-                  onClick={() => updateUrlFilters({ ...filters, category: undefined })}
-                  className="hover:text-primary-hover cursor-pointer"
-                >
-                  <XIcon size={14} />
-                </button>
-              </span>
-            )}
-
-            {filters.brands.map((bSlug) => {
-              const brandObj = brands.find((b) => b.slug === bSlug);
-              return (
-                <span
-                  key={bSlug}
-                  className="inline-flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-1 rounded-full font-medium"
-                >
-                  برند: {brandObj ? brandObj.name : bSlug}
-                  <button
-                    onClick={() =>
-                      updateUrlFilters({
-                        ...filters,
-                        brands: filters.brands.filter((b) => b !== bSlug),
-                      })
-                    }
-                    className="hover:text-primary-hover cursor-pointer"
-                  >
-                    <XIcon size={14} />
-                  </button>
-                </span>
-              );
-            })}
-
-            {filters.minPrice !== undefined && (
-              <span className="inline-flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-1 rounded-full font-medium">
-                از: {Number(filters.minPrice).toLocaleString("fa-IR")} تومان
-                <button
-                  onClick={() => updateUrlFilters({ ...filters, minPrice: undefined })}
-                  className="hover:text-primary-hover cursor-pointer"
-                >
-                  <XIcon size={14} />
-                </button>
-              </span>
-            )}
-
-            {filters.maxPrice !== undefined && (
-              <span className="inline-flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-1 rounded-full font-medium">
-                تا: {Number(filters.maxPrice).toLocaleString("fa-IR")} تومان
-                <button
-                  onClick={() => updateUrlFilters({ ...filters, maxPrice: undefined })}
-                  className="hover:text-primary-hover cursor-pointer"
-                >
-                  <XIcon size={14} />
-                </button>
-              </span>
-            )}
-
-            {filters.inStock && (
-              <span className="inline-flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-1 rounded-full font-medium">
-                فقط کالاهای موجود
-                <button
-                  onClick={() => updateUrlFilters({ ...filters, inStock: false })}
-                  className="hover:text-primary-hover cursor-pointer"
-                >
-                  <XIcon size={14} />
-                </button>
-              </span>
-            )}
-
-            {filters.hasDiscount && (
-              <span className="inline-flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-1 rounded-full font-medium">
-                فقط تخفیف‌دار
-                <button
-                  onClick={() => updateUrlFilters({ ...filters, hasDiscount: false })}
-                  className="hover:text-primary-hover cursor-pointer"
-                >
-                  <XIcon size={14} />
-                </button>
-              </span>
-            )}
-
-            {filters.q && (
-              <span className="inline-flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-1 rounded-full font-medium">
-                جستجو: {filters.q}
-                <button
-                  onClick={() => updateUrlFilters({ ...filters, q: undefined })}
-                  className="hover:text-primary-hover cursor-pointer"
-                >
-                  <XIcon size={14} />
-                </button>
-              </span>
-            )}
-
-            <button
-              onClick={handleClearFilters}
-              className="text-error font-medium hover:underline cursor-pointer mr-auto"
-            >
-              حذف همه
-            </button>
-          </div>
-        )}
 
         {/* 2 & 3. Main Grid Layout (Desktop right side filter panel, left side product grid) */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-start">

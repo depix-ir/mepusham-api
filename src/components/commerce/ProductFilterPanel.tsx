@@ -99,7 +99,7 @@ export function ProductFilterPanel({
             className="text-xs font-medium text-error hover:text-error/80 flex items-center gap-1 cursor-pointer transition-colors"
           >
             <TrashIcon size={14} />
-            <span>حذف همه</span>
+
           </button>
         )}
       </div>
