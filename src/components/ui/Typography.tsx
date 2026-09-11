@@ -24,7 +24,7 @@ export function Typography({
   children,
   ...props
 }: TypographyProps) {
-  const Component = as || getDefaultElement(variant);
+  const Tag = as || getDefaultElement(variant);
 
   const variants = {
     display: "text-2xl md:text-4xl leading-tight",
@@ -47,17 +47,17 @@ export function Typography({
 
   const weightClass = weight ? weights[weight] : "";
 
-  return (
-    <Component
-      className={`${variants[variant]} ${weightClass} ${className}`.trim()}
-      {...props}
-    >
-      {children}
-    </Component>
+  return React.createElement(
+    Tag,
+    {
+      className: `${variants[variant]} ${weightClass} ${className}`.trim(),
+      ...props,
+    },
+    children
   );
 }
 
-function getDefaultElement(variant: string): React.ElementType {
+function getDefaultElement(variant: string): keyof React.JSX.IntrinsicElements {
   switch (variant) {
     case "display":
     case "h1":

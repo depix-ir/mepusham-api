@@ -18,26 +18,28 @@ export function OfferSection({
   if (products.length === 0) return null;
 
   return (
-    <section className="w-full my-6 md:my-10 py-6 md:py-10 bg-primary text-primary-foreground">
+    <section className="w-full my-6 md:my-10">
       <Container>
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-3">
-          <div className="flex flex-col gap-1">
-            <h2 className="text-lg md:text-2xl font-bold">{title}</h2>
-            {description && (
-              <p className="text-xs md:text-sm text-primary-foreground/80">
-                {description}
-              </p>
-            )}
+        <div className="w-full rounded-2xl bg-gradient-to-l from-primary to-primary-hover text-primary-foreground p-5 sm:p-8 md:p-10 shadow-md">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 gap-3">
+            <div className="flex flex-col gap-1">
+              <h2 className="text-xl sm:text-2xl font-black tracking-tight">{title}</h2>
+              {description && (
+                <p className="text-xs sm:text-sm text-primary-foreground/85 font-medium">
+                  {description}
+                </p>
+              )}
+            </div>
+            <Link
+              href="/offers"
+              className="text-xs sm:text-sm font-semibold hover:underline underline-offset-4 text-primary-foreground shrink-0 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full transition-colors self-start sm:self-auto"
+            >
+              مشاهده همه محصولات
+            </Link>
           </div>
-          <Link
-            href="/offers"
-            className="text-xs md:text-sm font-medium hover:underline underline-offset-4 text-primary-foreground shrink-0"
-          >
-            مشاهده همه محصولات
-          </Link>
-        </div>
 
-        <ProductCarousel products={products} />
+          <ProductCarousel products={products} />
+        </div>
       </Container>
     </section>
   );

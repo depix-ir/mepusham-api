@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Product } from "@/types/product";
 import { ProductCard } from "./ProductCard";
 import { IconButton } from "@/components/ui/IconButton";
@@ -18,25 +18,49 @@ export function ProductCarousel({
   className = "",
 }: ProductCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [isMouseDown, setIsMouseDown] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
 
   const scroll = (direction: "left" | "right") => {
     if (!scrollRef.current) return;
-    const scrollAmount = 300;
-    // In RTL direction: scrolling left moves forward in list, right moves backward
+    const scrollAmount = 320;
+    // In RTL direction: scrolling left moves forward, right moves backward
     const modifier = direction === "left" ? -scrollAmount : scrollAmount;
     scrollRef.current.scrollBy({ left: modifier, behavior: "smooth" });
   };
 
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!scrollRef.current) return;
+    setIsMouseDown(true);
+    setStartX(e.pageX - scrollRef.current.offsetLeft);
+    setScrollLeft(scrollRef.current.scrollLeft);
+  };
+
+  const handleMouseLeaveOrUp = () => {
+    setIsMouseDown(false);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isMouseDown || !scrollRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startX) * 1.5;
+    scrollRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  if (products.length === 0) return null;
+
   return (
     <div className={`relative w-full group ${className}`.trim()}>
-      {/* Navigation Controls (Visible on hover/desktop) */}
-      <div className="hidden md:flex items-center justify-between absolute -top-12 left-0 gap-2 z-10">
+      {/* Navigation Controls */}
+      <div className="hidden md:flex items-center gap-2 absolute -top-12 left-0 z-10">
         <IconButton
           ariaLabel="قبلی"
           variant="outline"
           size="sm"
           onClick={() => scroll("right")}
-          className="bg-background/80 hover:bg-background"
+          className="bg-background/90 hover:bg-background text-foreground shadow-sm rounded-full"
         >
           <ChevronRightIcon size={18} />
         </IconButton>
@@ -45,7 +69,7 @@ export function ProductCarousel({
           variant="outline"
           size="sm"
           onClick={() => scroll("left")}
-          className="bg-background/80 hover:bg-background"
+          className="bg-background/90 hover:bg-background text-foreground shadow-sm rounded-full"
         >
           <ChevronLeftIcon size={18} />
         </IconButton>
@@ -54,14 +78,24 @@ export function ProductCarousel({
       {/* Scrollable Container */}
       <div
         ref={scrollRef}
-        className="flex gap-2 md:gap-4 overflow-x-auto no-scrollbar scroll-smooth py-2 px-1 -mx-1 dir-rtl"
+        onMouseDown={handleMouseDown}
+        onMouseLeave={handleMouseLeaveOrUp}
+        onMouseUp={handleMouseLeaveOrUp}
+        onMouseMove={handleMouseMove}
+        className={`flex gap-3 sm:gap-4 overflow-x-auto no-scrollbar scroll-smooth py-2 px-1 -mx-1 dir-rtl select-none ${
+          isMouseDown ? "cursor-grabbing scroll-auto" : "cursor-grab"
+        }`}
       >
         {products.map((product) => (
           <div
             key={product.id}
-            className="w-[170px] sm:w-[210px] md:w-[240px] shrink-0"
+            className="w-[180px] sm:w-[220px] md:w-[250px] shrink-0 flex flex-col"
           >
-            <ProductCard product={product} onAddToCart={onAddToCart} />
+            <ProductCard
+              product={product}
+              onAddToCart={onAddToCart}
+              className="h-full rounded-xl"
+            />
           </div>
         ))}
       </div>

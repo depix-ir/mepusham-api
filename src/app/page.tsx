@@ -12,8 +12,8 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col gap-2 md:gap-6 pb-6">
-      {/* Hero Banner Section */}
-      {banners[0] && <HeroSection banner={banners[0]} />}
+      {/* Hero Banner Section (Carousel Slider) */}
+      {banners.length > 0 && <HeroSection banners={banners} />}
 
       {/* Categories Section */}
       <CategorySection categories={categories} />
