@@ -11,6 +11,7 @@ export type ProductCategory = {
   id: string;
   name: string;
   slug: string;
+  imageUrl?: string;
 };
 
 export type ProductImage = {
@@ -113,6 +114,8 @@ export type Banner = {
   title: string;
   subtitle?: string;
   imageUrl: string;
+  desktopImageUrl?: string;
+  mobileImageUrl?: string;
   linkUrl: string;
   buttonText?: string;
 };
