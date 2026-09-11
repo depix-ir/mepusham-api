@@ -1,8 +1,15 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Navigation, Pagination } from "swiper/modules";
+
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+
 import { Banner } from "@/types/product";
 import { ChevronRightIcon, ChevronLeftIcon } from "@/components/icons";
 
@@ -15,144 +22,47 @@ export function HeroSection({
   banners,
   autoPlayInterval = 4500,
 }: HeroSectionProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
-  const [dragOffset, setDragOffset] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-
-  const dragStartX = useRef(0);
-  const currentDragX = useRef(0);
-  const isPointerDown = useRef(false);
-  const wasDragged = useRef(false);
-  const sliderRef = useRef<HTMLDivElement>(null);
-
   const bannerList = banners || [];
   const bannerCount = bannerList.length;
-
-  const nextSlide = useCallback(() => {
-    if (bannerCount === 0) return;
-    setCurrentIndex((prev) => (prev + 1) % bannerCount);
-  }, [bannerCount]);
-
-  const prevSlide = useCallback(() => {
-    if (bannerCount === 0) return;
-    setCurrentIndex((prev) => (prev - 1 + bannerCount) % bannerCount);
-  }, [bannerCount]);
-
-  // Autoplay timer
-  useEffect(() => {
-    if (isHovered || isDragging || bannerCount <= 1) return;
-
-    const timer = setInterval(() => {
-      nextSlide();
-    }, autoPlayInterval);
-
-    return () => clearInterval(timer);
-  }, [isHovered, isDragging, bannerCount, autoPlayInterval, nextSlide]);
-
-  // Drag / Touch Handlers
-  const handlePointerDown = (clientX: number) => {
-    isPointerDown.current = true;
-    dragStartX.current = clientX;
-    currentDragX.current = clientX;
-    wasDragged.current = false;
-    setIsDragging(true);
-    setDragOffset(0);
-  };
-
-  const handlePointerMove = (clientX: number) => {
-    if (!isPointerDown.current) return;
-    const deltaX = clientX - dragStartX.current;
-    currentDragX.current = clientX;
-
-    if (Math.abs(deltaX) > 6) {
-      wasDragged.current = true;
-    }
-    setDragOffset(deltaX);
-  };
-
-  const handlePointerEnd = () => {
-    if (!isPointerDown.current) return;
-    isPointerDown.current = false;
-
-    const deltaX = currentDragX.current - dragStartX.current;
-    const threshold = sliderRef.current
-      ? Math.min(sliderRef.current.offsetWidth * 0.15, 80)
-      : 50;
-
-    // In RTL:
-    // Moving left (deltaX < 0) advances to next slide
-    // Moving right (deltaX > 0) returns to previous slide
-    if (deltaX < -threshold) {
-      nextSlide();
-    } else if (deltaX > threshold) {
-      prevSlide();
-    }
-
-    setDragOffset(0);
-    setIsDragging(false);
-
-    // Briefly keep wasDragged true so click event is intercepted
-    setTimeout(() => {
-      wasDragged.current = false;
-    }, 120);
-  };
-
-  // Prevent link navigation if drag occurred
-  const handleSlideClick = (e: React.MouseEvent) => {
-    if (wasDragged.current) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  };
 
   if (bannerCount === 0) return null;
 
   return (
-    <section
-      className="w-full max-w-full h-[180px] md:h-[400px] select-none overflow-hidden p-0 m-0 rounded-none border-none"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => {
-        setIsHovered(false);
-        if (isPointerDown.current) handlePointerEnd();
-      }}
-    >
-      <div
-        ref={sliderRef}
-        className="relative w-full h-full max-w-full rounded-none overflow-hidden bg-surface-subtle group touch-pan-y p-0 border-none"
-        onMouseDown={(e) => handlePointerDown(e.clientX)}
-        onMouseMove={(e) => handlePointerMove(e.clientX)}
-        onMouseUp={handlePointerEnd}
-        onTouchStart={(e) => handlePointerDown(e.touches[0].clientX)}
-        onTouchMove={(e) => handlePointerMove(e.touches[0].clientX)}
-        onTouchEnd={handlePointerEnd}
+    <section className="w-full max-w-full h-[180px] md:h-[400px] select-none overflow-hidden p-0 m-0 rounded-none border-none relative group">
+      <Swiper
+        modules={[Autoplay, Navigation, Pagination]}
+        spaceBetween={0}
+        slidesPerView={1}
+        loop={bannerCount > 1}
+        autoplay={
+          bannerCount > 1
+            ? {
+                delay: autoPlayInterval,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true,
+              }
+            : false
+        }
+        pagination={{
+          clickable: true,
+          el: ".hero-swiper-pagination",
+        }}
+        navigation={{
+          prevEl: ".hero-swiper-button-prev",
+          nextEl: ".hero-swiper-button-next",
+        }}
+        className="w-full h-full rounded-none"
       >
-        {/* Slides Track */}
-        <div
-          className={`w-full h-full flex ${
-            isDragging
-              ? "transition-none cursor-grabbing"
-              : "transition-transform duration-500 ease-out cursor-grab"
-          }`}
-          style={{
-            transform: `translateX(calc(${currentIndex * 100}% + ${dragOffset}px))`,
-          }}
-        >
-          {bannerList.map((banner, index) => {
-            const desktopImage = banner.desktopImageUrl || banner.imageUrl;
-            const mobileImage = banner.mobileImageUrl || banner.imageUrl;
+        {bannerList.map((banner, index) => {
+          const desktopImage = banner.desktopImageUrl || banner.imageUrl;
+          const mobileImage = banner.mobileImageUrl || banner.imageUrl;
 
-            return (
-              <div
-                key={banner.id || index}
-                className="w-full h-full shrink-0 relative rounded-none overflow-hidden"
-              >
-                {/* Linked Image */}
+          return (
+            <SwiperSlide key={banner.id || index} className="w-full h-full">
+              <div className="w-full h-full relative rounded-none overflow-hidden">
                 <Link
                   href={banner.linkUrl}
-                  onClick={handleSlideClick}
                   className="relative block w-full h-full cursor-pointer"
-                  draggable={false}
                 >
                   {/* Desktop / Tablet Image */}
                   <Image
@@ -177,63 +87,36 @@ export function HeroSection({
                   />
                 </Link>
               </div>
-            );
-          })}
-        </div>
+            </SwiperSlide>
+          );
+        })}
 
-        {/* Controls: Next / Prev Arrows */}
+        {/* Navigation Buttons */}
         {bannerCount > 1 && (
           <>
-            {/* Right Arrow Button (RTL: Previous Slide) */}
             <button
               type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                prevSlide();
-              }}
               aria-label="اسلاید قبلی"
-              className="absolute right-3 md:right-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full bg-background/85 hover:bg-background text-foreground shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 cursor-pointer backdrop-blur-sm opacity-90 hover:opacity-100"
+              className="hero-swiper-button-prev absolute right-3 md:right-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full bg-background/85 hover:bg-background text-foreground shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 cursor-pointer backdrop-blur-sm opacity-90 hover:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <ChevronRightIcon size={24} />
             </button>
 
-            {/* Left Arrow Button (RTL: Next Slide) */}
             <button
               type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                nextSlide();
-              }}
               aria-label="اسلاید بعدی"
-              className="absolute left-3 md:left-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full bg-background/85 hover:bg-background text-foreground shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 cursor-pointer backdrop-blur-sm opacity-90 hover:opacity-100"
+              className="hero-swiper-button-next absolute left-3 md:left-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full bg-background/85 hover:bg-background text-foreground shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 cursor-pointer backdrop-blur-sm opacity-90 hover:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <ChevronLeftIcon size={24} />
             </button>
           </>
         )}
 
-        {/* Dots Pagination */}
+        {/* Pagination Dots */}
         {bannerCount > 1 && (
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 bg-black/35 backdrop-blur-md px-3 py-1.5 rounded-full">
-            {bannerList.map((_, idx) => (
-              <button
-                key={idx}
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setCurrentIndex(idx);
-                }}
-                aria-label={`رفتن به اسلاید ${idx + 1}`}
-                className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
-                  currentIndex === idx
-                    ? "w-7 bg-primary"
-                    : "w-2.5 bg-white/60 hover:bg-white"
-                }`}
-              />
-            ))}
-          </div>
+          <div className="hero-swiper-pagination absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center justify-center gap-2 bg-black/35 backdrop-blur-md px-3 py-1.5 rounded-full !w-auto [&_.swiper-pagination-bullet]:w-2.5 [&_.swiper-pagination-bullet]:h-2.5 [&_.swiper-pagination-bullet]:rounded-full [&_.swiper-pagination-bullet]:bg-white/60 [&_.swiper-pagination-bullet]:opacity-100 [&_.swiper-pagination-bullet]:transition-all [&_.swiper-pagination-bullet]:duration-300 [&_.swiper-pagination-bullet]:cursor-pointer [&_.swiper-pagination-bullet-active]:!w-7 [&_.swiper-pagination-bullet-active]:!bg-primary [&_.swiper-pagination-bullet-active]:!rounded-full" />
         )}
-      </div>
+      </Swiper>
     </section>
   );
 }
