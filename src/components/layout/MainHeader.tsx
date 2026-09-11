@@ -50,11 +50,10 @@ export function MainHeader({ cartItemCount = 0 }: MainHeaderProps) {
           <Link href="/cart" className="relative">
             <IconButton
               ariaLabel="سبد خرید"
-              variant="primary"
               size="lg"
-              className="w-[50px] h-[50px] shadow-xs"
+              className="w-[50px] h-[50px] bg-surface-subtle text-foreground hover:bg-primary hover:text-primary-foreground transition-colors group"
             >
-              <CartIcon size={22} className="text-primary-foreground" />
+              <CartIcon size={22} className="text-foreground group-hover:text-primary-foreground transition-colors" />
             </IconButton>
             {cartItemCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-error text-error-foreground text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-background">
