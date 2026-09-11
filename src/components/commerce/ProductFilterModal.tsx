@@ -84,9 +84,16 @@ export function ProductFilterModal({
     onClose();
   };
 
-  const handleClear = () => {
-    onClearFilters();
-    onClose();
+  const handleClearTemp = () => {
+    setTempFilters({
+      category: undefined,
+      brands: [],
+      minPrice: undefined,
+      maxPrice: undefined,
+      inStock: false,
+      hasDiscount: false,
+      q: undefined,
+    });
   };
 
   const activeFilterCount =
@@ -115,7 +122,7 @@ export function ProductFilterModal({
           {activeFilterCount > 0 && (
             <button
               type="button"
-              onClick={handleClear}
+              onClick={handleClearTemp}
               className="text-xs font-medium text-error flex items-center gap-1 cursor-pointer"
             >
               <TrashIcon size={14} />
@@ -134,22 +141,13 @@ export function ProductFilterModal({
       </div>
 
       {/* Filter Content Area */}
-      <div className="p-4 overflow-y-auto flex-1">
+      <div className="p-4 overflow-y-auto no-scrollbar flex-1">
         <ProductFilterPanel
           filters={tempFilters}
           onFilterChange={(newFilters) => setTempFilters(newFilters)}
-          onClearFilters={() =>
-            setTempFilters({
-              category: undefined,
-              brands: [],
-              minPrice: undefined,
-              maxPrice: undefined,
-              inStock: false,
-              hasDiscount: false,
-              q: undefined,
-            })
-          }
+          onClearFilters={handleClearTemp}
           allProducts={allProducts}
+          hideHeader={true}
           className="border-none p-0 rounded-none shadow-none"
         />
       </div>

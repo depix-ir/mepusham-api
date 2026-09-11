@@ -1,0 +1,12 @@
+$ next dev
+▲ Next.js 16.3.4 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+✓ Ready in 643ms
+✓ Running next.config.ts took 49ms
+
+○ Compiling / ...
+ HEAD / 200 in 4.2s (next.js: 3.6s, application-code: 641ms)
+ GET /products 200 in 2.1s (next.js: 1629ms, application-code: 422ms)
+[browser] Image with src "/images/banner-1.webp" has "fill" prop and "sizes" prop of "100vw", but image is not rendered at full viewport width. Please adjust "sizes" to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/images/banner-2.webp" has "fill" prop and "sizes" prop of "100vw", but image is not rendered at full viewport width. Please adjust "sizes" to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
