@@ -11,6 +11,7 @@ export interface ProductCarouselProps {
   onAddToCart?: (product: Product) => void;
   className?: string;
   hideControls?: boolean;
+  cardWidthClass?: string;
 }
 
 export function ProductCarousel({
@@ -18,6 +19,7 @@ export function ProductCarousel({
   onAddToCart,
   className = "",
   hideControls = false,
+  cardWidthClass = "w-[170px] sm:w-[220px] md:w-[250px]",
 }: ProductCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isMouseDown, setIsMouseDown] = useState(false);
@@ -54,7 +56,7 @@ export function ProductCarousel({
   if (products.length === 0) return null;
 
   return (
-    <div className={`relative w-full group ${className}`.trim()}>
+    <div className={`relative w-full ${className}`.trim()}>
       {/* Navigation Controls */}
       {!hideControls && (
         <div className="hidden md:flex items-center gap-2 absolute -top-12 left-0 z-10">
@@ -93,7 +95,7 @@ export function ProductCarousel({
         {products.map((product) => (
           <div
             key={product.id}
-            className="w-[170px] sm:w-[220px] md:w-[250px] shrink-0 flex flex-col"
+            className={`${cardWidthClass} shrink-0 flex flex-col`}
           >
             <ProductCard
               product={product}

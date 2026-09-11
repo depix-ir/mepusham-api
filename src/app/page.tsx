@@ -5,6 +5,7 @@ import { HeroSection } from "@/components/sections/HeroSection";
 import { CategorySection } from "@/components/sections/CategorySection";
 import { OfferSection } from "@/components/sections/OfferSection";
 import { ProductGridSection } from "@/components/sections/ProductGridSection";
+import { CategoryCarouselSection } from "@/components/sections/CategoryCarouselSection";
 
 export default function HomePage() {
   const discountedProducts = products.filter((p) => p.pricing.hasDiscount);
@@ -33,12 +34,14 @@ export default function HomePage() {
         viewAllUrl="/products"
       />
 
-      {/* Bottom Categories Section (Large Rounded Circular Images + Name) */}
-      <CategorySection
-        categories={categories}
-        variant="circular"
-        title="دسته‌بندی‌های محبوب"
-      />
+      {/* Category Product Carousels (1 Carousel Per Category) */}
+      {categories.map((category) => (
+        <CategoryCarouselSection
+          key={category.id}
+          category={category}
+          products={products}
+        />
+      ))}
     </div>
   );
 }
