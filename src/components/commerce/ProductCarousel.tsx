@@ -10,12 +10,14 @@ export interface ProductCarouselProps {
   products: Product[];
   onAddToCart?: (product: Product) => void;
   className?: string;
+  hideControls?: boolean;
 }
 
 export function ProductCarousel({
   products,
   onAddToCart,
   className = "",
+  hideControls = false,
 }: ProductCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isMouseDown, setIsMouseDown] = useState(false);
@@ -54,26 +56,28 @@ export function ProductCarousel({
   return (
     <div className={`relative w-full group ${className}`.trim()}>
       {/* Navigation Controls */}
-      <div className="hidden md:flex items-center gap-2 absolute -top-12 left-0 z-10">
-        <IconButton
-          ariaLabel="قبلی"
-          variant="outline"
-          size="sm"
-          onClick={() => scroll("right")}
-          className="bg-background/90 hover:bg-background text-foreground shadow-sm rounded-full"
-        >
-          <ChevronRightIcon size={18} />
-        </IconButton>
-        <IconButton
-          ariaLabel="بعدی"
-          variant="outline"
-          size="sm"
-          onClick={() => scroll("left")}
-          className="bg-background/90 hover:bg-background text-foreground shadow-sm rounded-full"
-        >
-          <ChevronLeftIcon size={18} />
-        </IconButton>
-      </div>
+      {!hideControls && (
+        <div className="hidden md:flex items-center gap-2 absolute -top-12 left-0 z-10">
+          <IconButton
+            ariaLabel="قبلی"
+            variant="outline"
+            size="sm"
+            onClick={() => scroll("right")}
+            className="bg-background/90 hover:bg-background text-foreground shadow-sm rounded-full"
+          >
+            <ChevronRightIcon size={18} />
+          </IconButton>
+          <IconButton
+            ariaLabel="بعدی"
+            variant="outline"
+            size="sm"
+            onClick={() => scroll("left")}
+            className="bg-background/90 hover:bg-background text-foreground shadow-sm rounded-full"
+          >
+            <ChevronLeftIcon size={18} />
+          </IconButton>
+        </div>
+      )}
 
       {/* Scrollable Container */}
       <div
@@ -82,14 +86,14 @@ export function ProductCarousel({
         onMouseLeave={handleMouseLeaveOrUp}
         onMouseUp={handleMouseLeaveOrUp}
         onMouseMove={handleMouseMove}
-        className={`flex gap-3 sm:gap-4 overflow-x-auto no-scrollbar scroll-smooth py-2 px-1 -mx-1 dir-rtl select-none ${
+        className={`flex gap-2 sm:gap-4 overflow-x-auto no-scrollbar scroll-smooth py-1 px-0 dir-rtl select-none ${
           isMouseDown ? "cursor-grabbing scroll-auto" : "cursor-grab"
         }`}
       >
         {products.map((product) => (
           <div
             key={product.id}
-            className="w-[180px] sm:w-[220px] md:w-[250px] shrink-0 flex flex-col"
+            className="w-[170px] sm:w-[220px] md:w-[250px] shrink-0 flex flex-col"
           >
             <ProductCard
               product={product}
