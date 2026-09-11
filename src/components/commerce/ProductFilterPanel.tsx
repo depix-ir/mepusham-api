@@ -81,7 +81,7 @@ export function ProductFilterPanel({
 
   return (
     <aside
-      className={`bg-background rounded-xl border border-border-product p-4 flex flex-col gap-6 text-foreground select-none ${className}`.trim()}
+      className={`bg-background rounded-xl border border-border-product p-4 flex flex-col gap-6 text-foreground select-none max-h-[calc(100vh-7rem)] overflow-y-auto ${className}`.trim()}
     >
       {/* Panel Header */}
       <div className="flex items-center justify-between border-b border-border-product pb-3">
