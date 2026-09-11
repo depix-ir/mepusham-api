@@ -21,6 +21,7 @@ interface ProductFilterPanelProps {
   onClearFilters: () => void;
   allProducts: Product[];
   className?: string;
+  hideHeader?: boolean;
 }
 
 export function ProductFilterPanel({
@@ -29,6 +30,7 @@ export function ProductFilterPanel({
   onClearFilters,
   allProducts,
   className = "",
+  hideHeader = false,
 }: ProductFilterPanelProps) {
   const activeFilterCount =
     (filters.category ? 1 : 0) +
@@ -79,30 +81,33 @@ export function ProductFilterPanel({
     onFilterChange({ ...filters, maxPrice: val ? Number(val) : undefined });
   };
 
+  const containerClasses = hideHeader
+    ? `flex flex-col gap-6 text-foreground select-none ${className}`.trim()
+    : `bg-background rounded-xl border border-border-product p-4 flex flex-col gap-6 text-foreground select-none max-h-[calc(100vh-7rem)] overflow-y-auto no-scrollbar ${className}`.trim();
+
   return (
-    <aside
-      className={`bg-background rounded-xl border border-border-product p-4 flex flex-col gap-6 text-foreground select-none max-h-[calc(100vh-7rem)] overflow-y-auto ${className}`.trim()}
-    >
+    <aside className={containerClasses}>
       {/* Panel Header */}
-      <div className="flex items-center justify-between border-b border-border-product pb-3">
-        <div className="flex items-center gap-2">
-          <h2 className="font-bold text-base text-foreground">فیلترها</h2>
+      {!hideHeader && (
+        <div className="flex items-center justify-between border-b border-border-product pb-3">
+          <div className="flex items-center gap-2">
+            <h2 className="font-bold text-base text-foreground">فیلترها</h2>
+            {activeFilterCount > 0 && (
+              <span className="bg-primary/10 text-primary text-xs font-semibold px-2 py-0.5 rounded-full">
+                {activeFilterCount}
+              </span>
+            )}
+          </div>
           {activeFilterCount > 0 && (
-            <span className="bg-primary/10 text-primary text-xs font-semibold px-2 py-0.5 rounded-full">
-              {activeFilterCount}
-            </span>
+            <button
+              onClick={onClearFilters}
+              className="text-xs font-medium text-error hover:text-error/80 flex items-center gap-1 cursor-pointer transition-colors"
+            >
+              <TrashIcon size={14} />
+            </button>
           )}
         </div>
-        {activeFilterCount > 0 && (
-          <button
-            onClick={onClearFilters}
-            className="text-xs font-medium text-error hover:text-error/80 flex items-center gap-1 cursor-pointer transition-colors"
-          >
-            <TrashIcon size={14} />
-
-          </button>
-        )}
-      </div>
+      )}
 
       {/* Filter Section: Categories */}
       <div className="flex flex-col gap-2.5">
