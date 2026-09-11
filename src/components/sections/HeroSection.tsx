@@ -110,7 +110,7 @@ export function HeroSection({
 
   return (
     <section
-      className="w-full select-none overflow-hidden p-0 m-0"
+      className="w-full max-w-full h-[180px] md:h-[400px] select-none overflow-hidden p-0 m-0 rounded-none border-none"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => {
         setIsHovered(false);
@@ -119,7 +119,7 @@ export function HeroSection({
     >
       <div
         ref={sliderRef}
-        className="relative w-full rounded-none overflow-hidden bg-surface-subtle group touch-pan-y p-0 border-none"
+        className="relative w-full h-full max-w-full rounded-none overflow-hidden bg-surface-subtle group touch-pan-y p-0 border-none"
         onMouseDown={(e) => handlePointerDown(e.clientX)}
         onMouseMove={(e) => handlePointerMove(e.clientX)}
         onMouseUp={handlePointerEnd}
@@ -129,7 +129,7 @@ export function HeroSection({
       >
         {/* Slides Track */}
         <div
-          className={`flex ${
+          className={`w-full h-full flex ${
             isDragging
               ? "transition-none cursor-grabbing"
               : "transition-transform duration-500 ease-out cursor-grab"
@@ -145,7 +145,7 @@ export function HeroSection({
             return (
               <div
                 key={banner.id || index}
-                className="w-full shrink-0 relative rounded-none aspect-[16/9] sm:aspect-[21/9] md:aspect-[24/9] lg:aspect-[28/9] min-h-[200px] sm:min-h-[300px] md:min-h-[420px] overflow-hidden"
+                className="w-full h-full shrink-0 relative rounded-none overflow-hidden"
               >
                 {/* Linked Image */}
                 <Link
