@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { Banner } from "@/types/product";
 import { Container } from "@/components/ui/Container";
-import { Button } from "@/components/ui/Button";
 import { ChevronRightIcon, ChevronLeftIcon } from "@/components/icons";
 
 interface HeroSectionProps {
@@ -142,56 +141,25 @@ export function HeroSection({
             {bannerList.map((banner, index) => (
               <div
                 key={banner.id || index}
-                className="w-full shrink-0 relative min-h-[240px] sm:min-h-[340px] md:min-h-[440px] flex items-center overflow-hidden"
+                className="w-full shrink-0 relative aspect-[16/7] min-h-[180px] sm:min-h-[300px] md:min-h-[420px] overflow-hidden"
               >
-                {/* Background Banner Link */}
+                {/* Linked Image Only */}
                 <Link
                   href={banner.linkUrl}
                   onClick={handleSlideClick}
-                  className="absolute inset-0 z-0 block w-full h-full cursor-pointer"
+                  className="relative block w-full h-full cursor-pointer"
                   draggable={false}
                 >
                   <Image
                     src={banner.imageUrl}
-                    alt={banner.title}
+                    alt={banner.title || `اسلاید ${index + 1}`}
                     fill
                     priority={index === 0}
                     sizes="(max-width: 1440px) 100vw, 1440px"
-                    className="object-cover object-center transition-transform duration-700 group-hover:scale-102"
+                    className="object-cover object-center"
                     draggable={false}
                   />
-                  {/* Subtle Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/35 to-transparent" />
                 </Link>
-
-                {/* Banner Text Overlay Content */}
-                <div className="relative z-10 p-6 sm:p-10 md:p-16 max-w-xl text-white flex flex-col gap-2 md:gap-4 pointer-events-none">
-                  <h1 className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-tight drop-shadow-sm">
-                    {banner.title}
-                  </h1>
-                  {banner.subtitle && (
-                    <p className="text-xs sm:text-base md:text-lg text-white/90 drop-shadow-sm">
-                      {banner.subtitle}
-                    </p>
-                  )}
-                  {banner.buttonText && (
-                    <div className="pt-2 pointer-events-auto">
-                      <Link
-                        href={banner.linkUrl}
-                        onClick={handleSlideClick}
-                        className="inline-block"
-                      >
-                        <Button
-                          variant="primary"
-                          size="md"
-                          className="rounded-full shadow-lg hover:scale-105 active:scale-95 transition-transform"
-                        >
-                          {banner.buttonText}
-                        </Button>
-                      </Link>
-                    </div>
-                  )}
-                </div>
               </div>
             ))}
           </div>
