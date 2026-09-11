@@ -11,12 +11,12 @@ export default function HomePage() {
   const newArrivals = products.slice(0, 4);
 
   return (
-    <div className="flex flex-col gap-2 md:gap-6 pb-6">
-      {/* Hero Banner Section (Carousel Slider) */}
+    <div className="flex flex-col gap-6 md:gap-10 pb-8">
+      {/* Hero Banner Section (Full width, no padding, no border-radius) */}
       {banners.length > 0 && <HeroSection banners={banners} />}
 
-      {/* Categories Section */}
-      <CategorySection categories={categories} />
+      {/* Top Categories Showcase (Photo Cards Grid) */}
+      <CategorySection categories={categories} variant="cards" />
 
       {/* Special Offers Section (Carousel) */}
       <OfferSection
@@ -31,6 +31,13 @@ export default function HomePage() {
         title="جدیدترین محصولات"
         subtitle="بهترین و به روزترین استایل‌های زنانه"
         viewAllUrl="/products"
+      />
+
+      {/* Bottom Categories Section (Large Rounded Circular Images + Name) */}
+      <CategorySection
+        categories={categories}
+        variant="circular"
+        title="دسته‌بندی‌های محبوب"
       />
     </div>
   );

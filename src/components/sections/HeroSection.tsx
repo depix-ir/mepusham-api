@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Banner } from "@/types/product";
-import { Container } from "@/components/ui/Container";
 import { ChevronRightIcon, ChevronLeftIcon } from "@/components/icons";
 
 interface HeroSectionProps {
@@ -111,113 +110,130 @@ export function HeroSection({
 
   return (
     <section
-      className="w-full my-3 md:my-6 select-none"
+      className="w-full select-none overflow-hidden p-0 m-0"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => {
         setIsHovered(false);
         if (isPointerDown.current) handlePointerEnd();
       }}
     >
-      <Container>
+      <div
+        ref={sliderRef}
+        className="relative w-full rounded-none overflow-hidden bg-surface-subtle group touch-pan-y p-0 border-none"
+        onMouseDown={(e) => handlePointerDown(e.clientX)}
+        onMouseMove={(e) => handlePointerMove(e.clientX)}
+        onMouseUp={handlePointerEnd}
+        onTouchStart={(e) => handlePointerDown(e.touches[0].clientX)}
+        onTouchMove={(e) => handlePointerMove(e.touches[0].clientX)}
+        onTouchEnd={handlePointerEnd}
+      >
+        {/* Slides Track */}
         <div
-          ref={sliderRef}
-          className="relative w-full rounded-2xl overflow-hidden bg-surface-subtle shadow-md group touch-pan-y"
-          onMouseDown={(e) => handlePointerDown(e.clientX)}
-          onMouseMove={(e) => handlePointerMove(e.clientX)}
-          onMouseUp={handlePointerEnd}
-          onTouchStart={(e) => handlePointerDown(e.touches[0].clientX)}
-          onTouchMove={(e) => handlePointerMove(e.touches[0].clientX)}
-          onTouchEnd={handlePointerEnd}
+          className={`flex ${
+            isDragging
+              ? "transition-none cursor-grabbing"
+              : "transition-transform duration-500 ease-out cursor-grab"
+          }`}
+          style={{
+            transform: `translateX(calc(${currentIndex * 100}% + ${dragOffset}px))`,
+          }}
         >
-          {/* Slides Track */}
-          <div
-            className={`flex ${
-              isDragging ? "transition-none cursor-grabbing" : "transition-transform duration-500 ease-out cursor-grab"
-            }`}
-            style={{
-              transform: `translateX(calc(${currentIndex * 100}% + ${dragOffset}px))`,
-            }}
-          >
-            {bannerList.map((banner, index) => (
+          {bannerList.map((banner, index) => {
+            const desktopImage = banner.desktopImageUrl || banner.imageUrl;
+            const mobileImage = banner.mobileImageUrl || banner.imageUrl;
+
+            return (
               <div
                 key={banner.id || index}
-                className="w-full shrink-0 relative aspect-[16/7] min-h-[180px] sm:min-h-[300px] md:min-h-[420px] overflow-hidden"
+                className="w-full shrink-0 relative rounded-none aspect-[16/9] sm:aspect-[21/9] md:aspect-[24/9] lg:aspect-[28/9] min-h-[200px] sm:min-h-[300px] md:min-h-[420px] overflow-hidden"
               >
-                {/* Linked Image Only */}
+                {/* Linked Image */}
                 <Link
                   href={banner.linkUrl}
                   onClick={handleSlideClick}
                   className="relative block w-full h-full cursor-pointer"
                   draggable={false}
                 >
+                  {/* Desktop / Tablet Image */}
                   <Image
-                    src={banner.imageUrl}
+                    src={desktopImage}
                     alt={banner.title || `اسلاید ${index + 1}`}
                     fill
                     priority={index === 0}
-                    sizes="(max-width: 1440px) 100vw, 1440px"
-                    className="object-cover object-center"
+                    sizes="100vw"
+                    className="hidden md:block object-cover object-center"
+                    draggable={false}
+                  />
+
+                  {/* Mobile Image */}
+                  <Image
+                    src={mobileImage}
+                    alt={banner.title || `اسلاید ${index + 1}`}
+                    fill
+                    priority={index === 0}
+                    sizes="100vw"
+                    className="block md:hidden object-cover object-center"
                     draggable={false}
                   />
                 </Link>
               </div>
+            );
+          })}
+        </div>
+
+        {/* Controls: Next / Prev Arrows */}
+        {bannerCount > 1 && (
+          <>
+            {/* Right Arrow Button (RTL: Previous Slide) */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                prevSlide();
+              }}
+              aria-label="اسلاید قبلی"
+              className="absolute right-3 md:right-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full bg-background/85 hover:bg-background text-foreground shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 cursor-pointer backdrop-blur-sm opacity-90 hover:opacity-100"
+            >
+              <ChevronRightIcon size={24} />
+            </button>
+
+            {/* Left Arrow Button (RTL: Next Slide) */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                nextSlide();
+              }}
+              aria-label="اسلاید بعدی"
+              className="absolute left-3 md:left-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full bg-background/85 hover:bg-background text-foreground shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 cursor-pointer backdrop-blur-sm opacity-90 hover:opacity-100"
+            >
+              <ChevronLeftIcon size={24} />
+            </button>
+          </>
+        )}
+
+        {/* Dots Pagination */}
+        {bannerCount > 1 && (
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 bg-black/35 backdrop-blur-md px-3 py-1.5 rounded-full">
+            {bannerList.map((_, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCurrentIndex(idx);
+                }}
+                aria-label={`رفتن به اسلاید ${idx + 1}`}
+                className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
+                  currentIndex === idx
+                    ? "w-7 bg-primary"
+                    : "w-2.5 bg-white/60 hover:bg-white"
+                }`}
+              />
             ))}
           </div>
-
-          {/* Controls: Next / Prev Arrows */}
-          {bannerCount > 1 && (
-            <>
-              {/* Right Arrow Button (RTL: Previous Slide) */}
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  prevSlide();
-                }}
-                aria-label="اسلاید قبلی"
-                className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full bg-background/85 hover:bg-background text-foreground shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 cursor-pointer backdrop-blur-sm opacity-90 hover:opacity-100"
-              >
-                <ChevronRightIcon size={24} />
-              </button>
-
-              {/* Left Arrow Button (RTL: Next Slide) */}
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  nextSlide();
-                }}
-                aria-label="اسلاید بعدی"
-                className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full bg-background/85 hover:bg-background text-foreground shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 cursor-pointer backdrop-blur-sm opacity-90 hover:opacity-100"
-              >
-                <ChevronLeftIcon size={24} />
-              </button>
-            </>
-          )}
-
-          {/* Dots Pagination */}
-          {bannerCount > 1 && (
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 bg-black/35 backdrop-blur-md px-3 py-1.5 rounded-full">
-              {bannerList.map((_, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setCurrentIndex(idx);
-                  }}
-                  aria-label={`رفتن به اسلاید ${idx + 1}`}
-                  className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
-                    currentIndex === idx
-                      ? "w-7 bg-primary"
-                      : "w-2.5 bg-white/60 hover:bg-white"
-                  }`}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      </Container>
+        )}
+      </div>
     </section>
   );
 }
