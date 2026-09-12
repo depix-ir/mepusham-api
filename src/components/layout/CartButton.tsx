@@ -1,23 +1,27 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
 import { CartIcon } from "@/components/icons";
 import { IconButton } from "@/components/ui/IconButton";
+import { useCart } from "@/store/cart/cart.store";
 
 export interface CartButtonProps {
   cartItemCount?: number;
   className?: string;
 }
 
-export function CartButton({ cartItemCount = 0, className = "" }: CartButtonProps) {
+export function CartButton({ className = "" }: CartButtonProps) {
+  const { getItemCount, openCart } = useCart();
+  const count = getItemCount();
+
   return (
-    <Link
-      href="/cart"
-      className={`relative inline-flex items-center shrink-0 group ${className}`}
-      aria-label={`سبد خرید (${cartItemCount} کالا)`}
+    <button
+      type="button"
+      onClick={openCart}
+      className={`relative inline-flex items-center shrink-0 group border-none bg-transparent p-0 cursor-pointer text-right ${className}`}
+      aria-label={`سبد خرید (${count} کالا)`}
     >
-      {/* Mobile Cart Button (APPROVED DESIGN: DO NOT CHANGE) */}
+      {/* Mobile Cart Button */}
       <div className="md:hidden relative">
         <IconButton
           ariaLabel="سبد خرید"
@@ -26,17 +30,17 @@ export function CartButton({ cartItemCount = 0, className = "" }: CartButtonProp
         >
           <CartIcon
             size={22}
-            className="text-foreground group-hover:text-primary-foreground transition-colors"
+            className="text-foreground "
           />
         </IconButton>
-        {cartItemCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-error text-error-foreground text-[10px] font-bold  rounded-full flex items-center justify-center border-2 border-background">
-            {cartItemCount}
+        {count > 0 && (
+          <span className="absolute -top-1 -right-1 bg-error text-error-foreground text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-background">
+            {count}
           </span>
         )}
       </div>
 
-      {/* Desktop Dedicated Cart Button (Commerce-Specific Visual Identity) */}
+      {/* Desktop Dedicated Cart Button */}
       <div
         className="hidden md:inline-flex items-center gap-2.5 px-4 h-11 bg-primary text-primary-foreground rounded-md font-medium text-sm transition-all duration-200 ease-in-out hover:bg-primary-hover active:bg-primary-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 shadow-2xs hover:shadow-xs cursor-pointer select-none"
         role="button"
@@ -46,9 +50,9 @@ export function CartButton({ cartItemCount = 0, className = "" }: CartButtonProp
           <CartIcon size={20} className="text-primary-foreground shrink-0" />
         </div>
         <span className="font-semibold text-sm whitespace-nowrap">سبد خرید</span>
-        {cartItemCount > 0 ? (
+        {count > 0 ? (
           <span className="bg-primary-foreground text-primary text-xs font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center shrink-0 leading-none shadow-2xs">
-            {cartItemCount}
+            {count}
           </span>
         ) : (
           <span className="bg-primary-hover/50 text-primary-foreground/90 text-xs font-medium px-2 py-0.5 rounded-full min-w-[20px] text-center shrink-0 leading-none">
@@ -56,6 +60,6 @@ export function CartButton({ cartItemCount = 0, className = "" }: CartButtonProp
           </span>
         )}
       </div>
-    </Link>
+    </button>
   );
 }
