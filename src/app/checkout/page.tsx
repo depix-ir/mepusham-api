@@ -1,125 +1,222 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCart } from "@/store/cart/cart.store";
-import { formatPrice } from "@/lib/formatting/currency";
-import { CheckCircle2, ShoppingBag, ShieldCheck, ArrowRight } from "lucide-react";
+import { CustomerInformation, CheckoutFormErrors } from "@/types/checkout";
+import { validateCustomerForm } from "@/lib/checkout/validation";
+import { shippingMethods, DEFAULT_SHIPPING_METHOD_ID, getShippingMethodById } from "@/data/shipping";
+
+import { CheckoutHeader } from "@/components/checkout/CheckoutHeader";
+import { CustomerInformationForm } from "@/components/checkout/CustomerInformationForm";
+import { ShippingMethodSelector } from "@/components/checkout/ShippingMethodSelector";
+import { TrustSection } from "@/components/checkout/TrustSection";
+import { CheckoutCartItems } from "@/components/checkout/CheckoutCartItems";
+import { OrderSummary } from "@/components/checkout/OrderSummary";
+import { MobileCheckoutBar } from "@/components/checkout/MobileCheckoutBar";
+import { CartEmptyState } from "@/components/cart/CartEmptyState";
+
+import { AlertCircle } from "lucide-react";
 
 export default function CheckoutPage() {
-  const { items, getTotal, clearCart } = useCart();
-  const [isOrdered, setIsOrdered] = useState(false);
+  const router = useRouter();
+  const {
+    items,
+    updateQuantity,
+    removeItem,
+    getTotal,
+    validateCurrentCart,
+  } = useCart();
 
-  const total = getTotal();
+  // Session state for customer checkout form
+  const [customer, setCustomer] = useState<CustomerInformation>({
+    firstName: "",
+    lastName: "",
+    phone: "",
+    province: "",
+    city: "",
+    address: "",
+    postalCode: "",
+  });
 
-  const handleCompleteOrder = () => {
-    clearCart();
-    setIsOrdered(true);
+  const [selectedShippingId, setSelectedShippingId] = useState<string>(
+    DEFAULT_SHIPPING_METHOD_ID
+  );
+
+  const [formErrors, setFormErrors] = useState<CheckoutFormErrors>({});
+  const [cartValidationErrors, setCartValidationErrors] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Selected Shipping Object
+  const selectedShipping =
+    getShippingMethodById(selectedShippingId) || shippingMethods[0];
+
+  // Single Source of Truth Price Calculations
+  const itemsSubtotal = getTotal();
+  const shippingCost = selectedShipping.price;
+  const payableTotal = itemsSubtotal + shippingCost;
+
+  const handleFieldChange = (field: keyof CustomerInformation, value: string) => {
+    setCustomer((prev) => ({ ...prev, [field]: value }));
+    if (formErrors[field]) {
+      setFormErrors((prev) => {
+        const copy = { ...prev };
+        delete copy[field];
+        return copy;
+      });
+    }
   };
 
-  if (isOrdered) {
+  const handleSubmitCheckout = () => {
+    if (isLoading) return; // Prevent duplicate click/submission
+
+    // 1. Validate Cart & Inventory
+    const cartResult = validateCurrentCart();
+    if (!cartResult.valid) {
+      setCartValidationErrors(cartResult.errors.map((e) => e.message));
+      return;
+    }
+    setCartValidationErrors([]);
+
+    // 2. Validate Form
+    const formResult = validateCustomerForm(customer);
+    if (!formResult.isValid) {
+      setFormErrors(formResult.errors);
+      return;
+    }
+    setFormErrors({});
+
+    setIsLoading(true);
+
+    // Prepare Checkout Payload
+    const checkoutPayload = {
+      customer: formResult.normalizedCustomer,
+      shipping: {
+        methodId: selectedShipping.id,
+        price: selectedShipping.price,
+        title: selectedShipping.title,
+        estimatedDelivery: selectedShipping.estimatedDelivery,
+      },
+      items: items.map((i) => ({
+        productId: i.productId,
+        variantId: i.variantId,
+        quantity: i.quantity,
+        unitPrice: i.unitPrice,
+      })),
+      pricing: {
+        itemsSubtotal,
+        shippingCost,
+        payableTotal,
+      },
+      createdAt: new Date().toISOString(),
+    };
+
+    // Store payload in sessionStorage for payment page consumption
+    try {
+      sessionStorage.setItem("pending_checkout_payload", JSON.stringify(checkoutPayload));
+    } catch {
+      // Fallback if sessionStorage is disabled
+    }
+
+    // Simulate short network delay before navigation to /payment
+    setTimeout(() => {
+      router.push("/payment");
+    }, 400);
+  };
+
+  // Empty Cart State Rendering
+  if (items.length === 0) {
     return (
-      <div className="w-full max-w-2xl mx-auto px-4 py-16 text-center flex flex-col items-center gap-6">
-        <div className="w-20 h-20 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center animate-bounce">
-          <CheckCircle2 className="w-10 h-10" />
-        </div>
-        <div className="flex flex-col gap-2">
-          <h1 className="text-2xl font-black text-foreground">
-            سفارش شما با موفقیت ثبت شد!
-          </h1>
-          <p className="text-sm text-muted">
-            این یک صفحه پرداخت آزمایشی (Stub Checkout) است. سبد خرید شما با موفقیت خالی شد.
-          </p>
-        </div>
-        <Link
-          href="/products"
-          className="mt-4 inline-flex items-center gap-2 h-12 px-6 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary-hover transition-all shadow-md"
-        >
-          <ArrowRight className="w-4 h-4" />
-          <span>بازگشت به فروشگاه</span>
-        </Link>
+      <div className="min-h-screen bg-background flex flex-col">
+        <CheckoutHeader />
+        <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-12 flex items-center justify-center">
+          <div className="w-full bg-background border border-border-subtle rounded-2xl p-6 sm:p-12 shadow-xs">
+            <CartEmptyState />
+          </div>
+        </main>
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex flex-col gap-8">
-      {/* Page Header */}
-      <div className="flex flex-col gap-2 border-b border-border-subtle pb-6">
-        <div className="flex items-center gap-2 text-primary font-bold text-xs bg-primary/10 px-3 py-1 rounded-full w-fit">
-          <ShieldCheck className="w-4 h-4" />
-          <span>درگاه پرداخت امن (نمونه اولیه)</span>
-        </div>
-        <h1 className="text-2xl sm:text-3xl font-black text-foreground">
-          تکمیل سفارش و پرداخت
-        </h1>
-        <p className="text-xs sm:text-sm text-muted">
-          این صفحه به عنوان استاب نهایی تکمیل سفارش آماده شده است.
-        </p>
-      </div>
+    <div className="min-h-screen bg-background flex flex-col pb-24 lg:pb-12">
+      {/* Minimal Header */}
+      <CheckoutHeader />
 
-      {/* Main Checkout Area */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
-        {/* Order Details Panel */}
-        <div className="md:col-span-7 bg-background border border-border-subtle rounded-2xl p-6 flex flex-col gap-6 shadow-sm">
-          <h2 className="text-base font-bold text-foreground pb-3 border-b border-border-subtle flex items-center gap-2">
-            <ShoppingBag className="w-4 h-4 text-primary" />
-            <span>خلاصه اقلام سفارش</span>
-          </h2>
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+        {/* Main 12-Column RTL Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-          {items.length === 0 ? (
-            <div className="text-center py-8 text-muted text-sm">
-              هیچ کالا یا آیتمی در سبد خرید شما یافت نشد.
-            </div>
-          ) : (
-            <div className="flex flex-col gap-3 max-h-80 overflow-y-auto pr-1">
-              {items.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex items-center justify-between p-3 rounded-xl bg-surface-subtle/60 border border-border-subtle text-xs"
-                >
-                  <div className="flex flex-col gap-1 min-w-0 flex-1 pr-2">
-                    <span className="font-bold text-foreground truncate">{item.name}</span>
-                    <span className="text-[11px] text-muted">تعداد: {item.quantity}</span>
-                  </div>
-                  <span className="font-extrabold text-foreground shrink-0">
-                    {formatPrice(item.unitPrice * item.quantity)}
-                  </span>
+          {/* RIGHT SECTION (8 Columns Desktop): Main Checkout Form & Flow */}
+          <div className="lg:col-span-8 flex flex-col gap-8">
+
+            {/* Global Errors Banner */}
+            {cartValidationErrors.length > 0 && (
+              <div className="flex flex-col gap-2 p-4 rounded-2xl bg-red-50 border border-red-200 text-error text-xs sm:text-sm">
+                <div className="flex items-center gap-2 font-bold text-red-800">
+                  <AlertCircle className="w-4.5 h-4.5 shrink-0 text-error" />
+                  <span>خطا در بررسی سبد خرید و موجودی:</span>
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
+                <ul className="list-disc list-inside space-y-1 text-xs text-red-700 pr-2">
+                  {cartValidationErrors.map((err, idx) => (
+                    <li key={idx}>{err}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
-        {/* Payment Summary & CTA */}
-        <div className="md:col-span-5 bg-background border border-border shadow-md rounded-2xl p-6 flex flex-col gap-5">
-          <h2 className="text-base font-bold text-foreground pb-3 border-b border-border-subtle">
-            مبلغ قابل پرداخت
-          </h2>
+            {/* 01. Customer & Shipping Address Form */}
+            <section className="bg-background border border-border-subtle rounded-2xl p-5 sm:p-6 shadow-xs">
+              <CustomerInformationForm
+                customer={customer}
+                onChange={handleFieldChange}
+                errors={formErrors}
+              />
+            </section>
 
-          <div className="flex items-center justify-between py-2">
-            <span className="text-sm font-medium text-muted">جمع کل:</span>
-            <span className="text-xl font-black text-foreground">{formatPrice(total)}</span>
+            {/* 02. Shipping Method Selection */}
+            <section className="bg-background border border-border-subtle rounded-2xl p-5 sm:p-6 shadow-xs">
+              <ShippingMethodSelector
+                methods={shippingMethods}
+                selectedMethodId={selectedShippingId}
+                onSelect={(id) => setSelectedShippingId(id)}
+              />
+            </section>
+
+            {/* 03. Trust & Policy Section */}
+            <section className="bg-background border border-border-subtle rounded-2xl p-5 sm:p-6 shadow-xs">
+              <TrustSection />
+            </section>
+
+            {/* 04. Compact Cart Items List for Review */}
+            <section className="bg-background border border-border-subtle rounded-2xl p-5 sm:p-6 shadow-xs">
+              <CheckoutCartItems
+                items={items}
+                onUpdateQuantity={updateQuantity}
+                onRemoveItem={removeItem}
+              />
+            </section>
           </div>
 
-          <button
-            type="button"
-            onClick={handleCompleteOrder}
-            disabled={items.length === 0}
-            className="w-full h-12 rounded-xl bg-emerald-600 text-white font-bold text-sm flex items-center justify-center gap-2 hover:bg-emerald-700 disabled:opacity-50 transition-all shadow-md cursor-pointer"
-          >
-            <CheckCircle2 className="w-4 h-4" />
-            <span>ثبت سفارش آزمایشی</span>
-          </button>
-
-          <Link
-            href="/cart"
-            className="text-center text-xs font-medium text-muted hover:text-primary transition-colors"
-          >
-            بازگشت به سبد خرید
-          </Link>
+          {/* LEFT SECTION (4 Columns Desktop): Order Summary & Payment CTA */}
+          <div className="lg:col-span-4 sticky top-6">
+            <OrderSummary
+              itemsSubtotal={itemsSubtotal}
+              shippingOption={selectedShipping}
+              payableTotal={payableTotal}
+              onSubmit={handleSubmitCheckout}
+              isLoading={isLoading}
+            />
+          </div>
         </div>
-      </div>
+      </main>
+
+      {/* Mobile Bottom Sticky Payment Bar */}
+      <MobileCheckoutBar
+        payableTotal={payableTotal}
+        onSubmit={handleSubmitCheckout}
+        isLoading={isLoading}
+      />
     </div>
   );
 }
