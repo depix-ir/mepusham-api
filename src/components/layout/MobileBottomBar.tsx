@@ -35,6 +35,16 @@ export function MobileBottomBar({
 }: MobileBottomBarProps) {
   const pathname = usePathname();
 
+  // Hide global bottom nav on Product Detail Pages (/products/[slug])
+  // so the Sticky Add To Cart Bar has full focus
+  const isProductDetailPage =
+    pathname?.startsWith("/products/") &&
+    pathname.split("/").filter(Boolean).length >= 2;
+
+  if (isProductDetailPage) {
+    return null;
+  }
+
   return (
     <nav
       aria-label="ناوبری اصلی موبایل"

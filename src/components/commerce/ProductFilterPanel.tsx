@@ -3,7 +3,7 @@
 import React from "react";
 import { categories, brands } from "@/data/common";
 import { Product } from "@/types/product";
-import { TrashIcon, CheckIcon, ChevronLeftIcon } from "@/components/icons";
+import { TrashIcon, CheckIcon } from "@/components/icons";
 
 export interface FilterState {
   category?: string;

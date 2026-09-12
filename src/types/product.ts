@@ -91,6 +91,54 @@ export type ProductInventory = {
   hasAvailableVariants: boolean;
 };
 
+export type ProductReview = {
+  id: string;
+  authorName: string;
+  rating: number;
+  date: string;
+  comment: string;
+  verifiedPurchase: boolean;
+  storeResponse?: {
+    author: string;
+    date: string;
+    text: string;
+  };
+  aspects?: {
+    fit?: "small" | "true_to_size" | "large";
+    quality?: number;
+    comfort?: number;
+  };
+};
+
+export type ProductRating = {
+  average: number;
+  count: number;
+  starDistribution: {
+    5: number;
+    4: number;
+    3: number;
+    2: number;
+    1: number;
+  };
+};
+
+export type SizeGuideCategory = "clothing" | "footwear" | "pants" | "accessories" | "none";
+
+export type SizeGuideRow = Record<string, string>;
+
+export type SizeGuideData = {
+  type: SizeGuideCategory;
+  title: string;
+  description?: string;
+  columns: { key: string; label: string }[];
+  rows: SizeGuideRow[];
+};
+
+export type ProductSpecification = {
+  label: string;
+  value: string;
+};
+
 export type Product = {
   id: string;
   slug: string;
@@ -107,6 +155,12 @@ export type Product = {
   status: ProductStatus;
   createdAt: string;
   updatedAt: string;
+  rating?: ProductRating;
+  reviews?: ProductReview[];
+  specifications?: ProductSpecification[];
+  careInstructions?: string[];
+  sizeGuide?: SizeGuideData;
+  shippingReturns?: string;
 };
 
 export type Banner = {

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { getSearchSuggestions, SearchSuggestion } from "./suggestionService";
 
 export interface UseSearchSuggestionsOptions {
@@ -16,7 +16,6 @@ export function useSearchSuggestions({
 }: UseSearchSuggestionsOptions = {}) {
   const [query, setQuery] = useState(initialQuery);
   const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
-  const [suggestions, setSuggestions] = useState<SearchSuggestion[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isMobileActive, setIsMobileActive] = useState(false);
@@ -24,9 +23,13 @@ export function useSearchSuggestions({
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
+  const updateQuery = useCallback((newQuery: string) => {
+    setQuery(newQuery);
+    setIsLoading(true);
+  }, []);
+
   // Synchronize debouncedQuery with query using debounceMs
   useEffect(() => {
-    setIsLoading(true);
     if (timerRef.current) clearTimeout(timerRef.current);
 
     timerRef.current = setTimeout(() => {
@@ -39,16 +42,16 @@ export function useSearchSuggestions({
     };
   }, [query, debounceMs]);
 
-  // Compute suggestions when debouncedQuery changes
-  useEffect(() => {
-    const results = getSearchSuggestions(debouncedQuery, undefined, { limit });
-    setSuggestions(results);
-    setSelectedIndex(-1);
+  // Compute suggestions derived from debouncedQuery
+  const suggestions: SearchSuggestion[] = useMemo(() => {
+    return getSearchSuggestions(debouncedQuery, undefined, { limit });
   }, [debouncedQuery, limit]);
 
   const selectSuggestion = useCallback(
     (text: string) => {
       setQuery(text);
+      setDebouncedQuery(text);
+      setIsLoading(false);
       setIsOpen(false);
       setIsMobileActive(false);
       if (onSelect) {
@@ -61,6 +64,7 @@ export function useSearchSuggestions({
   const clearQuery = useCallback(() => {
     setQuery("");
     setDebouncedQuery("");
+    setIsLoading(false);
     setSelectedIndex(-1);
   }, []);
 
@@ -120,7 +124,7 @@ export function useSearchSuggestions({
 
   return {
     query,
-    setQuery,
+    setQuery: updateQuery,
     suggestions,
     isLoading,
     isOpen,

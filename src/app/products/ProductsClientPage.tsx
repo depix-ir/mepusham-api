@@ -3,14 +3,13 @@
 import React, { useState, useTransition, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { products as initialProducts } from "@/data/products";
-import { banners, categories, brands } from "@/data/common";
+import { banners, categories } from "@/data/common";
 import { ProductBannerSlider } from "@/components/commerce/ProductBannerSlider";
 import { ProductFilterPanel, FilterState } from "@/components/commerce/ProductFilterPanel";
 import { ProductFilterModal } from "@/components/commerce/ProductFilterModal";
 import { ProductGrid } from "@/components/commerce/ProductGrid";
 import { Container } from "@/components/ui/Container";
-import { FilterIcon, SortIcon, XIcon, TrashIcon } from "@/components/icons";
-import { Product } from "@/types/product";
+import { FilterIcon, SortIcon } from "@/components/icons";
 
 export function ProductsClientPage() {
   const router = useRouter();
@@ -44,7 +43,7 @@ export function ProductsClientPage() {
     }),
     [
       categoryParam,
-      brandParam.join(","),
+      brandParam,
       minPriceParam,
       maxPriceParam,
       inStockParam,

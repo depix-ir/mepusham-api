@@ -44,7 +44,6 @@ export function Search({
     suggestions,
     isLoading,
     isOpen,
-    setIsOpen,
     isMobileActive,
     openMobileSearch,
     closeMobileSearch,
@@ -124,8 +123,6 @@ export function Search({
           onClick={handleMobileInputClick}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          aria-expanded={isOpen}
-          aria-haspopup="listbox"
           aria-autocomplete="list"
           className="w-full bg-transparent pr-3 text-xs md:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
         />
