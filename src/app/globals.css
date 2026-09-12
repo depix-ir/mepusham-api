@@ -99,6 +99,15 @@ body {
   flex-direction: column;
 }
 
+/* Prevent image selection and dragging across the entire application */
+img, picture, svg {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
 /* Custom scrollbar behavior for RTL carousels */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
