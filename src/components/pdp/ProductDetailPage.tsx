@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Product } from "@/types/product";
 import { getVariantDetails } from "@/lib/product/domain";
 import { formatPrice } from "@/lib/formatting/currency";
+import { useCart } from "@/store/cart/cart.store";
 import { ProductGallery } from "./ProductGallery";
 import { ProductIdentity } from "./ProductIdentity";
 import { VariantSelector } from "./VariantSelector";
@@ -27,8 +28,10 @@ export interface ProductDetailPageProps {
 export function ProductDetailPage({
   product,
   relatedProducts = [],
-  onAddToCart,
+  onAddToCart: customOnAddToCart,
 }: ProductDetailPageProps) {
+  const { addItem, openCart } = useCart();
+
   // Initialize default option selections if options exist
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>(() => {
     const initial: Record<string, string> = {};
@@ -66,13 +69,29 @@ export function ProductDetailPage({
     // 3. Validate Quantity
     if (quantity <= 0 || (variantDetails.stock > 0 && quantity > variantDetails.stock)) return;
 
-    // Execute Add to Cart Action
-    if (onAddToCart) {
-      onAddToCart(product, quantity, selectedOptions);
-    }
+    // Dispatch to global CartStore
+    const added = addItem(product, quantity, selectedOptions);
 
-    // Open Success Modal upon verified success
-    setIsSuccessModalOpen(true);
+    if (added) {
+      if (customOnAddToCart) {
+        customOnAddToCart(product, quantity, selectedOptions);
+      }
+      setIsSuccessModalOpen(true);
+    }
+  };
+
+  const handleCardAddToCart = (prod: Product) => {
+    // Quick add from related products carousel
+    const defaultOpts: Record<string, string> = {};
+    prod.options.forEach((opt) => {
+      if (opt.values.length > 0) {
+        defaultOpts[opt.id] = opt.values[0].id;
+      }
+    });
+    const added = addItem(prod, 1, defaultOpts);
+    if (added) {
+      openCart();
+    }
   };
 
   // Get selected option labels summary for sticky bar & modal
@@ -209,7 +228,10 @@ export function ProductDetailPage({
 
       {/* Related Products Carousel Section */}
       {relatedProducts.length > 0 && (
-        <RelatedProductsSection products={relatedProducts} />
+        <RelatedProductsSection
+          products={relatedProducts}
+          onAddToCart={handleCardAddToCart}
+        />
       )}
 
       {/* Mobile Sticky Add to Cart Bottom Bar */}
@@ -248,6 +270,7 @@ export function ProductDetailPage({
         productImage={mainImageUrl}
         selectedVariantSummary={selectedVariantSummary}
         quantity={quantity}
+        onOpenCart={openCart}
       />
     </div>
   );

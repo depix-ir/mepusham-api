@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import Image from "next/image";
 import Link from "next/link";
+import Image from "next/image";
 import { X, Check, ShoppingCart } from "lucide-react";
 
 export interface AddToCartSuccessModalProps {
@@ -12,6 +12,7 @@ export interface AddToCartSuccessModalProps {
   productImage?: string;
   selectedVariantSummary?: string;
   quantity: number;
+  onOpenCart?: () => void;
 }
 
 export function AddToCartSuccessModal({
@@ -21,6 +22,7 @@ export function AddToCartSuccessModal({
   productImage,
   selectedVariantSummary,
   quantity,
+  onOpenCart,
 }: AddToCartSuccessModalProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -52,6 +54,14 @@ export function AddToCartSuccessModal({
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
+
+  const handleCartClick = (e: React.MouseEvent) => {
+    onClose();
+    if (onOpenCart) {
+      e.preventDefault();
+      onOpenCart();
+    }
+  };
 
   return (
     <div
@@ -88,8 +98,6 @@ export function AddToCartSuccessModal({
 
         {/* Modal Content / Product Summary */}
         <div className="py-4 flex flex-col gap-3.5">
-
-
           <div className="flex items-center gap-3.5 p-3 rounded-xl bg-surface-subtle/70 border border-border-product">
             {productImage && (
               <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0 border border-border-product bg-background">
@@ -118,14 +126,14 @@ export function AddToCartSuccessModal({
           </div>
         </div>
 
-        {/* Action CTAs - Single Full-Width Primary CTA */}
+        {/* Action CTAs */}
         <div className="pt-2">
           <Link
             href="/cart"
-            onClick={onClose}
+            onClick={handleCartClick}
             className="w-full h-12 px-4 rounded-xl bg-primary text-primary-foreground font-bold text-sm flex items-center justify-center gap-2.5 hover:bg-primary/90 transition-all active:scale-98 shadow-md cursor-pointer"
           >
-            <ShoppingCart className="" />
+            <ShoppingCart className="w-5 h-5" />
             <span>مشاهده سبد خرید</span>
           </Link>
         </div>
