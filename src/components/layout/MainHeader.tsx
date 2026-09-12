@@ -5,7 +5,8 @@ import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { SearchInput } from "@/components/ui/SearchInput";
 import { IconButton } from "@/components/ui/IconButton";
-import { CartIcon, HeartIcon, UserIcon } from "@/components/icons";
+import { HeartIcon, UserIcon } from "@/components/icons";
+import { CartButton } from "./CartButton";
 
 interface MainHeaderProps {
   cartItemCount?: number;
@@ -18,7 +19,7 @@ export function MainHeader({ cartItemCount = 0 }: MainHeaderProps) {
         {/* Desktop Brand Logo */}
         <Link
           href="/"
-          className="hidden md:flex items-center gap-2 text-2xl font-black text-primary tracking-tight shrink-0"
+          className="hidden md:flex items-center gap-2 text-2xl font-black text-primary tracking-tight shrink-0 hover:opacity-90 transition-opacity"
         >
           <span>مپوشام</span>
         </Link>
@@ -31,7 +32,7 @@ export function MainHeader({ cartItemCount = 0 }: MainHeaderProps) {
         </div>
 
         {/* Header Action Buttons */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2 md:gap-3 shrink-0">
           {/* Wishlist Button (Desktop) */}
           <Link href="/wishlist" className="hidden md:block">
             <IconButton ariaLabel="پسندیده‌ها" variant="ghost" size="md">
@@ -46,21 +47,8 @@ export function MainHeader({ cartItemCount = 0 }: MainHeaderProps) {
             </IconButton>
           </Link>
 
-          {/* Mobile & Desktop Cart Button (Circular 50px height matching search on mobile) */}
-          <Link href="/cart" className="relative">
-            <IconButton
-              ariaLabel="سبد خرید"
-              size="lg"
-              className="w-[50px] h-[50px] bg-surface-subtle text-foreground hover:bg-primary hover:text-primary-foreground transition-colors group"
-            >
-              <CartIcon size={22} className="text-foreground group-hover:text-primary-foreground transition-colors" />
-            </IconButton>
-            {cartItemCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-error text-error-foreground text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-background">
-                {cartItemCount}
-              </span>
-            )}
-          </Link>
+          {/* Cart Button (Handles Mobile & Desktop) */}
+          <CartButton cartItemCount={cartItemCount} />
         </div>
       </Container>
     </div>
