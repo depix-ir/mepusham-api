@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { XIcon, BellIcon, CheckIcon } from "@/components/icons";
+import { X, Bell, Check } from "lucide-react";
 
 export interface NotifyMeModalProps {
   isOpen: boolean;
@@ -43,7 +43,7 @@ export function NotifyMeModal({
       >
         <div className="flex items-center justify-between pb-3 border-b border-border-product">
           <div className="flex items-center gap-2 text-primary font-bold text-base sm:text-lg">
-            <BellIcon size={20} />
+            <Bell className="w-5 h-5" />
             <span>اطلاع‌رسانی موجودی</span>
           </div>
           <button
@@ -52,14 +52,14 @@ export function NotifyMeModal({
             aria-label="بستن"
             className="w-8 h-8 rounded-full bg-surface-subtle hover:bg-border-product text-foreground flex items-center justify-center transition-colors cursor-pointer"
           >
-            <XIcon size={18} />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {submitted ? (
           <div className="py-8 flex flex-col items-center justify-center text-center gap-3">
             <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center">
-              <CheckIcon size={28} />
+              <Check className="w-7 h-7" />
             </div>
             <p className="text-sm font-bold text-foreground">
               درخواست شما با موفقیت ثبت شد!

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { SizeGuideData } from "@/types/product";
-import { XIcon } from "@/components/icons";
+import { X } from "lucide-react";
 
 export interface SizeGuideModalProps {
   isOpen: boolean;
@@ -40,7 +40,7 @@ export function SizeGuideModal({ isOpen, onClose, data }: SizeGuideModalProps) {
             aria-label="بستن"
             className="w-8 h-8 rounded-full bg-surface-subtle hover:bg-border-product text-foreground flex items-center justify-center transition-colors cursor-pointer"
           >
-            <XIcon size={18} />
+            <X className="w-4 h-4" />
           </button>
         </div>
 

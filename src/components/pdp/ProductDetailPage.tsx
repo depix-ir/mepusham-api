@@ -9,13 +9,14 @@ import { ProductIdentity } from "./ProductIdentity";
 import { VariantSelector } from "./VariantSelector";
 import { SizeGuideModal } from "./SizeGuideModal";
 import { NotifyMeModal } from "./NotifyMeModal";
+import { AddToCartSuccessModal } from "./AddToCartSuccessModal";
 import { QuantitySelector } from "./QuantitySelector";
 import { TrustSignals } from "./TrustSignals";
 import { ProductTabsAccordion } from "./ProductTabsAccordion";
 import { ProductReviews } from "./ProductReviews";
 import { RelatedProductsSection } from "./RelatedProductsSection";
 import { StickyAddToCartBar } from "./StickyAddToCartBar";
-import { CartIcon, BellIcon, CheckIcon } from "@/components/icons";
+import { ShoppingCart, Bell } from "lucide-react";
 
 export interface ProductDetailPageProps {
   product: Product;
@@ -42,7 +43,7 @@ export function ProductDetailPage({
   const [quantity, setQuantity] = useState(1);
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
   const [isNotifyMeOpen, setIsNotifyMeOpen] = useState(false);
-  const [addToast, setAddToast] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
   // Derive active variant details
   const variantDetails = getVariantDetails(product, selectedOptions);
@@ -55,15 +56,26 @@ export function ProductDetailPage({
   };
 
   const handleAddToCart = () => {
+    // 1. Validate Product Exists
+    if (!product || !product.id) return;
+
+    // 2. Validate Variant Requirement & Selection & Availability
+    if (product.options.length > 0 && !variantDetails.allOptionsSelected) return;
     if (!variantDetails.isAvailable) return;
+
+    // 3. Validate Quantity
+    if (quantity <= 0 || (variantDetails.stock > 0 && quantity > variantDetails.stock)) return;
+
+    // Execute Add to Cart Action
     if (onAddToCart) {
       onAddToCart(product, quantity, selectedOptions);
     }
-    setAddToast(true);
-    setTimeout(() => setAddToast(false), 2500);
+
+    // Open Success Modal upon verified success
+    setIsSuccessModalOpen(true);
   };
 
-  // Get selected option labels summary for sticky bar
+  // Get selected option labels summary for sticky bar & modal
   const selectedVariantSummary = product.options
     .map((opt) => {
       const val = opt.values.find((v) => v.id === selectedOptions[opt.id]);
@@ -72,16 +84,10 @@ export function ProductDetailPage({
     .filter(Boolean)
     .join(" | ");
 
+  const mainImageUrl = product.images.length > 0 ? product.images[0].url : undefined;
+
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-28 md:pb-12 flex flex-col gap-8">
-      {/* Toast Notification for Desktop */}
-      {addToast && (
-        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-emerald-600 text-white text-xs sm:text-sm font-bold px-5 py-3 rounded-full shadow-2xl flex items-center gap-2 animate-bounce">
-          <CheckIcon size={18} />
-          <span>محصول با موفقیت به سبد خرید اضافه شد</span>
-        </div>
-      )}
-
       {/* Main Top Section: Gallery (Left/Right) + Buy Section (Right/Left) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-start">
         {/* Gallery Column */}
@@ -92,6 +98,7 @@ export function ProductDetailPage({
             hasDiscount={variantDetails.hasDiscount}
             discountPercent={variantDetails.discountPercent}
             isOutOfStock={!variantDetails.isAvailable}
+            rating={product.rating}
           />
         </div>
 
@@ -169,7 +176,7 @@ export function ProductDetailPage({
                 onClick={handleAddToCart}
                 className="flex-1 h-12 px-6 rounded-xl bg-primary text-primary-foreground font-bold text-sm flex items-center justify-center gap-2 hover:bg-primary/90 transition-all active:scale-98 shadow-md cursor-pointer"
               >
-                <CartIcon size={20} />
+                <ShoppingCart className="w-5 h-5" />
                 <span>افزودن به سبد خرید</span>
               </button>
             ) : (
@@ -178,7 +185,7 @@ export function ProductDetailPage({
                 onClick={() => setIsNotifyMeOpen(true)}
                 className="flex-1 h-12 px-6 rounded-xl bg-amber-500 text-white font-bold text-sm flex items-center justify-center gap-2 hover:bg-amber-600 transition-all active:scale-98 shadow-md cursor-pointer"
               >
-                <BellIcon size={20} />
+                <Bell className="w-5 h-5" />
                 <span>موجود شد به من اطلاع بده</span>
               </button>
             )}
@@ -231,6 +238,16 @@ export function ProductDetailPage({
         onClose={() => setIsNotifyMeOpen(false)}
         productTitle={product.title}
         variantLabel={selectedVariantSummary}
+      />
+
+      {/* Add-to-Cart Success Modal */}
+      <AddToCartSuccessModal
+        isOpen={isSuccessModalOpen}
+        onClose={() => setIsSuccessModalOpen(false)}
+        productTitle={product.title}
+        productImage={mainImageUrl}
+        selectedVariantSummary={selectedVariantSummary}
+        quantity={quantity}
       />
     </div>
   );

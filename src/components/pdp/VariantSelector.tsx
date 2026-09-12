@@ -3,7 +3,7 @@
 import React from "react";
 import { Product, ProductOption, SizeGuideData } from "@/types/product";
 import { isOptionValueAvailable } from "@/lib/product/domain";
-import { CheckIcon } from "@/components/icons";
+import { Check, Ruler } from "lucide-react";
 
 export interface VariantSelectorProps {
   product: Product;
@@ -50,7 +50,8 @@ export function VariantSelector({
                   onClick={onOpenSizeGuide}
                   className="text-xs font-semibold text-primary hover:underline flex items-center gap-1 cursor-pointer"
                 >
-                  📏 راهنمای سایز
+                  <Ruler className="w-3.5 h-3.5" />
+                  <span>راهنمای سایز</span>
                 </button>
               )}
             </div>
@@ -74,15 +75,24 @@ export function VariantSelector({
                     <button
                       key={val.id}
                       type="button"
-                      onClick={() => onSelectOption(option.id, val.id)}
+                      disabled={!isAvailable}
+                      onClick={() => {
+                        if (isAvailable) {
+                          onSelectOption(option.id, val.id);
+                        }
+                      }}
                       title={`${val.label}${!isAvailable ? " (ناموجود)" : ""}`}
                       aria-label={`${option.name}: ${val.label}${!isAvailable ? " (ناموجود)" : ""}`}
                       aria-pressed={isSelected}
-                      className={`relative group flex items-center justify-center rounded-full transition-all cursor-pointer ${
+                      className={`relative group flex items-center justify-center rounded-full transition-all ${
+                        isAvailable ? "cursor-pointer" : "cursor-not-allowed opacity-40 grayscale"
+                      } ${
                         isSelected
                           ? "ring-2 ring-primary ring-offset-2 scale-110 shadow-sm"
-                          : "hover:scale-105"
-                      } ${!isAvailable ? "opacity-40 grayscale" : ""}`}
+                          : isAvailable
+                          ? "hover:scale-105"
+                          : ""
+                      }`}
                       style={{ width: 36, height: 36 }}
                     >
                       <span
@@ -90,13 +100,12 @@ export function VariantSelector({
                         style={{ backgroundColor: colorHex }}
                       >
                         {isSelected && (
-                          <CheckIcon
-                            size={16}
-                            className={
+                          <Check
+                            className={`w-4 h-4 ${
                               colorHex.toLowerCase() === "#ffffff" || colorHex.toLowerCase() === "#fff"
                                 ? "text-black"
                                 : "text-white"
-                            }
+                            }`}
                           />
                         )}
                       </span>
@@ -114,16 +123,21 @@ export function VariantSelector({
                   <button
                     key={val.id}
                     type="button"
-                    onClick={() => onSelectOption(option.id, val.id)}
+                    disabled={!isAvailable}
+                    onClick={() => {
+                      if (isAvailable) {
+                        onSelectOption(option.id, val.id);
+                      }
+                    }}
                     aria-label={`${option.name}: ${val.label}${!isAvailable ? " (ناموجود)" : ""}`}
                     aria-pressed={isSelected}
-                    className={`relative min-w-[44px] h-10 px-3.5 rounded-xl text-xs sm:text-sm font-semibold transition-all border cursor-pointer flex items-center justify-center ${
+                    className={`relative min-w-[44px] h-10 px-3.5 rounded-xl text-xs sm:text-sm font-semibold transition-all border flex items-center justify-center ${
+                      isAvailable ? "cursor-pointer" : "cursor-not-allowed opacity-40 border-dashed border-red-300/80 bg-red-50/20 text-muted"
+                    } ${
                       isSelected
                         ? "bg-primary text-primary-foreground border-primary shadow-sm scale-102"
-                        : "bg-background text-foreground border-border-product hover:border-primary/50"
-                    } ${
-                      !isAvailable
-                        ? "opacity-50 border-dashed border-red-300/80 bg-red-50/20 text-muted cursor-pointer"
+                        : isAvailable
+                        ? "bg-background text-foreground border-border-product hover:border-primary/50"
                         : ""
                     }`}
                   >

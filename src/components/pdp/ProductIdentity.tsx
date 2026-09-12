@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { ProductBrand, ProductCategory, ProductRating } from "@/types/product";
-import { StarIcon, ChevronLeftIcon } from "@/components/icons";
+import { Star, ChevronLeft } from "lucide-react";
 
 export interface ProductIdentityProps {
   title: string;
@@ -35,11 +35,11 @@ export function ProductIdentity({
         <Link href="/" className="hover:text-primary transition-colors">
           خانه
         </Link>
-        <ChevronLeftIcon size={12} className="text-muted/60 shrink-0" />
+        <ChevronLeft className="w-3 h-3 text-muted/60 shrink-0" />
         <Link href={`/products?category=${category.slug}`} className="hover:text-primary transition-colors">
           {category.name}
         </Link>
-        <ChevronLeftIcon size={12} className="text-muted/60 shrink-0" />
+        <ChevronLeft className="w-3 h-3 text-muted/60 shrink-0" />
         <span className="text-foreground font-medium truncate max-w-[180px] sm:max-w-xs" title={title}>
           {title}
         </span>
@@ -74,7 +74,7 @@ export function ProductIdentity({
             className="flex items-center gap-1.5 group cursor-pointer"
           >
             <div className="flex items-center gap-1 bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400 px-2 py-0.5 rounded-md border border-amber-200/60 font-semibold text-xs">
-              <StarIcon size={14} className="fill-amber-400 stroke-amber-500" />
+              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
               <span>{rating.average.toFixed(1)}</span>
             </div>
             <span className="text-xs text-muted group-hover:text-primary transition-colors underline decoration-dotted">

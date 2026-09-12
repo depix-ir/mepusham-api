@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { formatPrice } from "@/lib/formatting/currency";
-import { CartIcon, BellIcon, CheckIcon } from "@/components/icons";
+import { ShoppingCart, Bell, Check } from "lucide-react";
 
 export interface StickyAddToCartBarProps {
   price: number;
@@ -61,7 +61,7 @@ export function StickyAddToCartBar({
               onClick={handleAdd}
               className="flex-1 h-11 px-4 rounded-xl bg-primary text-primary-foreground font-bold text-xs sm:text-sm flex items-center justify-center gap-2 hover:bg-primary/90 transition-all active:scale-98 shadow-md cursor-pointer"
             >
-              <CartIcon size={18} />
+              <ShoppingCart className="w-4 h-4" />
               <span>افزودن به سبد خرید</span>
             </button>
           ) : (
@@ -70,7 +70,7 @@ export function StickyAddToCartBar({
               onClick={onOpenNotifyModal}
               className="flex-1 h-11 px-4 rounded-xl bg-amber-500 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 hover:bg-amber-600 transition-all active:scale-98 shadow-md cursor-pointer"
             >
-              <BellIcon size={18} />
+              <Bell className="w-4 h-4" />
               <span>موجود شد اطلاع بده</span>
             </button>
           )}
@@ -80,7 +80,7 @@ export function StickyAddToCartBar({
       {/* Added Toast Notification */}
       {addedToast && (
         <div className="fixed bottom-18 left-1/2 -translate-x-1/2 z-50 bg-emerald-600 text-white text-xs font-bold px-4 py-2.5 rounded-full shadow-xl flex items-center gap-2 animate-bounce md:hidden">
-          <CheckIcon size={16} />
+          <Check className="w-4 h-4" />
           <span>محصول به سبد خرید اضافه شد</span>
         </div>
       )}

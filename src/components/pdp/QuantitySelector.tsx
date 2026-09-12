@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { PlusIcon, MinusIcon } from "@/components/icons";
+import { Plus, Minus } from "lucide-react";
 
 export interface QuantitySelectorProps {
   quantity: number;
@@ -37,7 +37,7 @@ export function QuantitySelector({
           aria-label="کاهش تعداد"
           className="w-9 h-9 flex items-center justify-center hover:bg-surface-subtle text-foreground disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer"
         >
-          <MinusIcon size={16} />
+          <Minus className="w-4 h-4" />
         </button>
         <span className="w-10 text-center font-bold text-sm text-foreground select-none">
           {quantity}
@@ -49,7 +49,7 @@ export function QuantitySelector({
           aria-label="افزایش تعداد"
           className="w-9 h-9 flex items-center justify-center hover:bg-surface-subtle text-foreground disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer"
         >
-          <PlusIcon size={16} />
+          <Plus className="w-4 h-4" />
         </button>
       </div>
     </div>

@@ -1,11 +1,17 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Image from "next/image";
-import { ProductImage } from "@/types/product";
+import { ProductImage, ProductRating } from "@/types/product";
 import { Badge } from "@/components/ui/Badge";
 import { formatPercent } from "@/lib/formatting/currency";
-import { HeartIcon, ShareIcon, ChevronLeftIcon, ChevronRightIcon } from "@/components/icons";
+import {
+  Heart,
+  Share2,
+  ChevronLeft,
+  ChevronRight,
+  Star,
+} from "lucide-react";
 
 export interface ProductGalleryProps {
   images: ProductImage[];
@@ -13,6 +19,7 @@ export interface ProductGalleryProps {
   hasDiscount?: boolean;
   discountPercent?: number;
   isOutOfStock?: boolean;
+  rating?: ProductRating;
 }
 
 export function ProductGallery({
@@ -21,10 +28,16 @@ export function ProductGallery({
   hasDiscount = false,
   discountPercent,
   isOutOfStock = false,
+  rating,
 }: ProductGalleryProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [wishlistState, setWishlistState] = useState<"idle" | "active" | "loading">("idle");
   const [showShareToast, setShowShareToast] = useState(false);
+
+  // Drag / Swipe State
+  const [isDragging, setIsDragging] = useState(false);
+  const startXRef = useRef<number>(0);
+  const currentXRef = useRef<number>(0);
 
   const galleryImages = images.length > 0 ? images : [
     { id: "img-placeholder", url: "/images/placeholders/product-placeholder.webp", alt: title, sortOrder: 0 }
@@ -38,6 +51,44 @@ export function ProductGallery({
 
   const handlePrev = () => {
     setSelectedIndex((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
+  };
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    // Ignore button clicks or multi-touch
+    if ((e.target as HTMLElement).closest("button")) return;
+    setIsDragging(true);
+    startXRef.current = e.clientX;
+    currentXRef.current = e.clientX;
+    if (e.currentTarget) {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    }
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging) return;
+    currentXRef.current = e.clientX;
+  };
+
+  const handlePointerUpOrCancel = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    if (e.currentTarget && e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+
+    const deltaX = currentXRef.current - startXRef.current;
+    const threshold = 40; // minimum drag distance in px to change slide
+
+    if (galleryImages.length > 1 && Math.abs(deltaX) > threshold) {
+      // In RTL (Right-to-Left):
+      // Swiping right (deltaX > 0) moves slide to previous
+      // Swiping left (deltaX < 0) moves slide to next
+      if (deltaX > 0) {
+        handlePrev();
+      } else {
+        handleNext();
+      }
+    }
   };
 
   const toggleWishlist = () => {
@@ -68,17 +119,34 @@ export function ProductGallery({
     }
   };
 
+  const scrollToReviews = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const reviewElement = document.getElementById("reviews-section");
+    if (reviewElement) {
+      reviewElement.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
-    <div className="flex flex-col gap-3 w-full">
-      {/* Main Image Stage */}
-      <div className="relative w-full aspect-square sm:aspect-[4/5] bg-surface-subtle rounded-2xl overflow-hidden border border-border-product shadow-sm group">
+    <div className="flex flex-col gap-4 w-full">
+      {/* Main Image Stage with Drag + Touch Swipe */}
+      <div
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUpOrCancel}
+        onPointerCancel={handlePointerUpOrCancel}
+        className={`relative w-full aspect-square sm:aspect-[4/5] bg-surface-subtle rounded-2xl overflow-hidden border border-border-product shadow-sm group select-none touch-pan-y ${
+          isDragging ? "cursor-grabbing" : "cursor-grab"
+        }`}
+      >
         <Image
           src={currentImage.url}
           alt={currentImage.alt || title}
           fill
           priority
           sizes="(max-width: 768px) 100vw, 50vw"
-          className={`object-cover object-center transition-all duration-300 ${
+          draggable={false}
+          className={`object-cover object-center transition-all duration-300 pointer-events-none ${
             isOutOfStock ? "opacity-60 grayscale-[20%]" : ""
           }`}
         />
@@ -108,17 +176,17 @@ export function ProductGallery({
               type="button"
               onClick={handlePrev}
               aria-label="تصویر قبلی"
-              className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-background/80 hover:bg-background text-foreground backdrop-blur-sm flex items-center justify-center shadow-md transition-all active:scale-90 opacity-90 group-hover:opacity-100"
+              className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-background/80 hover:bg-background text-foreground backdrop-blur-sm flex items-center justify-center shadow-md transition-all active:scale-90 opacity-90 group-hover:opacity-100 cursor-pointer z-10"
             >
-              <ChevronLeftIcon size={20} />
+              <ChevronLeft className="w-5 h-5" />
             </button>
             <button
               type="button"
               onClick={handleNext}
               aria-label="تصویر بعدی"
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-background/80 hover:bg-background text-foreground backdrop-blur-sm flex items-center justify-center shadow-md transition-all active:scale-90 opacity-90 group-hover:opacity-100"
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-background/80 hover:bg-background text-foreground backdrop-blur-sm flex items-center justify-center shadow-md transition-all active:scale-90 opacity-90 group-hover:opacity-100 cursor-pointer z-10"
             >
-              <ChevronRightIcon size={20} />
+              <ChevronRight className="w-5 h-5" />
             </button>
           </>
         )}
@@ -137,9 +205,8 @@ export function ProductGallery({
                 : "bg-background/80 hover:bg-background text-foreground/80 hover:text-foreground"
             }`}
           >
-            <HeartIcon
-              size={20}
-              className={`transition-colors ${
+            <Heart
+              className={`w-5 h-5 transition-colors ${
                 wishlistState === "active" ? "fill-red-500 stroke-red-500" : ""
               }`}
             />
@@ -152,7 +219,7 @@ export function ProductGallery({
             aria-label="اشتراک‌گذاری محصول"
             className="w-10 h-10 rounded-full bg-background/80 hover:bg-background text-foreground/80 hover:text-foreground flex items-center justify-center shadow-md backdrop-blur-md transition-all active:scale-90 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
-            <ShareIcon size={18} />
+            <Share2 className="w-4 h-4" />
           </button>
         </div>
 
@@ -188,6 +255,42 @@ export function ProductGallery({
             </button>
           ))}
         </div>
+      )}
+
+      {/* Rating Section Under Gallery */}
+      {rating && (
+        <a
+          href="#reviews-section"
+          onClick={scrollToReviews}
+          aria-label={`امتیاز ${rating.average.toFixed(1)} از ۵، بر اساس ${rating.count} نظر`}
+          className="flex items-center justify-between p-3.5 px-4 rounded-xl bg-surface-subtle border border-border-product hover:border-primary/40 transition-colors group cursor-pointer"
+        >
+          <div className="flex items-center gap-3">
+            {/* Rating Value */}
+            <span className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">
+              {rating.average.toFixed(1)}
+            </span>
+
+            {/* Stars Visualization */}
+            <div className="flex items-center gap-0.5" aria-hidden="true">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Star
+                  key={star}
+                  className={`w-4 h-4 ${
+                    star <= Math.round(rating.average)
+                      ? "text-amber-400 fill-amber-400"
+                      : "text-muted/30 fill-muted/20"
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Review Count */}
+          <span className="text-xs sm:text-sm font-semibold text-muted group-hover:text-primary transition-colors">
+            {rating.count} نظر
+          </span>
+        </a>
       )}
     </div>
   );
