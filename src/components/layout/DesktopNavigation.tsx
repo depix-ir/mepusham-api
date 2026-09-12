@@ -19,6 +19,8 @@ export function DesktopNavigation({
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
 
   const lastScrollYRef = useRef(0);
+  const pivotScrollYRef = useRef(0);
+  const scrollDirectionRef = useRef<"up" | "down" | null>(null);
   const openTimerRef = useRef<NodeJS.Timeout | null>(null);
   const closeTimerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -31,13 +33,18 @@ export function DesktopNavigation({
   }, []);
 
   // Close mega menu on route change
+  const prevPathnameRef = useRef(pathname);
   useEffect(() => {
-    setIsMegaMenuOpen(false);
+    if (prevPathnameRef.current !== pathname) {
+      prevPathnameRef.current = pathname;
+      setIsMegaMenuOpen(false);
+    }
   }, [pathname]);
 
   // Smart Sticky Scroll Behavior
   useEffect(() => {
-    const threshold = 12; // Minimum px scroll diff to react
+    const HIDE_THRESHOLD = 100; // Scroll down 100px to hide
+    const SHOW_THRESHOLD = 60; // Scroll up 60px to show
     const topBuffer = 80; // Always visible near top
 
     const handleScroll = () => {
@@ -47,21 +54,34 @@ export function DesktopNavigation({
       if (currentScrollY <= topBuffer) {
         setIsNavVisible(true);
         lastScrollYRef.current = currentScrollY;
+        pivotScrollYRef.current = currentScrollY;
+        scrollDirectionRef.current = null;
         return;
       }
 
       const diff = currentScrollY - lastScrollYRef.current;
+      if (diff === 0) return;
 
-      if (Math.abs(diff) >= threshold) {
-        if (diff > 0) {
-          // Scrolling Down -> Hide navigation row only
+      const currentDirection = diff > 0 ? "down" : "up";
+
+      if (currentDirection !== scrollDirectionRef.current) {
+        scrollDirectionRef.current = currentDirection;
+        pivotScrollYRef.current = lastScrollYRef.current;
+      }
+
+      lastScrollYRef.current = currentScrollY;
+
+      if (currentDirection === "down") {
+        const downDistance = currentScrollY - pivotScrollYRef.current;
+        if (downDistance >= HIDE_THRESHOLD) {
           setIsNavVisible(false);
           setIsMegaMenuOpen(false); // Close mega menu on scroll down
-        } else {
-          // Scrolling Up -> Show navigation row
+        }
+      } else if (currentDirection === "up") {
+        const upDistance = pivotScrollYRef.current - currentScrollY;
+        if (upDistance >= SHOW_THRESHOLD) {
           setIsNavVisible(true);
         }
-        lastScrollYRef.current = currentScrollY;
       }
     };
 
