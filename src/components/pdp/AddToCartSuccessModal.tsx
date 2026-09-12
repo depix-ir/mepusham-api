@@ -125,7 +125,6 @@ export function AddToCartSuccessModal({
             onClick={onClose}
             className="w-full h-12 px-4 rounded-xl bg-primary text-primary-foreground font-bold text-sm flex items-center justify-center gap-2.5 hover:bg-primary/90 transition-all active:scale-98 shadow-md cursor-pointer"
           >
-            <ShoppingCart className="" />
             <span>مشاهده سبد خرید</span>
           </Link>
         </div>

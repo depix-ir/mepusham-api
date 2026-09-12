@@ -77,13 +77,7 @@ export function StickyAddToCartBar({
         </div>
       </div>
 
-      {/* Added Toast Notification */}
-      {addedToast && (
-        <div className="fixed bottom-18 left-1/2 -translate-x-1/2 z-50 bg-emerald-600 text-white text-xs font-bold px-4 py-2.5 rounded-full shadow-xl flex items-center gap-2 animate-bounce md:hidden">
-          <Check className="w-4 h-4" />
-          <span>محصول به سبد خرید اضافه شد</span>
-        </div>
-      )}
+
     </>
   );
 }

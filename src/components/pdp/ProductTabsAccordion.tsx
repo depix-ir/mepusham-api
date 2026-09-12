@@ -45,7 +45,7 @@ export function ProductTabsAccordion({
             />
           </button>
           {openSection === "description" && (
-            <div className="p-4 pt-1 text-xs sm:text-sm text-foreground/80 leading-relaxed space-y-2 border-t border-border-product/40 animate-fade-in">
+            <div className="p-4  text-xs sm:text-sm text-foreground/80 leading-relaxed space-y-2 border-t border-border-product/40 animate-fade-in">
               <p>{description}</p>
             </div>
           )}
@@ -71,12 +71,12 @@ export function ProductTabsAccordion({
             />
           </button>
           {openSection === "specs" && (
-            <div className="p-4 pt-1 border-t border-border-product/40 animate-fade-in">
+            <div className="p-4 border-t border-border-product/40 animate-fade-in">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {specifications.map((spec, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center justify-between p-2.5 rounded-xl bg-surface-subtle text-xs"
+                    className="flex items-center justify-between p-3 rounded-xl bg-surface-subtle text-xs"
                   >
                     <span className="text-muted font-medium">{spec.label}:</span>
                     <span className="text-foreground font-semibold">{spec.value}</span>
@@ -107,7 +107,7 @@ export function ProductTabsAccordion({
             />
           </button>
           {openSection === "care" && (
-            <div className="p-4 pt-1 border-t border-border-product/40 animate-fade-in">
+            <div className="p-4 border-t border-border-product/40 animate-fade-in">
               <ul className="list-disc list-inside space-y-1.5 text-xs sm:text-sm text-foreground/80 leading-relaxed">
                 {careInstructions.map((item, idx) => (
                   <li key={idx}>{item}</li>
@@ -137,7 +137,7 @@ export function ProductTabsAccordion({
             />
           </button>
           {openSection === "shipping" && (
-            <div className="p-4 pt-1 text-xs sm:text-sm text-foreground/80 leading-relaxed whitespace-pre-line border-t border-border-product/40 animate-fade-in">
+            <div className="p-4  text-xs sm:text-sm text-foreground/80 leading-relaxed whitespace-pre-line border-t border-border-product/40 animate-fade-in">
               {shippingReturns}
             </div>
           )}

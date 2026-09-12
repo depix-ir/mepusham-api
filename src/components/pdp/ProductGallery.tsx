@@ -141,14 +141,7 @@ export function ProductGallery({
           }`}
         />
 
-        {/* Discount Badge */}
-        {hasDiscount && discountPercent && !isOutOfStock && (
-          <div className="absolute top-3 right-3 z-10">
-            <Badge variant="primary" size="md" className="bg-primary text-primary-foreground font-bold shadow-sm">
-              {formatPercent(discountPercent)} تخفیف
-            </Badge>
-          </div>
-        )}
+
 
         {/* Out of Stock Overlay Badge */}
         {isOutOfStock && (

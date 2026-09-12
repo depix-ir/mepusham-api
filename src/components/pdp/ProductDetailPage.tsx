@@ -176,7 +176,7 @@ export function ProductDetailPage({
                 onClick={handleAddToCart}
                 className="flex-1 h-12 px-6 rounded-xl bg-primary text-primary-foreground font-bold text-sm flex items-center justify-center gap-2 hover:bg-primary/90 transition-all active:scale-98 shadow-md cursor-pointer"
               >
-                <ShoppingCart className="w-5 h-5" />
+                <ShoppingCart className="" />
                 <span>افزودن به سبد خرید</span>
               </button>
             ) : (
@@ -185,7 +185,7 @@ export function ProductDetailPage({
                 onClick={() => setIsNotifyMeOpen(true)}
                 className="flex-1 h-12 px-6 rounded-xl bg-amber-500 text-white font-bold text-sm flex items-center justify-center gap-2 hover:bg-amber-600 transition-all active:scale-98 shadow-md cursor-pointer"
               >
-                <Bell className="w-5 h-5" />
+                <Bell className="" />
                 <span>موجود شد به من اطلاع بده</span>
               </button>
             )}
