@@ -1,7 +1,7 @@
 import React from "react";
 import { AnnouncementBar } from "./AnnouncementBar";
 import { MainHeader } from "./MainHeader";
-import { HeaderNavbar } from "./HeaderNavbar";
+import { DesktopNavigation } from "./DesktopNavigation";
 
 interface HeaderProps {
   announcementText?: string;
@@ -13,7 +13,7 @@ export function Header({ announcementText, cartItemCount }: HeaderProps) {
     <header className="w-full sticky top-0 z-40 bg-background shadow-xs">
       <AnnouncementBar text={announcementText} />
       <MainHeader cartItemCount={cartItemCount} />
-      <HeaderNavbar />
+      <DesktopNavigation />
     </header>
   );
 }
