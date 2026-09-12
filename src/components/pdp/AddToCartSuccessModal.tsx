@@ -66,13 +66,13 @@ export function AddToCartSuccessModal({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-border-product">
-          <div className="flex items-center gap-2 text-emerald-600 font-bold text-base sm:text-lg">
-            <div className="w-7 h-7 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
-              <Check className="w-4.5 h-4.5 stroke-[2.5]" />
+        <div className="flex items-center justify-between pb-3.5 border-b border-border-product/60">
+          <div className="flex items-center gap-2 text-emerald-600 font-bold text-base">
+            <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center shrink-0">
+              <Check className="w-4 h-4 stroke-[2.5]" />
             </div>
-            <h2 id="cart-modal-title" className="text-foreground font-bold">
-              افزودن به سبد خرید
+            <h2 id="cart-modal-title" className="text-foreground font-bold text-sm sm:text-base">
+              افزوده شد به سبد خرید
             </h2>
           </div>
           <button
@@ -80,26 +80,27 @@ export function AddToCartSuccessModal({
             type="button"
             onClick={onClose}
             aria-label="بستن"
-            className="w-8 h-8 rounded-full bg-surface-subtle hover:bg-border-product text-foreground flex items-center justify-center transition-colors cursor-pointer"
+            className="w-8 h-8 rounded-full bg-surface-subtle hover:bg-border-product text-muted hover:text-foreground flex items-center justify-center transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Modal Content / Product Summary */}
-        <div className="py-5 flex flex-col gap-4">
-          <p className="text-xs sm:text-sm font-semibold text-foreground/90 leading-relaxed">
-            محصول با موفقیت به سبد خرید اضافه شد
+        <div className="py-4 flex flex-col gap-3.5">
+          <p className="text-xs sm:text-sm font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 p-2.5 rounded-xl border border-emerald-200/60 flex items-center gap-2">
+            <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>محصول با موفقیت به سبد خرید شما اضافه شد.</span>
           </p>
 
-          <div className="flex items-center gap-3.5 p-3 rounded-xl bg-surface-subtle border border-border-product">
+          <div className="flex items-center gap-3.5 p-3 rounded-xl bg-surface-subtle/70 border border-border-product">
             {productImage && (
-              <div className="relative w-16 h-16 sm:w-18 sm:h-18 rounded-lg overflow-hidden shrink-0 border border-border-product">
+              <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0 border border-border-product bg-background">
                 <Image
                   src={productImage}
                   alt={productTitle}
                   fill
-                  sizes="72px"
+                  sizes="64px"
                   className="object-cover object-center"
                 />
               </div>
@@ -120,23 +121,16 @@ export function AddToCartSuccessModal({
           </div>
         </div>
 
-        {/* Action CTAs */}
-        <div className="flex flex-col sm:flex-row gap-2.5 pt-2">
+        {/* Action CTAs - Single Full-Width Primary CTA */}
+        <div className="pt-2">
           <Link
             href="/cart"
             onClick={onClose}
-            className="flex-1 h-11 px-4 rounded-xl bg-primary text-primary-foreground font-bold text-xs sm:text-sm flex items-center justify-center gap-2 hover:bg-primary/90 transition-all active:scale-98 shadow-md cursor-pointer"
+            className="w-full h-12 px-4 rounded-xl bg-primary text-primary-foreground font-bold text-sm flex items-center justify-center gap-2.5 hover:bg-primary/90 transition-all active:scale-98 shadow-md cursor-pointer"
           >
-            <ShoppingCart className="w-4 h-4" />
+            <ShoppingCart className="w-5 h-5" />
             <span>مشاهده سبد خرید</span>
           </Link>
-          <button
-            type="button"
-            onClick={onClose}
-            className="h-11 px-4 rounded-xl border border-border-product hover:bg-surface-subtle text-foreground font-bold text-xs sm:text-sm transition-all cursor-pointer"
-          >
-            ادامه خرید
-          </button>
         </div>
       </div>
     </div>
