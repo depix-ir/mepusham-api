@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { ProductRating, ProductReview } from "@/types/product";
-import { StarIcon, CheckIcon } from "@/components/icons";
+import { Star, Check } from "lucide-react";
 
 export interface ProductReviewsProps {
   rating?: ProductRating;
@@ -10,13 +10,7 @@ export interface ProductReviewsProps {
 }
 
 export function ProductReviews({ rating, reviews = [] }: ProductReviewsProps) {
-  const [filterRating, setFilterRating] = useState<number | "all">("all");
-
   if (!rating) return null;
-
-  const filteredReviews = filterRating === "all"
-    ? reviews
-    : reviews.filter((r) => r.rating === filterRating);
 
   return (
     <div id="reviews-section" className="flex flex-col gap-6 pt-6 border-t border-border-product">
@@ -35,14 +29,13 @@ export function ProductReviews({ rating, reviews = [] }: ProductReviewsProps) {
           </span>
           <div className="flex items-center gap-1 text-amber-400 my-1">
             {[1, 2, 3, 4, 5].map((star) => (
-              <StarIcon
+              <Star
                 key={star}
-                size={18}
-                className={
+                className={`w-4 h-4 ${
                   star <= Math.round(rating.average)
-                    ? "fill-amber-400 stroke-amber-500"
-                    : "text-muted/30 stroke-muted/50"
-                }
+                    ? "fill-amber-400 text-amber-400"
+                    : "text-muted/30 fill-muted/20"
+                }`}
               />
             ))}
           </div>
@@ -61,7 +54,7 @@ export function ProductReviews({ rating, reviews = [] }: ProductReviewsProps) {
             return (
               <div key={starNum} className="flex items-center gap-2 text-xs">
                 <span className="w-8 shrink-0 font-medium text-foreground flex items-center gap-1">
-                  {starNum} <StarIcon size={12} className="fill-amber-400 stroke-amber-500" />
+                  {starNum} <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
                 </span>
                 <div className="flex-1 h-2 rounded-full bg-border-product/60 overflow-hidden">
                   <div
@@ -76,43 +69,14 @@ export function ProductReviews({ rating, reviews = [] }: ProductReviewsProps) {
         </div>
       </div>
 
-      {/* Filter Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
-        <button
-          type="button"
-          onClick={() => setFilterRating("all")}
-          className={`px-3 py-1.5 rounded-full font-semibold border transition-all cursor-pointer ${
-            filterRating === "all"
-              ? "bg-foreground text-background border-foreground"
-              : "bg-background text-foreground border-border-product hover:border-foreground/50"
-          }`}
-        >
-          همه نظرات ({reviews.length})
-        </button>
-        {[5, 4, 3, 2, 1].map((st) => (
-          <button
-            key={st}
-            type="button"
-            onClick={() => setFilterRating(st)}
-            className={`px-3 py-1.5 rounded-full font-semibold border transition-all cursor-pointer flex items-center gap-1 ${
-              filterRating === st
-                ? "bg-foreground text-background border-foreground"
-                : "bg-background text-foreground border-border-product hover:border-foreground/50"
-            }`}
-          >
-            <span>{st} ستاره</span>
-          </button>
-        ))}
-      </div>
-
       {/* Reviews List */}
       <div className="flex flex-col gap-4">
-        {filteredReviews.length === 0 ? (
+        {reviews.length === 0 ? (
           <div className="p-8 text-center text-xs sm:text-sm text-muted bg-surface-subtle/50 rounded-xl border border-dashed border-border-product">
-            هیچ دیدگاهی با این امتیاز ثبت نشده است.
+            هیچ دیدگاهی ثبت نشده است.
           </div>
         ) : (
-          filteredReviews.map((rev) => (
+          reviews.map((rev) => (
             <div
               key={rev.id}
               className="flex flex-col gap-3 p-4 rounded-2xl border border-border-product bg-background shadow-xs"
@@ -125,7 +89,7 @@ export function ProductReviews({ rating, reviews = [] }: ProductReviewsProps) {
                   </span>
                   {rev.verifiedPurchase && (
                     <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                      <CheckIcon size={12} /> خریدار بااصالت
+                      <Check className="w-3 h-3" /> خریدار بااصالت
                     </span>
                   )}
                 </div>
@@ -135,14 +99,13 @@ export function ProductReviews({ rating, reviews = [] }: ProductReviewsProps) {
               {/* Stars & Rating */}
               <div className="flex items-center gap-1 text-amber-400">
                 {[1, 2, 3, 4, 5].map((s) => (
-                  <StarIcon
+                  <Star
                     key={s}
-                    size={14}
-                    className={
+                    className={`w-3.5 h-3.5 ${
                       s <= rev.rating
-                        ? "fill-amber-400 stroke-amber-500"
-                        : "text-muted/30 stroke-muted/50"
-                    }
+                        ? "fill-amber-400 text-amber-400"
+                        : "text-muted/30 fill-muted/20"
+                    }`}
                   />
                 ))}
               </div>
