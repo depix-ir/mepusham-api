@@ -8,6 +8,7 @@ import { formatPrice, formatPercent } from "@/lib/formatting/currency";
 import { getProductCardPricing } from "@/lib/product/domain";
 import { Badge } from "@/components/ui/Badge";
 import { CartIcon } from "@/components/icons";
+import { useCart } from "@/store/cart/cart.store";
 
 export interface ProductCardProps {
   product: Product;
@@ -22,6 +23,7 @@ export function ProductCard({
   isCartActive = false,
   className = "",
 }: ProductCardProps) {
+  const { addItem, openCart } = useCart();
   const pricing = getProductCardPricing(product);
   const isOutOfStock =
     !product.inventory.hasAvailableVariants || product.inventory.totalStock === 0;
@@ -29,8 +31,25 @@ export function ProductCard({
   const handleCartClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!isOutOfStock && onAddToCart) {
+
+    if (isOutOfStock) return;
+
+    if (onAddToCart) {
       onAddToCart(product);
+      return;
+    }
+
+    // Default behavior: add first available variant or default options & open cart drawer
+    const defaultOpts: Record<string, string> = {};
+    product.options.forEach((opt) => {
+      if (opt.values.length > 0) {
+        defaultOpts[opt.id] = opt.values[0].id;
+      }
+    });
+
+    const added = addItem(product, 1, defaultOpts);
+    if (added) {
+      openCart();
     }
   };
 

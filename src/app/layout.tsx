@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { peydaFont } from "@/lib/fonts";
 import { Header } from "@/components/layout/Header";
 import { MobileBottomBar } from "@/components/layout/MobileBottomBar";
+import { CartProvider } from "@/store/cart/cart.store";
+import { CartDrawer } from "@/components/cart/CartDrawer";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -24,9 +26,12 @@ export default function RootLayout({
   return (
     <html lang="fa" dir="rtl" className={peydaFont.variable}>
       <body className="min-h-screen bg-background text-foreground antialiased font-sans flex flex-col pb-16 md:pb-0">
-        <Header />
-        <main className="flex-1 w-full">{children}</main>
-        <MobileBottomBar />
+        <CartProvider>
+          <Header />
+          <main className="flex-1 w-full">{children}</main>
+          <MobileBottomBar />
+          <CartDrawer />
+        </CartProvider>
       </body>
     </html>
   );
