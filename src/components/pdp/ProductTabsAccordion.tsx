@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { ProductSpecification } from "@/types/product";
-import { ChevronDownIcon } from "@/components/icons";
+import { FileText, ClipboardList, Shirt, Truck, ChevronDown } from "lucide-react";
 
 export interface ProductTabsAccordionProps {
   description?: string;
@@ -34,10 +34,12 @@ export function ProductTabsAccordion({
             onClick={() => toggleSection("description")}
             className="flex items-center justify-between p-4 font-bold text-sm sm:text-base text-foreground hover:bg-surface-subtle/50 transition-colors cursor-pointer"
           >
-            <span>📝 توضیحات کامل محصول</span>
-            <ChevronDownIcon
-              size={18}
-              className={`transition-transform duration-200 ${
+            <div className="flex items-center gap-2.5">
+              <FileText className="w-4 h-4 text-primary shrink-0" />
+              <span>توضیحات کامل محصول</span>
+            </div>
+            <ChevronDown
+              className={`w-4 h-4 transition-transform duration-200 ${
                 openSection === "description" ? "rotate-180 text-primary" : "text-muted"
               }`}
             />
@@ -58,10 +60,12 @@ export function ProductTabsAccordion({
             onClick={() => toggleSection("specs")}
             className="flex items-center justify-between p-4 font-bold text-sm sm:text-base text-foreground hover:bg-surface-subtle/50 transition-colors cursor-pointer"
           >
-            <span>📋 مشخصات فنی</span>
-            <ChevronDownIcon
-              size={18}
-              className={`transition-transform duration-200 ${
+            <div className="flex items-center gap-2.5">
+              <ClipboardList className="w-4 h-4 text-primary shrink-0" />
+              <span>مشخصات فنی</span>
+            </div>
+            <ChevronDown
+              className={`w-4 h-4 transition-transform duration-200 ${
                 openSection === "specs" ? "rotate-180 text-primary" : "text-muted"
               }`}
             />
@@ -92,10 +96,12 @@ export function ProductTabsAccordion({
             onClick={() => toggleSection("care")}
             className="flex items-center justify-between p-4 font-bold text-sm sm:text-base text-foreground hover:bg-surface-subtle/50 transition-colors cursor-pointer"
           >
-            <span>🧺 راهنمای شستشو و نگهداری</span>
-            <ChevronDownIcon
-              size={18}
-              className={`transition-transform duration-200 ${
+            <div className="flex items-center gap-2.5">
+              <Shirt className="w-4 h-4 text-primary shrink-0" />
+              <span>راهنمای شستشو و نگهداری</span>
+            </div>
+            <ChevronDown
+              className={`w-4 h-4 transition-transform duration-200 ${
                 openSection === "care" ? "rotate-180 text-primary" : "text-muted"
               }`}
             />
@@ -120,10 +126,12 @@ export function ProductTabsAccordion({
             onClick={() => toggleSection("shipping")}
             className="flex items-center justify-between p-4 font-bold text-sm sm:text-base text-foreground hover:bg-surface-subtle/50 transition-colors cursor-pointer"
           >
-            <span>🚚 شرایط ارسال و مرجوعی</span>
-            <ChevronDownIcon
-              size={18}
-              className={`transition-transform duration-200 ${
+            <div className="flex items-center gap-2.5">
+              <Truck className="w-4 h-4 text-primary shrink-0" />
+              <span>شرایط ارسال و مرجوعی</span>
+            </div>
+            <ChevronDown
+              className={`w-4 h-4 transition-transform duration-200 ${
                 openSection === "shipping" ? "rotate-180 text-primary" : "text-muted"
               }`}
             />

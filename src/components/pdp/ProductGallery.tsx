@@ -10,7 +10,6 @@ import {
   Share2,
   ChevronLeft,
   ChevronRight,
-  Star,
 } from "lucide-react";
 
 export interface ProductGalleryProps {
@@ -28,7 +27,6 @@ export function ProductGallery({
   hasDiscount = false,
   discountPercent,
   isOutOfStock = false,
-  rating,
 }: ProductGalleryProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [wishlistState, setWishlistState] = useState<"idle" | "active" | "loading">("idle");
@@ -116,14 +114,6 @@ export function ProductGallery({
       await navigator.clipboard.writeText(window.location.href);
       setShowShareToast(true);
       setTimeout(() => setShowShareToast(false), 2500);
-    }
-  };
-
-  const scrollToReviews = (e: React.MouseEvent) => {
-    e.preventDefault();
-    const reviewElement = document.getElementById("reviews-section");
-    if (reviewElement) {
-      reviewElement.scrollIntoView({ behavior: "smooth" });
     }
   };
 
@@ -257,41 +247,6 @@ export function ProductGallery({
         </div>
       )}
 
-      {/* Rating Section Under Gallery */}
-      {rating && (
-        <a
-          href="#reviews-section"
-          onClick={scrollToReviews}
-          aria-label={`امتیاز ${rating.average.toFixed(1)} از ۵، بر اساس ${rating.count} نظر`}
-          className="flex items-center justify-between p-3.5 px-4 rounded-xl bg-surface-subtle border border-border-product hover:border-primary/40 transition-colors group cursor-pointer"
-        >
-          <div className="flex items-center gap-3">
-            {/* Rating Value */}
-            <span className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">
-              {rating.average.toFixed(1)}
-            </span>
-
-            {/* Stars Visualization */}
-            <div className="flex items-center gap-0.5" aria-hidden="true">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star
-                  key={star}
-                  className={`w-4 h-4 ${
-                    star <= Math.round(rating.average)
-                      ? "text-amber-400 fill-amber-400"
-                      : "text-muted/30 fill-muted/20"
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Review Count */}
-          <span className="text-xs sm:text-sm font-semibold text-muted group-hover:text-primary transition-colors">
-            {rating.count} نظر
-          </span>
-        </a>
-      )}
     </div>
   );
 }
