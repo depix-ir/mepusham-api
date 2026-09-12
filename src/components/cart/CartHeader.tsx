@@ -10,7 +10,7 @@ export interface CartHeaderProps {
 
 export function CartHeader({ itemCount, onClose }: CartHeaderProps) {
   return (
-    <div className="flex items-center justify-between p-4 border-b border-border-subtle bg-background shrink-0">
+    <div className="flex items-center justify-between p-3  bg-background shrink-0">
       <div className="flex items-center gap-2">
         <h2 className="text-base sm:text-lg font-bold text-foreground">
           سبد خرید شما

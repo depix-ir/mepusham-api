@@ -41,7 +41,7 @@ export function CartSummary({
   const isDisabled = itemCount === 0;
 
   return (
-    <div className="border-t border-border-subtle bg-background p-4 flex flex-col gap-3 shrink-0 shadow-lg pb-[calc(1rem+env(safe-area-inset-bottom))]">
+    <div className=" bg-background p-3 flex flex-col gap-3 shrink-0 shadow-lg pb-[calc(1rem+env(safe-area-inset-bottom))]">
       {/* Inline Validation Error Banner */}
       {validationErrors.length > 0 && (
         <div className="flex flex-col gap-1.5 p-3 rounded-xl bg-red-50 border border-red-200 text-error text-xs animate-fadeIn">

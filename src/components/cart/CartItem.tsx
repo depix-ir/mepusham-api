@@ -104,7 +104,7 @@ export function CartItem({
                 {formatPrice(item.compareAtPrice * item.quantity, false)}
               </span>
             )}
-            <span className="text-xs sm:text-sm font-extrabold text-foreground">
+            <span className="text-md sm:text-sm font-bold text-foreground">
               {formatPrice(item.unitPrice * item.quantity)}
             </span>
           </div>
