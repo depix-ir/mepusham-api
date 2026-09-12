@@ -43,7 +43,7 @@ export function NotifyMeModal({
       >
         <div className="flex items-center justify-between pb-3 border-b border-border-product">
           <div className="flex items-center gap-2 text-primary font-bold text-base sm:text-lg">
-            <Bell className="w-5 h-5" />
+            <Bell className="" />
             <span>اطلاع‌رسانی موجودی</span>
           </div>
           <button

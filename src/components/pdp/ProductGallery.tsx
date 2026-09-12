@@ -168,7 +168,7 @@ export function ProductGallery({
               aria-label="تصویر قبلی"
               className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-background/80 hover:bg-background text-foreground backdrop-blur-sm flex items-center justify-center shadow-md transition-all active:scale-90 opacity-90 group-hover:opacity-100 cursor-pointer z-10"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="" />
             </button>
             <button
               type="button"
@@ -176,7 +176,7 @@ export function ProductGallery({
               aria-label="تصویر بعدی"
               className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-background/80 hover:bg-background text-foreground backdrop-blur-sm flex items-center justify-center shadow-md transition-all active:scale-90 opacity-90 group-hover:opacity-100 cursor-pointer z-10"
             >
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="" />
             </button>
           </>
         )}
@@ -196,7 +196,7 @@ export function ProductGallery({
             }`}
           >
             <Heart
-              className={`w-5 h-5 transition-colors ${
+              className={` transition-colors ${
                 wishlistState === "active" ? "fill-red-500 stroke-red-500" : ""
               }`}
             />
@@ -223,7 +223,7 @@ export function ProductGallery({
 
       {/* Thumbnails Row */}
       {galleryImages.length > 1 && (
-        <div className="flex items-center gap-2.5 overflow-x-auto pb-1 scrollbar-none">
+        <div className="flex items-center gap-2.5 overflow-x-auto p-1 scrollbar-none">
           {galleryImages.map((img, idx) => (
             <button
               key={img.id || idx}

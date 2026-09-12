@@ -88,10 +88,7 @@ export function AddToCartSuccessModal({
 
         {/* Modal Content / Product Summary */}
         <div className="py-4 flex flex-col gap-3.5">
-          <p className="text-xs sm:text-sm font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 p-2.5 rounded-xl border border-emerald-200/60 flex items-center gap-2">
-            <Check className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span>محصول با موفقیت به سبد خرید شما اضافه شد.</span>
-          </p>
+
 
           <div className="flex items-center gap-3.5 p-3 rounded-xl bg-surface-subtle/70 border border-border-product">
             {productImage && (
@@ -128,7 +125,7 @@ export function AddToCartSuccessModal({
             onClick={onClose}
             className="w-full h-12 px-4 rounded-xl bg-primary text-primary-foreground font-bold text-sm flex items-center justify-center gap-2.5 hover:bg-primary/90 transition-all active:scale-98 shadow-md cursor-pointer"
           >
-            <ShoppingCart className="w-5 h-5" />
+            <ShoppingCart className="" />
             <span>مشاهده سبد خرید</span>
           </Link>
         </div>
