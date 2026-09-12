@@ -13,6 +13,7 @@ import { NotifyMeModal } from "./NotifyMeModal";
 import { AddToCartSuccessModal } from "./AddToCartSuccessModal";
 import { QuantitySelector } from "./QuantitySelector";
 import { TrustSignals } from "./TrustSignals";
+import { ProductDescription } from "./ProductDescription";
 import { ProductTabsAccordion } from "./ProductTabsAccordion";
 import { ProductReviews } from "./ProductReviews";
 import { RelatedProductsSection } from "./RelatedProductsSection";
@@ -212,12 +213,14 @@ export function ProductDetailPage({
 
           {/* Trust Signals (Express Shipping, Guarantee, Returns) */}
           <TrustSignals />
+
+          {/* Full Product Description */}
+          <ProductDescription description={product.description} />
         </div>
       </div>
 
-      {/* Description & Specifications Accordion Tabs */}
+      {/* Specifications & Care Accordion Tabs */}
       <ProductTabsAccordion
-        description={product.description}
         specifications={product.specifications}
         careInstructions={product.careInstructions}
         shippingReturns={product.shippingReturns}
@@ -236,10 +239,13 @@ export function ProductDetailPage({
 
       {/* Mobile Sticky Add to Cart Bottom Bar */}
       <StickyAddToCartBar
+        product={product}
+        selectedOptions={selectedOptions}
         price={variantDetails.price}
         compareAtPrice={variantDetails.compareAtPrice}
         hasDiscount={variantDetails.hasDiscount}
         isAvailable={variantDetails.isAvailable}
+        stock={variantDetails.stock}
         onAddToCart={handleAddToCart}
         onOpenNotifyModal={() => setIsNotifyMeOpen(true)}
         selectedVariantSummary={selectedVariantSummary}

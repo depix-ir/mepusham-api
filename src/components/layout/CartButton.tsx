@@ -15,17 +15,15 @@ export function CartButton({ className = "" }: CartButtonProps) {
   const count = getItemCount();
 
   return (
-    <button
-      type="button"
-      onClick={openCart}
-      className={`relative inline-flex items-center shrink-0 group border-none bg-transparent p-0 cursor-pointer text-right ${className}`}
-      aria-label={`سبد خرید (${count} کالا)`}
+    <div
+      className={`relative inline-flex items-center shrink-0 group ${className}`}
     >
       {/* Mobile Cart Button */}
       <div className="md:hidden relative">
         <IconButton
-          ariaLabel="سبد خرید"
+          ariaLabel={`سبد خرید (${count} کالا)`}
           size="lg"
+          onClick={openCart}
           className="w-[50px] h-[50px] bg-surface-subtle text-foreground hover:bg-primary hover:text-primary-foreground transition-colors group"
         >
           <CartIcon
@@ -41,10 +39,11 @@ export function CartButton({ className = "" }: CartButtonProps) {
       </div>
 
       {/* Desktop Dedicated Cart Button */}
-      <div
-        className="hidden md:inline-flex items-center gap-2.5 px-4 h-11 bg-primary text-primary-foreground rounded-md font-medium text-sm transition-all duration-200 ease-in-out hover:bg-primary-hover active:bg-primary-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 shadow-2xs hover:shadow-xs cursor-pointer select-none"
-        role="button"
-        tabIndex={0}
+      <button
+        type="button"
+        onClick={openCart}
+        className="hidden md:inline-flex items-center gap-2.5 px-4 h-11 bg-primary text-primary-foreground rounded-md font-medium text-sm transition-all duration-200 ease-in-out hover:bg-primary-hover active:bg-primary-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 shadow-2xs hover:shadow-xs cursor-pointer select-none border-none"
+        aria-label={`سبد خرید (${count} کالا)`}
       >
         <div className="relative flex items-center justify-center">
           <CartIcon size={20} className="text-primary-foreground shrink-0" />
@@ -59,7 +58,7 @@ export function CartButton({ className = "" }: CartButtonProps) {
             ۰
           </span>
         )}
-      </div>
-    </button>
+      </button>
+    </div>
   );
 }

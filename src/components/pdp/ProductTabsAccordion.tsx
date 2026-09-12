@@ -2,57 +2,33 @@
 
 import React, { useState } from "react";
 import { ProductSpecification } from "@/types/product";
-import { FileText, ClipboardList, Shirt, Truck, ChevronDown } from "lucide-react";
+import { ClipboardList, Shirt, Truck, ChevronDown } from "lucide-react";
 
 export interface ProductTabsAccordionProps {
-  description?: string;
   specifications?: ProductSpecification[];
   careInstructions?: string[];
   shippingReturns?: string;
 }
 
 export function ProductTabsAccordion({
-  description,
   specifications = [],
   careInstructions = [],
   shippingReturns,
 }: ProductTabsAccordionProps) {
+  const hasContent = specifications.length > 0 || careInstructions.length > 0 || Boolean(shippingReturns);
+
   // Store open states for accordion items
-  const [openSection, setOpenSection] = useState<string | null>("description");
+  const [openSection, setOpenSection] = useState<string | null>("specs");
 
   const toggleSection = (id: string) => {
     setOpenSection((prev) => (prev === id ? null : id));
   };
 
+  if (!hasContent) return null;
+
   return (
     <div className="flex flex-col border border-border-product rounded-2xl overflow-hidden bg-background shadow-xs divide-y divide-border-product/60">
-      {/* 1. Description */}
-      {description && (
-        <div className="flex flex-col">
-          <button
-            type="button"
-            onClick={() => toggleSection("description")}
-            className="flex items-center justify-between p-4 font-bold text-sm sm:text-base text-foreground hover:bg-surface-subtle/50 transition-colors cursor-pointer"
-          >
-            <div className="flex items-center gap-2.5">
-              <FileText className="w-4 h-4 text-primary shrink-0" />
-              <span>توضیحات کامل محصول</span>
-            </div>
-            <ChevronDown
-              className={`w-4 h-4 transition-transform duration-200 ${
-                openSection === "description" ? "rotate-180 text-primary" : "text-muted"
-              }`}
-            />
-          </button>
-          {openSection === "description" && (
-            <div className="p-4  text-xs sm:text-sm text-foreground/80 leading-relaxed space-y-2 border-t border-border-product/40 animate-fade-in">
-              <p>{description}</p>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* 2. Specifications */}
+      {/* 1. Specifications */}
       {specifications.length > 0 && (
         <div className="flex flex-col">
           <button
