@@ -20,17 +20,20 @@ export function ProductFilterModal({
   onClose,
   filters,
   onFilterChange,
-  onClearFilters,
   allProducts,
-  matchingCount,
 }: ProductFilterModalProps) {
-  // Local temporary filter state for mobile modal batching
   const [tempFilters, setTempFilters] = React.useState<FilterState>(filters);
+  const [prevIsOpen, setPrevIsOpen] = React.useState(isOpen);
 
-  // Sync temp filters when modal opens or external filters change
-  useEffect(() => {
+  if (isOpen !== prevIsOpen) {
+    setPrevIsOpen(isOpen);
     if (isOpen) {
       setTempFilters(filters);
+    }
+  }
+
+  useEffect(() => {
+    if (isOpen) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
@@ -38,7 +41,7 @@ export function ProductFilterModal({
     return () => {
       document.body.style.overflow = "";
     };
-  }, [isOpen, filters]);
+  }, [isOpen]);
 
   // Calculate matching count dynamically for temp filters
   const tempMatchingCount = React.useMemo(() => {

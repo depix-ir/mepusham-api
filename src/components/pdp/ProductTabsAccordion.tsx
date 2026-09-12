@@ -1,0 +1,140 @@
+"use client";
+
+import React, { useState } from "react";
+import { ProductSpecification } from "@/types/product";
+import { ChevronDownIcon } from "@/components/icons";
+
+export interface ProductTabsAccordionProps {
+  description?: string;
+  specifications?: ProductSpecification[];
+  careInstructions?: string[];
+  shippingReturns?: string;
+}
+
+export function ProductTabsAccordion({
+  description,
+  specifications = [],
+  careInstructions = [],
+  shippingReturns,
+}: ProductTabsAccordionProps) {
+  // Store open states for accordion items
+  const [openSection, setOpenSection] = useState<string | null>("description");
+
+  const toggleSection = (id: string) => {
+    setOpenSection((prev) => (prev === id ? null : id));
+  };
+
+  return (
+    <div className="flex flex-col border border-border-product rounded-2xl overflow-hidden bg-background shadow-xs divide-y divide-border-product/60">
+      {/* 1. Description */}
+      {description && (
+        <div className="flex flex-col">
+          <button
+            type="button"
+            onClick={() => toggleSection("description")}
+            className="flex items-center justify-between p-4 font-bold text-sm sm:text-base text-foreground hover:bg-surface-subtle/50 transition-colors cursor-pointer"
+          >
+            <span>📝 توضیحات کامل محصول</span>
+            <ChevronDownIcon
+              size={18}
+              className={`transition-transform duration-200 ${
+                openSection === "description" ? "rotate-180 text-primary" : "text-muted"
+              }`}
+            />
+          </button>
+          {openSection === "description" && (
+            <div className="p-4 pt-1 text-xs sm:text-sm text-foreground/80 leading-relaxed space-y-2 border-t border-border-product/40 animate-fade-in">
+              <p>{description}</p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* 2. Specifications */}
+      {specifications.length > 0 && (
+        <div className="flex flex-col">
+          <button
+            type="button"
+            onClick={() => toggleSection("specs")}
+            className="flex items-center justify-between p-4 font-bold text-sm sm:text-base text-foreground hover:bg-surface-subtle/50 transition-colors cursor-pointer"
+          >
+            <span>📋 مشخصات فنی</span>
+            <ChevronDownIcon
+              size={18}
+              className={`transition-transform duration-200 ${
+                openSection === "specs" ? "rotate-180 text-primary" : "text-muted"
+              }`}
+            />
+          </button>
+          {openSection === "specs" && (
+            <div className="p-4 pt-1 border-t border-border-product/40 animate-fade-in">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {specifications.map((spec, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between p-2.5 rounded-xl bg-surface-subtle text-xs"
+                  >
+                    <span className="text-muted font-medium">{spec.label}:</span>
+                    <span className="text-foreground font-semibold">{spec.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* 3. Care & Washing Instructions */}
+      {careInstructions.length > 0 && (
+        <div className="flex flex-col">
+          <button
+            type="button"
+            onClick={() => toggleSection("care")}
+            className="flex items-center justify-between p-4 font-bold text-sm sm:text-base text-foreground hover:bg-surface-subtle/50 transition-colors cursor-pointer"
+          >
+            <span>🧺 راهنمای شستشو و نگهداری</span>
+            <ChevronDownIcon
+              size={18}
+              className={`transition-transform duration-200 ${
+                openSection === "care" ? "rotate-180 text-primary" : "text-muted"
+              }`}
+            />
+          </button>
+          {openSection === "care" && (
+            <div className="p-4 pt-1 border-t border-border-product/40 animate-fade-in">
+              <ul className="list-disc list-inside space-y-1.5 text-xs sm:text-sm text-foreground/80 leading-relaxed">
+                {careInstructions.map((item, idx) => (
+                  <li key={idx}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* 4. Shipping & Returns */}
+      {shippingReturns && (
+        <div className="flex flex-col">
+          <button
+            type="button"
+            onClick={() => toggleSection("shipping")}
+            className="flex items-center justify-between p-4 font-bold text-sm sm:text-base text-foreground hover:bg-surface-subtle/50 transition-colors cursor-pointer"
+          >
+            <span>🚚 شرایط ارسال و مرجوعی</span>
+            <ChevronDownIcon
+              size={18}
+              className={`transition-transform duration-200 ${
+                openSection === "shipping" ? "rotate-180 text-primary" : "text-muted"
+              }`}
+            />
+          </button>
+          {openSection === "shipping" && (
+            <div className="p-4 pt-1 text-xs sm:text-sm text-foreground/80 leading-relaxed whitespace-pre-line border-t border-border-product/40 animate-fade-in">
+              {shippingReturns}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
