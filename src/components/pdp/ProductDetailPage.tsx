@@ -5,6 +5,7 @@ import { Product } from "@/types/product";
 import { getVariantDetails } from "@/lib/product/domain";
 import { formatPrice } from "@/lib/formatting/currency";
 import { useCart } from "@/store/cart/cart.store";
+import { useWishlist } from "@/store/wishlist/wishlist.store";
 import { ProductGallery } from "./ProductGallery";
 import { ProductIdentity } from "./ProductIdentity";
 import { VariantSelector } from "./VariantSelector";
@@ -32,6 +33,8 @@ export function ProductDetailPage({
   onAddToCart: customOnAddToCart,
 }: ProductDetailPageProps) {
   const { addItem, openCart } = useCart();
+  const { isLiked: checkIsLiked, toggle: toggleWishlist } = useWishlist();
+  const isLiked = checkIsLiked(product.id);
 
   // Initialize default option selections if options exist
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>(() => {
@@ -124,13 +127,16 @@ export function ProductDetailPage({
 
         {/* Product Identity & Buy Actions Column */}
         <div className="lg:col-span-6 xl:col-span-6 flex flex-col gap-4">
-          {/* Title, Brand, Breadcrumb, SKU, Rating */}
+          {/* Title, Brand, Breadcrumb, SKU, Rating, Wishlist toggle */}
           <ProductIdentity
+            productId={product.id}
             title={product.title}
             brand={product.brand}
             category={product.category}
             sku={variantDetails.sku}
             rating={product.rating}
+            isLiked={isLiked}
+            onToggleWishlist={() => toggleWishlist(product.id)}
           />
 
           {/* Pricing Block */}

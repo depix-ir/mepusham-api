@@ -8,7 +8,9 @@ import { formatPrice, formatPercent } from "@/lib/formatting/currency";
 import { getProductCardPricing } from "@/lib/product/domain";
 import { Badge } from "@/components/ui/Badge";
 import { CartIcon } from "@/components/icons";
+import { Heart } from "lucide-react";
 import { useCart } from "@/store/cart/cart.store";
+import { useWishlist } from "@/store/wishlist/wishlist.store";
 
 export interface ProductCardProps {
   product: Product;
@@ -24,6 +26,8 @@ export function ProductCard({
   className = "",
 }: ProductCardProps) {
   const { addItem, openCart } = useCart();
+  const { isLiked: checkIsLiked } = useWishlist();
+  const isLiked = checkIsLiked(product.id);
   const pricing = getProductCardPricing(product);
   const isOutOfStock =
     !product.inventory.hasAvailableVariants || product.inventory.totalStock === 0;
@@ -89,6 +93,16 @@ export function ProductCard({
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             className="object-cover object-center opacity-0 group-hover:opacity-100 transition-opacity duration-500"
           />
+        )}
+
+        {/* Wishlist Status Indicator - NON-INTERACTIVE DISPLAY ONLY */}
+        {isLiked && (
+          <div
+            className="absolute top-2 left-2 z-10 p-1.5 rounded-full bg-white/90 backdrop-blur-xs text-rose-500 shadow-xs pointer-events-none select-none flex items-center justify-center"
+            aria-hidden="true"
+          >
+            <Heart size={16} fill="currentColor" className="text-rose-500" />
+          </div>
         )}
 
         {/* Discount Badge */}
