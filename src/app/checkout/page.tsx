@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/store/cart/cart.store";
+import { useAuth } from "@/store/auth/auth.store";
+import { useToast } from "@/components/ui/Toast";
 import { CustomerInformation, CheckoutFormErrors } from "@/types/checkout";
 import { validateCustomerForm } from "@/lib/checkout/validation";
 import { shippingMethods, DEFAULT_SHIPPING_METHOD_ID, getShippingMethodById } from "@/data/shipping";
@@ -15,11 +17,24 @@ import { CheckoutCartItems } from "@/components/checkout/CheckoutCartItems";
 import { OrderSummary } from "@/components/checkout/OrderSummary";
 import { MobileCheckoutBar } from "@/components/checkout/MobileCheckoutBar";
 import { CartEmptyState } from "@/components/cart/CartEmptyState";
+import { OtpVerificationModal } from "@/components/checkout/OtpVerificationModal";
 
 import { AlertCircle } from "lucide-react";
 
+const FIELD_ELEMENT_IDS: Record<string, string> = {
+  firstName: "input-firstName",
+  lastName: "input-lastName",
+  phone: "input-phone",
+  postalCode: "input-postalCode",
+  province: "container-province",
+  city: "container-city",
+  address: "checkout-address",
+};
+
 export default function CheckoutPage() {
   const router = useRouter();
+  const { showToast } = useToast();
+  const { user, isAuthenticated, requestOtp, verifyOtp } = useAuth();
   const {
     items,
     updateQuantity,
@@ -46,6 +61,8 @@ export default function CheckoutPage() {
   const [formErrors, setFormErrors] = useState<CheckoutFormErrors>({});
   const [cartValidationErrors, setCartValidationErrors] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
+  const [pendingNormalizedCustomer, setPendingNormalizedCustomer] = useState<CustomerInformation | null>(null);
 
   // Selected Shipping Object
   const selectedShipping =
@@ -67,30 +84,11 @@ export default function CheckoutPage() {
     }
   };
 
-  const handleSubmitCheckout = () => {
-    if (isLoading) return; // Prevent duplicate click/submission
-
-    // 1. Validate Cart & Inventory
-    const cartResult = validateCurrentCart();
-    if (!cartResult.valid) {
-      setCartValidationErrors(cartResult.errors.map((e) => e.message));
-      return;
-    }
-    setCartValidationErrors([]);
-
-    // 2. Validate Form
-    const formResult = validateCustomerForm(customer);
-    if (!formResult.isValid) {
-      setFormErrors(formResult.errors);
-      return;
-    }
-    setFormErrors({});
-
+  const proceedToPayment = (normalizedCustomer: CustomerInformation) => {
     setIsLoading(true);
 
-    // Prepare Checkout Payload
     const checkoutPayload = {
-      customer: formResult.normalizedCustomer,
+      customer: normalizedCustomer,
       shipping: {
         methodId: selectedShipping.id,
         price: selectedShipping.price,
@@ -111,17 +109,125 @@ export default function CheckoutPage() {
       createdAt: new Date().toISOString(),
     };
 
-    // Store payload in sessionStorage for payment page consumption
     try {
       sessionStorage.setItem("pending_checkout_payload", JSON.stringify(checkoutPayload));
     } catch {
       // Fallback if sessionStorage is disabled
     }
 
-    // Simulate short network delay before navigation to /payment
     setTimeout(() => {
       router.push("/payment");
     }, 400);
+  };
+
+  const handleSubmitCheckout = async () => {
+    if (isLoading) return;
+
+    // 1. Validate Cart & Inventory
+    const cartResult = validateCurrentCart();
+    if (!cartResult.valid) {
+      const errMsgs = cartResult.errors.map((e) => e.message);
+      setCartValidationErrors(errMsgs);
+      showToast(errMsgs[0] || "مشکلی در موجودی کالاها پیش آمده است.", "error");
+      return;
+    }
+    setCartValidationErrors([]);
+
+    // 2. Validate Customer Form
+    const formResult = validateCustomerForm(customer);
+    if (!formResult.isValid) {
+      setFormErrors(formResult.errors);
+
+      // Extract first error message and target field for smooth scroll
+      const errorKeys = Object.keys(formResult.errors) as (keyof CheckoutFormErrors)[];
+      const firstKey = errorKeys[0];
+      const firstErrorMessage = formResult.errors[firstKey];
+
+      // Custom message if phone has error vs general error
+      let toastMessage = "لطفاً خطاهای اطلاعات فرم را برطرف کنید.";
+      if (firstKey === "phone") {
+        toastMessage = `خطا: شماره موبایل وارد شده اشتباه یا ناقص است (${firstErrorMessage})`;
+      } else if (firstErrorMessage) {
+        toastMessage = `خطا در فرم: ${firstErrorMessage}`;
+      }
+
+      showToast(toastMessage, "error");
+
+      // Smooth scroll to the first invalid field
+      if (firstKey && FIELD_ELEMENT_IDS[firstKey]) {
+        const targetId = FIELD_ELEMENT_IDS[firstKey];
+        const el = document.getElementById(targetId);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+          const inputEl = el.querySelector("input, select, textarea") || el;
+          if ("focus" in inputEl && typeof inputEl.focus === "function") {
+            (inputEl as HTMLElement).focus();
+          }
+        }
+      }
+
+      return;
+    }
+
+    setFormErrors({});
+    const normalizedCustomer = formResult.normalizedCustomer;
+
+    // Check if user is already logged in with the matching phone number
+    if (isAuthenticated && user && user.phone === normalizedCustomer.phone) {
+      proceedToPayment(normalizedCustomer);
+      return;
+    }
+
+    // Otherwise, trigger OTP modal requirement before payment
+    try {
+      setIsLoading(true);
+      await requestOtp({
+        phone: normalizedCustomer.phone,
+        mode: "login",
+        firstName: normalizedCustomer.firstName,
+        lastName: normalizedCustomer.lastName,
+      });
+
+      setPendingNormalizedCustomer(normalizedCustomer);
+      setIsOtpModalOpen(true);
+      showToast(`کد تأیید ۶ رقمی به شماره ${normalizedCustomer.phone} ارسال شد.`, "info");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "خطا در ارسال کد تأیید.";
+      showToast(msg, "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerifyOtpCode = async (code: string) => {
+    if (!pendingNormalizedCustomer) return;
+
+    await verifyOtp({
+      phone: pendingNormalizedCustomer.phone,
+      code,
+      mode: "login",
+      firstName: pendingNormalizedCustomer.firstName,
+      lastName: pendingNormalizedCustomer.lastName,
+    });
+  };
+
+  const handleOtpSuccess = () => {
+    setIsOtpModalOpen(false);
+    showToast("شماره موبایل شما با موفقیت تأیید شد.", "success");
+    if (pendingNormalizedCustomer) {
+      proceedToPayment(pendingNormalizedCustomer);
+    }
+  };
+
+  const handleResendOtpCode = async () => {
+    if (!pendingNormalizedCustomer) return;
+    await requestOtp({
+      phone: pendingNormalizedCustomer.phone,
+      mode: "login",
+      firstName: pendingNormalizedCustomer.firstName,
+      lastName: pendingNormalizedCustomer.lastName,
+    });
+    showToast("کد تأیید جدید مجدداً ارسال گردید.", "info");
   };
 
   // Empty Cart State Rendering
@@ -220,6 +326,20 @@ export default function CheckoutPage() {
         onSubmit={handleSubmitCheckout}
         isLoading={isLoading}
       />
+
+      {/* Mandatory OTP Modal before Payment */}
+      {pendingNormalizedCustomer && (
+        <OtpVerificationModal
+          isOpen={isOtpModalOpen}
+          phone={pendingNormalizedCustomer.phone}
+          firstName={pendingNormalizedCustomer.firstName}
+          lastName={pendingNormalizedCustomer.lastName}
+          onClose={() => setIsOtpModalOpen(false)}
+          onSuccess={handleOtpSuccess}
+          onVerifyOtp={handleVerifyOtpCode}
+          onResendOtp={handleResendOtpCode}
+        />
+      )}
     </div>
   );
 }
