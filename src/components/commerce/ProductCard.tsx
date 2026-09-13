@@ -7,7 +7,7 @@ import { Product } from "@/types/product";
 import { formatPrice, formatPercent } from "@/lib/formatting/currency";
 import { getProductCardPricing } from "@/lib/product/domain";
 import { Badge } from "@/components/ui/Badge";
-import { CartIcon } from "@/components/icons";
+import { CartIcon, TomanIcon } from "@/components/icons";
 import { Heart } from "lucide-react";
 import { useCart } from "@/store/cart/cart.store";
 import { useWishlist } from "@/store/wishlist/wishlist.store";
@@ -79,8 +79,8 @@ export function ProductCard({
           alt={primaryImage.alt || product.title}
           fill
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          className={`object-cover object-center transition-transform duration-500 group-hover:scale-105 ${
-            isOutOfStock ? "opacity-50 grayscale-[30%]" : ""
+          className={`object-cover object-center transition-all duration-500 group-hover:scale-105 ${
+            isOutOfStock ? "opacity-65 grayscale-[20%]" : ""
           }`}
         />
 
@@ -114,10 +114,10 @@ export function ProductCard({
           </div>
         )}
 
-        {/* Out of stock overlay banner */}
+        {/* Out of stock minimal badge */}
         {isOutOfStock && (
-          <div className="absolute inset-0 bg-black/25 backdrop-blur-[1px] flex items-center justify-center z-10">
-            <span className="bg-foreground/90 text-background text-xs font-bold px-3 py-1.5 rounded-md shadow-md">
+          <div className="absolute top-2.5 right-2.5 z-10">
+            <span className="px-2.5 py-1 text-[11px] font-medium tracking-wide bg-white/95 backdrop-blur-md text-neutral-600 rounded-full border border-neutral-200/80 shadow-xs select-none">
               ناموجود
             </span>
           </div>
@@ -143,15 +143,16 @@ export function ProductCard({
         {/* Pricing & Cart Action */}
         <div className="flex items-end justify-between gap-2 pt-2 border-t border-border-product/60 mt-auto">
           {/* Price Block */}
-          <div className="flex flex-col">
-            {pricing.hasDiscount && pricing.compareAtPrice ? (
-              <span className="text-[10px] sm:text-xs text-muted line-through font-medium">
-                {formatPrice(pricing.compareAtPrice, false)}
-              </span>
+          <div className={`flex flex-col ${isOutOfStock ? "opacity-60" : ""}`}>
+            {pricing.hasDiscount && pricing.compareAtPrice && !isOutOfStock ? (
+              <div className="flex items-center gap-1 text-[10px] sm:text-xs text-muted line-through font-medium">
+                <span>{formatPrice(pricing.compareAtPrice)}</span>
+              </div>
             ) : null}
-            <span className="text-xs sm:text-sm md:text-base font-bold text-foreground tracking-tight">
-              {formatPrice(pricing.price)}
-            </span>
+            <div className="flex items-center gap-1 text-xs sm:text-sm md:text-base font-bold text-foreground tracking-tight">
+              <span>{formatPrice(pricing.price)}</span>
+              <TomanIcon size={14} className="text-muted shrink-0" />
+            </div>
           </div>
 
           {/* Cart Button */}
@@ -159,13 +160,13 @@ export function ProductCard({
             type="button"
             onClick={handleCartClick}
             disabled={isOutOfStock}
-            aria-label={`افزودن ${product.title} به سبد خرید`}
-            className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shrink-0 transition-all duration-200 cursor-pointer ${
+            aria-label={isOutOfStock ? `${product.title} ناموجود است` : `افزودن ${product.title} به سبد خرید`}
+            className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shrink-0 transition-all duration-200 ${
               isOutOfStock
-                ? "bg-surface-subtle text-muted cursor-not-allowed opacity-60"
+                ? "bg-neutral-100 text-neutral-400 cursor-not-allowed opacity-50"
                 : isCartActive
-                ? "bg-primary text-primary-foreground shadow-md scale-105"
-                : "bg-surface-subtle text-foreground hover:bg-primary hover:text-primary-foreground hover:shadow-md active:scale-95"
+                ? "bg-primary text-primary-foreground shadow-md scale-105 cursor-pointer"
+                : "bg-surface-subtle text-foreground hover:bg-primary hover:text-primary-foreground hover:shadow-md active:scale-95 cursor-pointer"
             }`}
           >
             <CartIcon size={18} />

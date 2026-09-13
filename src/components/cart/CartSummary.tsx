@@ -4,6 +4,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle, ArrowLeft } from "lucide-react";
 import { formatPrice } from "@/lib/formatting/currency";
+import { TomanIcon } from "@/components/icons";
 import { CartValidationError } from "@/store/cart/cart.types";
 
 export interface CartSummaryProps {
@@ -62,9 +63,10 @@ export function CartSummary({
         <span className="text-xs sm:text-sm font-medium text-muted">
           مبلغ کل سبد خرید
         </span>
-        <span className="text-base sm:text-lg font-black text-foreground">
-          {formatPrice(total)}
-        </span>
+        <div className="flex items-center gap-1 text-base sm:text-lg font-black text-foreground">
+          <span>{formatPrice(total)}</span>
+          <TomanIcon size={16} className="text-muted shrink-0" />
+        </div>
       </div>
 
       {/* Checkout CTA */}

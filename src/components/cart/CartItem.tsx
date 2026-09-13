@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Trash2 } from "lucide-react";
 import { CartItem as CartItemType } from "@/store/cart/cart.types";
 import { formatPrice } from "@/lib/formatting/currency";
+import { TomanIcon } from "@/components/icons";
 import { QuantityControl } from "./QuantityControl";
 
 export interface CartItemProps {
@@ -101,12 +102,13 @@ export function CartItem({
           <div className="flex flex-col items-end text-left shrink-0">
             {item.compareAtPrice && item.compareAtPrice > item.unitPrice && (
               <span className="text-[10px] sm:text-xs text-muted line-through font-medium">
-                {formatPrice(item.compareAtPrice * item.quantity, false)}
+                {formatPrice(item.compareAtPrice * item.quantity)}
               </span>
             )}
-            <span className="text-md sm:text-sm font-bold text-foreground">
-              {formatPrice(item.unitPrice * item.quantity)}
-            </span>
+            <div className="flex items-center gap-1 text-md sm:text-sm font-bold text-foreground">
+              <span>{formatPrice(item.unitPrice * item.quantity)}</span>
+              <TomanIcon size={13} className="text-muted shrink-0" />
+            </div>
           </div>
         </div>
       </div>

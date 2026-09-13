@@ -8,6 +8,7 @@ import { products as catalogProducts } from "@/data/products";
 import { Product } from "@/types/product";
 import { getProductCardPricing } from "@/lib/product/domain";
 import { formatPrice } from "@/lib/formatting/currency";
+import { TomanIcon } from "@/components/icons";
 import { Container } from "@/components/ui/Container";
 import { ProductCard } from "@/components/commerce/ProductCard";
 import { WishlistEmptyState } from "./WishlistEmptyState";
@@ -235,7 +236,10 @@ export function WishlistClientPage() {
               {totalAvailableDiscount > 0 && (
                 <div className="flex items-center justify-between text-emerald-700 font-medium">
                   <span>مجموع تخفیف:</span>
-                  <span className="font-bold">{formatPrice(totalAvailableDiscount)}</span>
+                  <div className="flex items-center gap-1 font-bold">
+                    <span>{formatPrice(totalAvailableDiscount)}</span>
+                    <TomanIcon size={13} className="text-emerald-700 shrink-0" />
+                  </div>
                 </div>
               )}
             </div>
@@ -246,9 +250,17 @@ export function WishlistClientPage() {
                 <span className="text-xs sm:text-sm font-bold text-foreground">
                   {unavailableCount > 0 ? "مجموع مبلغ محصولات موجود:" : "مجموع مبلغ:"}
                 </span>
-                <span className="text-base sm:text-xl font-black text-primary">
-                  {isAllOutOfStock ? "۰ تومان" : formatPrice(totalAvailablePrice)}
-                </span>
+                {isAllOutOfStock ? (
+                  <div className="flex items-center gap-1 text-base sm:text-xl font-black text-primary">
+                    <span>۰</span>
+                    <TomanIcon size={16} className="text-primary/70 shrink-0" />
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1 text-base sm:text-xl font-black text-primary">
+                    <span>{formatPrice(totalAvailablePrice)}</span>
+                    <TomanIcon size={16} className="text-primary/70 shrink-0" />
+                  </div>
+                )}
               </div>
 
               {/* Explicit Out-of-Stock Explanation Notice */}

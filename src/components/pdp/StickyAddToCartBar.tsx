@@ -2,6 +2,7 @@
 
 import React, { useMemo } from "react";
 import { formatPrice } from "@/lib/formatting/currency";
+import { TomanIcon } from "@/components/icons";
 import { ShoppingCart, Bell, Plus, Minus, Trash2 } from "lucide-react";
 import { Product } from "@/types/product";
 import { getVariantDetails } from "@/lib/product/domain";
@@ -86,12 +87,13 @@ export function StickyAddToCartBar({
           <div className="flex items-center gap-1">
             {hasDiscount && compareAtPrice && (
               <span className="text-[10px] text-muted line-through font-medium">
-                {formatPrice(compareAtPrice, false)}
+                {formatPrice(compareAtPrice)}
               </span>
             )}
-            <span className="text-sm font-bold text-foreground">
-              {formatPrice(price)}
-            </span>
+            <div className="flex items-center gap-0.5 text-sm font-bold text-foreground">
+              <span>{formatPrice(price)}</span>
+              <TomanIcon size={12} className="text-muted shrink-0" />
+            </div>
           </div>
         </div>
 

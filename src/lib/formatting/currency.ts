@@ -7,11 +7,11 @@ export function toPersianDigits(numStr: string | number): string {
 }
 
 /**
- * Formats a raw number price into Persian Toman string (e.g., 1890000 -> ۱,۸۹۰,۰۰۰ تومان)
+ * Formats a raw number price into Persian formatted string without currency suffix (e.g., 1890000 -> ۱,۸۹۰,۰۰۰)
  */
 export function formatPrice(
   amount: number,
-  includeCurrency: boolean = true
+  includeCurrency: boolean = false
 ): string {
   if (isNaN(amount)) return "";
   const formatted = amount.toLocaleString("fa-IR");

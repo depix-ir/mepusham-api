@@ -2,6 +2,7 @@
 
 import React from "react";
 import { formatPrice } from "@/lib/formatting/currency";
+import { TomanIcon } from "@/components/icons";
 import { Loader2, ArrowLeft } from "lucide-react";
 
 interface MobileCheckoutBarProps {
@@ -23,9 +24,10 @@ export function MobileCheckoutBar({
         {/* Total Price Display */}
         <div className="flex flex-col gap-0.5">
           <span className="text-[11px] font-medium text-muted">مبلغ قابل پرداخت</span>
-          <span className="text-base font-extrabold text-primary">
-            {formatPrice(payableTotal)}
-          </span>
+          <div className="flex items-center gap-1 text-base font-extrabold text-primary">
+            <span>{formatPrice(payableTotal)}</span>
+            <TomanIcon size={14} className="text-primary/70 shrink-0" />
+          </div>
         </div>
 
         {/* Action Button */}

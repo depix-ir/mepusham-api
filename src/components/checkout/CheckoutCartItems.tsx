@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { CartItem as CartItemType } from "@/store/cart/cart.types";
 import { formatPrice } from "@/lib/formatting/currency";
+import { TomanIcon } from "@/components/icons";
 import { Trash2, Plus, Minus, ShoppingBag } from "lucide-react";
 
 interface CheckoutCartItemsProps {
@@ -77,15 +78,17 @@ export function CheckoutCartItems({
                   )}
 
                   {/* Unit Price */}
-                  <span className="text-xs font-bold text-foreground sm:hidden pt-0.5">
-                    {formatPrice(item.unitPrice * item.quantity)}
-                  </span>
+                  <div className="flex items-center gap-1 text-xs font-bold text-foreground sm:hidden pt-0.5">
+                    <span>{formatPrice(item.unitPrice * item.quantity)}</span>
+                    <TomanIcon size={12} className="text-muted shrink-0" />
+                  </div>
                 </div>
               </div>
 
               {/* Desktop Price */}
-              <div className="hidden sm:block text-sm font-bold text-foreground shrink-0 px-2">
-                {formatPrice(item.unitPrice * item.quantity)}
+              <div className="hidden sm:flex items-center gap-1 text-sm font-bold text-foreground shrink-0 px-2">
+                <span>{formatPrice(item.unitPrice * item.quantity)}</span>
+                <TomanIcon size={13} className="text-muted shrink-0" />
               </div>
 
               {/* Quantity Controls & Remove */}
