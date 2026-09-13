@@ -4,6 +4,7 @@ import { Header } from "@/components/layout/Header";
 import { MobileBottomBar } from "@/components/layout/MobileBottomBar";
 import { CartProvider } from "@/store/cart/cart.store";
 import { WishlistProvider } from "@/store/wishlist/wishlist.store";
+import { AuthProvider } from "@/store/auth/auth.store";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import "./globals.css";
 
@@ -27,14 +28,16 @@ export default function RootLayout({
   return (
     <html lang="fa" dir="rtl" className={peydaFont.variable}>
       <body className="min-h-screen bg-background text-foreground antialiased font-sans flex flex-col pb-16 md:pb-0">
-        <CartProvider>
-          <WishlistProvider>
-            <Header />
-            <main className="flex-1 w-full">{children}</main>
-            <MobileBottomBar />
-            <CartDrawer />
-          </WishlistProvider>
-        </CartProvider>
+        <AuthProvider>
+          <CartProvider>
+            <WishlistProvider>
+              <Header />
+              <main className="flex-1 w-full">{children}</main>
+              <MobileBottomBar />
+              <CartDrawer />
+            </WishlistProvider>
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );
