@@ -74,16 +74,16 @@ export function StickyAddToCartBar({
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-md border-t border-border-product p-3 px-4 shadow-2xl md:hidden animate-slide-up">
+    <div className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-md border-t border-border-product p-2.5 px-4 shadow-lg md:hidden animate-slide-up pb-[calc(0.625rem+env(safe-area-inset-bottom))]">
       <div className="flex items-center justify-between gap-3 max-w-lg mx-auto">
         {/* Price Block */}
         <div className="flex flex-col justify-center shrink-0">
           {selectedVariantSummary && (
-            <span className="text-[10px] text-muted truncate max-w-[110px]">
+            <span className="text-[10px] text-muted truncate max-w-[100px]">
               {selectedVariantSummary}
             </span>
           )}
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1">
             {hasDiscount && compareAtPrice && (
               <span className="text-[10px] text-muted line-through font-medium">
                 {formatPrice(compareAtPrice, false)}
@@ -100,32 +100,32 @@ export function StickyAddToCartBar({
           <button
             type="button"
             onClick={onOpenNotifyModal}
-            className="flex-1 h-12 px-4 rounded-xl bg-amber-500 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 hover:bg-amber-600 transition-all active:scale-98 shadow-md cursor-pointer"
+            className="flex-1 h-10 px-3 rounded-lg bg-amber-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 hover:bg-amber-600 transition-colors cursor-pointer"
           >
             <Bell className="w-4 h-4" />
             <span>موجود شد اطلاع بده</span>
           </button>
         ) : cartQuantity > 0 ? (
-          <div className="flex-1 h-12 px-2.5 rounded-xl border-2 border-primary/40 bg-primary/5 flex items-center justify-between gap-2 shadow-xs transition-all animate-fade-in">
+          <div className="flex-1 h-10 px-2 rounded-lg border border-primary/30 bg-primary/5 flex items-center justify-between gap-2 transition-all">
             <button
               type="button"
               onClick={handleDecrement}
               aria-label={cartQuantity === 1 ? "حذف از سبد خرید" : "کاهش تعداد"}
               title={cartQuantity === 1 ? "حذف از سبد خرید" : "کاهش تعداد"}
-              className="w-9 h-9 rounded-lg flex items-center justify-center bg-background border border-border-product hover:bg-rose-50 hover:border-rose-200 text-foreground active:scale-95 transition-all cursor-pointer"
+              className="w-8 h-8 rounded-md flex items-center justify-center bg-background border border-border-product hover:bg-rose-50 hover:border-rose-200 text-foreground cursor-pointer"
             >
               {cartQuantity === 1 ? (
-                <Trash2 className="w-4 h-4 text-rose-500" />
+                <Trash2 className="w-3.5 h-3.5 text-rose-500" />
               ) : (
-                <Minus className="w-4 h-4 text-foreground" />
+                <Minus className="w-3.5 h-3.5 text-foreground" />
               )}
             </button>
 
-            <div className="flex items-center gap-1 select-none">
-              <span className="font-extrabold text-base text-primary">
+            <div className="flex items-center gap-1 select-none text-xs">
+              <span className="font-extrabold text-primary">
                 {cartQuantity}
               </span>
-              <span className="text-xs font-semibold text-foreground">
+              <span className="font-semibold text-foreground">
                 عدد در سبد
               </span>
             </div>
@@ -136,16 +136,16 @@ export function StickyAddToCartBar({
               disabled={maxStock > 0 && cartQuantity >= maxStock}
               aria-label="افزایش تعداد"
               title="افزایش تعداد"
-              className="w-9 h-9 rounded-lg bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 disabled:opacity-30 active:scale-95 transition-all cursor-pointer shadow-xs"
+              className="w-8 h-8 rounded-md bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 disabled:opacity-30 cursor-pointer"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-3.5 h-3.5" />
             </button>
           </div>
         ) : (
           <button
             type="button"
             onClick={onAddToCart}
-            className="flex-1 h-12 px-4 rounded-xl bg-primary text-primary-foreground font-bold text-xs sm:text-sm flex items-center justify-center gap-2 hover:bg-primary/90 transition-all active:scale-98 shadow-md cursor-pointer"
+            className="flex-1 h-10 px-3 rounded-lg bg-primary text-primary-foreground font-bold text-xs flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-colors cursor-pointer shadow-xs"
           >
             <ShoppingCart className="w-4 h-4" />
             <span>افزودن به سبد خرید</span>
