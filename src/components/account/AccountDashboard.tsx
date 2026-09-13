@@ -5,13 +5,13 @@ import { User } from "@/types/auth";
 import { Order, UserAddress, SupportTicket } from "@/types/account";
 import { accountService } from "@/lib/account/accountService";
 import { Container } from "@/components/ui/Container";
-import { OrdersSection } from "./orders/OrdersSection";
-import { OrderDetailsModal } from "./orders/OrderDetailsModal";
+import Link from "next/link";
+import { AccountOrdersSummary } from "./orders/AccountOrdersSummary";
 import { AddressesSection } from "./addresses/AddressesSection";
 import { SupportSection } from "./support/SupportSection";
 import { AccountInfoSection } from "./info/AccountInfoSection";
 import { LogoutDialog } from "./logout/LogoutDialog";
-import { LogOut, Sparkles, ShoppingBag, PackageCheck, Truck } from "lucide-react";
+import { LogOut, Sparkles, ShoppingBag, PackageCheck, Truck, ArrowLeft } from "lucide-react";
 
 interface AccountDashboardProps {
   user: User;
@@ -28,7 +28,6 @@ export function AccountDashboard({
   const [addresses, setAddresses] = useState<UserAddress[]>([]);
   const [tickets, setTickets] = useState<SupportTicket[]>([]);
 
-  const [selectedOrderDetails, setSelectedOrderDetails] = useState<Order | null>(null);
   const [prefilledOrderForTicket, setPrefilledOrderForTicket] = useState<Order | null>(null);
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
 
@@ -123,20 +122,13 @@ export function AccountDashboard({
             </div>
           </div>
 
-          {/* Desktop Layout: 8 cols (Main Orders) / 4 cols (Secondary) */}
+          {/* User Hub Grid Layout (8 cols left, 4 cols right on desktop) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
-            {/* Main Content Area (8 Cols on Desktop) - HERO priority for Orders */}
-            <div className="lg:col-span-8 space-y-8">
-              {/* Primary Content: Orders Section */}
-              <OrdersSection
-                orders={orders}
-                onViewDetails={(ord) => setSelectedOrderDetails(ord)}
-                onOpenSupport={(ord) => setPrefilledOrderForTicket(ord)}
-              />
-            </div>
+            {/* Primary Column (8 Cols Desktop) */}
+            <div className="lg:col-span-8 space-y-6">
+              {/* Compact Orders Summary */}
+              <AccountOrdersSummary orders={orders} />
 
-            {/* Secondary Content Sidebar (4 Cols on Desktop) */}
-            <div className="lg:col-span-4 space-y-8">
               {/* Addresses Section */}
               <div className="bg-background border border-border-subtle rounded-2xl p-4 sm:p-5 shadow-2xs">
                 <AddressesSection
@@ -144,6 +136,17 @@ export function AccountDashboard({
                   onSaveAddress={handleSaveAddress}
                   onDeleteAddress={handleDeleteAddress}
                   onSetDefault={handleSetDefaultAddress}
+                />
+              </div>
+            </div>
+
+            {/* Secondary Column (4 Cols Desktop) */}
+            <div className="lg:col-span-4 space-y-6">
+              {/* Personal Information Section */}
+              <div className="bg-background border border-border-subtle rounded-2xl p-4 sm:p-5 shadow-2xs">
+                <AccountInfoSection
+                  user={user}
+                  onUpdateProfile={onUpdateProfile}
                 />
               </div>
 
@@ -156,14 +159,6 @@ export function AccountDashboard({
                   onSendMessage={handleSendMessage}
                   prefilledOrderForTicket={prefilledOrderForTicket}
                   onClearPrefilledOrder={() => setPrefilledOrderForTicket(null)}
-                />
-              </div>
-
-              {/* Personal Information Section */}
-              <div className="bg-background border border-border-subtle rounded-2xl p-4 sm:p-5 shadow-2xs">
-                <AccountInfoSection
-                  user={user}
-                  onUpdateProfile={onUpdateProfile}
                 />
               </div>
 
@@ -182,17 +177,6 @@ export function AccountDashboard({
           </div>
         </div>
       </Container>
-
-      {/* Order Details Modal */}
-      <OrderDetailsModal
-        order={selectedOrderDetails}
-        isOpen={!!selectedOrderDetails}
-        onClose={() => setSelectedOrderDetails(null)}
-        onOpenSupport={(ord) => {
-          setSelectedOrderDetails(null);
-          setPrefilledOrderForTicket(ord);
-        }}
-      />
 
       {/* Logout Confirmation Dialog */}
       <LogoutDialog
