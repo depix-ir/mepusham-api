@@ -125,9 +125,7 @@ export function StickyAddToCartBar({
               <span className="font-extrabold text-primary">
                 {cartQuantity}
               </span>
-              <span className="font-semibold text-foreground">
-                عدد در سبد
-              </span>
+
             </div>
 
             <button

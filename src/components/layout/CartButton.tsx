@@ -50,7 +50,7 @@ export function CartButton({ className = "" }: CartButtonProps) {
         </div>
         <span className="font-semibold text-sm whitespace-nowrap">سبد خرید</span>
         {count > 0 ? (
-          <span className="bg-primary-foreground text-primary text-xs font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center shrink-0 leading-none shadow-2xs">
+          <span className="bg-primary-foreground text-primary text-xs font-bold px-2 py-0.5 rounded-full align-center justify-center  min-w-[20px] min-h-[20px] text-center shrink-0 leading-none shadow-2xs">
             {count}
           </span>
         ) : (

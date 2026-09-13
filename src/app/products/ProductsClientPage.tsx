@@ -231,7 +231,7 @@ export function ProductsClientPage() {
         {/* 2 & 3. Main Grid Layout (Desktop right side filter panel, left side product grid) */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-start">
           {/* Desktop Right Filter Panel (Order 1 on RTL layout or order-first) */}
-          <div className="hidden md:block md:col-span-1 sticky top-24">
+          <div className="hidden md:block md:col-span-1 sticky top-36">
             <ProductFilterPanel
               filters={filters}
               onFilterChange={updateUrlFilters}

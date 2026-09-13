@@ -41,7 +41,7 @@ export function MainHeader({ cartItemCount = 0 }: MainHeaderProps) {
             <IconButton ariaLabel="پسندیده‌ها" variant="ghost" size="md">
               <HeartIcon size={22} />
               {wishlistCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-4 min-w-[16px] px-1 flex items-center justify-center border-2 border-background leading-none">
+                <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold rounded-full w-4 h-4 min-w-[16px] px-1 flex items-center justify-center border-2 border-background leading-none">
                   {wishlistCount}
                 </span>
               )}

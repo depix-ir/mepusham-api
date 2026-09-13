@@ -209,40 +209,9 @@ export function ProductGallery({
 
         {/* Top Floating Actions (Compact Buttons with Small Visual Icons) */}
         <div className="absolute top-2.5 left-2.5 z-10 flex items-center gap-1.5">
-          {/* Wishlist Button */}
-          <button
-            type="button"
-            onClick={handleToggleWishlist}
-            aria-label={isLiked ? "حذف از پسندیده‌ها" : "افزودن به پسندیده‌ها"}
-            aria-pressed={isLiked}
-            title={isLiked ? "حذف از پسندیده‌ها" : "افزودن به پسندیده‌ها"}
-            className={`w-8 h-8 rounded-full flex items-center justify-center shadow-xs backdrop-blur-xs transition-all active:scale-90 cursor-pointer focus-visible:outline-none ${
-              isLiked
-                ? "bg-rose-50 text-rose-600 border border-rose-200"
-                : "bg-background/80 hover:bg-background text-foreground/80 hover:text-foreground"
-            }`}
-          >
-            <Heart
-              className={`w-4 h-4 transition-transform duration-200 ${
-                isLiked ? "fill-rose-600 stroke-rose-600 scale-105" : ""
-              }`}
-            />
-          </button>
 
-          {/* Toggle Mobile Zoom Button */}
-          <button
-            type="button"
-            onClick={() => setIsMobileZoomed((prev) => !prev)}
-            aria-label={isMobileZoomed ? "خروج از زوم" : "زوم تصویر"}
-            title={isMobileZoomed ? "خروج از زوم" : "زوم تصویر"}
-            className={`w-8 h-8 rounded-full flex items-center justify-center shadow-xs backdrop-blur-xs transition-all active:scale-90 cursor-pointer focus-visible:outline-none ${
-              isMobileZoomed
-                ? "bg-primary text-primary-foreground"
-                : "bg-background/80 hover:bg-background text-foreground/80 hover:text-foreground"
-            }`}
-          >
-            {isMobileZoomed ? <ZoomOut className="w-4 h-4" /> : <ZoomIn className="w-4 h-4" />}
-          </button>
+
+
 
           {/* Share Button */}
           <button
@@ -251,7 +220,7 @@ export function ProductGallery({
             aria-label="اشتراک‌گذاری محصول"
             className="w-8 h-8 rounded-full bg-background/80 hover:bg-background text-foreground/80 hover:text-foreground flex items-center justify-center shadow-xs backdrop-blur-xs transition-all active:scale-90 cursor-pointer focus-visible:outline-none"
           >
-            <Share2 className="w-4 h-4" />
+            <Share2 className="w-3 h-3" />
           </button>
         </div>
 

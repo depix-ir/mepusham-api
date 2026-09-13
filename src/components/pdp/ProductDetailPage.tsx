@@ -207,7 +207,7 @@ export function ProductDetailPage({
                 <span>موجود شد به من اطلاع بده</span>
               </button>
             ) : cartQuantity > 0 ? (
-              <div className="w-full flex items-center justify-between gap-3 p-1.5 bg-surface-subtle border border-primary/30 rounded-lg transition-all">
+              <div className=" flex items-center justify-between gap-3 p-1.5 bg-surface-subtle border border-primary/30 rounded-lg transition-all">
                 <button
                   type="button"
                   onClick={() => {
@@ -231,14 +231,6 @@ export function ProductDetailPage({
 
                 <div className="flex items-center gap-2 select-none">
                   <span className="text-base font-extrabold text-primary">{cartQuantity}</span>
-                  <span className="text-xs font-semibold text-foreground">عدد در سبد خرید</span>
-                  <button
-                    type="button"
-                    onClick={openCart}
-                    className="text-xs text-primary underline mr-1 cursor-pointer"
-                  >
-                    (مشاهده)
-                  </button>
                 </div>
 
                 <button
