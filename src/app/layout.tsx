@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { peydaFont } from "@/lib/fonts";
 import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
 import { MobileBottomBar } from "@/components/layout/MobileBottomBar";
 import { CartProvider } from "@/store/cart/cart.store";
 import { WishlistProvider } from "@/store/wishlist/wishlist.store";
@@ -33,6 +34,7 @@ export default function RootLayout({
             <WishlistProvider>
               <Header />
               <main className="flex-1 w-full">{children}</main>
+              <Footer />
               <MobileBottomBar />
               <CartDrawer />
             </WishlistProvider>
