@@ -21,10 +21,25 @@ export function CartDrawer() {
   } = useCart();
 
   const [validationErrors, setValidationErrors] = React.useState<CartValidationError[]>([]);
+  const [shouldRender, setShouldRender] = React.useState(isCartOpen);
+  const [isVisible, setIsVisible] = React.useState(false);
 
-  // 1. Handle Escape Key press & Scroll Lock
+  // Manage entry and exit transition states
   useEffect(() => {
-    if (!isCartOpen) return;
+    if (isCartOpen) {
+      setShouldRender(true);
+      const timer = setTimeout(() => setIsVisible(true), 10);
+      return () => clearTimeout(timer);
+    } else {
+      setIsVisible(false);
+      const timer = setTimeout(() => setShouldRender(false), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isCartOpen]);
+
+  // Handle Escape Key press & Scroll Lock
+  useEffect(() => {
+    if (!shouldRender) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -42,9 +57,9 @@ export function CartDrawer() {
       window.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = originalOverflow;
     };
-  }, [isCartOpen, closeCart]);
+  }, [shouldRender, closeCart]);
 
-  if (!isCartOpen) return null;
+  if (!shouldRender) return null;
 
   const total = getTotal();
   const itemCount = getItemCount();
@@ -73,7 +88,9 @@ export function CartDrawer() {
     <div className="fixed inset-0 z-50 select-none">
       {/* Background Overlay */}
       <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-300 animate-fadeIn"
+        className={`fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-300 ease-in-out ${
+          isVisible ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
         onClick={closeCart}
         aria-hidden="true"
       />
@@ -83,7 +100,9 @@ export function CartDrawer() {
         role="dialog"
         aria-modal="true"
         aria-label="سبد خرید"
-        className="fixed top-0 bottom-0 !left-0 !right-auto z-10 flex flex-col w-full md:w-[400px] h-[100dvh] bg-background shadow-2xl transition-transform duration-300 ease-in-out border-r border-border-subtle [direction:rtl]"
+        className={`fixed top-0 bottom-0 !left-0 !right-auto z-10 flex flex-col w-full md:w-[400px] h-[100dvh] bg-background shadow-2xl transition-transform duration-300 ease-in-out border-r border-border-subtle [direction:rtl] ${
+          isVisible ? "translate-x-0" : "-translate-x-full"
+        }`}
       >
         {/* Cart Header */}
         <CartHeader itemCount={itemCount} onClose={closeCart} />

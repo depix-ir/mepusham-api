@@ -114,7 +114,9 @@ export function HeroSection({
 
         {/* Pagination Dots */}
         {bannerCount > 1 && (
-          <div className="hero-swiper-pagination absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center justify-center gap-2 bg-black/35 backdrop-blur-md px-3 py-1.5 rounded-full !w-auto [&_.swiper-pagination-bullet]:w-2.5 [&_.swiper-pagination-bullet]:h-2.5 [&_.swiper-pagination-bullet]:rounded-full [&_.swiper-pagination-bullet]:bg-white/60 [&_.swiper-pagination-bullet]:opacity-100 [&_.swiper-pagination-bullet]:transition-all [&_.swiper-pagination-bullet]:duration-300 [&_.swiper-pagination-bullet]:cursor-pointer [&_.swiper-pagination-bullet-active]:!w-7 [&_.swiper-pagination-bullet-active]:!bg-primary [&_.swiper-pagination-bullet-active]:!rounded-full" />
+          <div className="absolute bottom-3 md:bottom-4 inset-x-0 z-20 flex justify-center items-center pointer-events-none">
+            <div className="hero-swiper-pagination pointer-events-auto flex items-center justify-center gap-2 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full !w-auto !relative !inset-auto !transform-none [&_.swiper-pagination-bullet]:w-2.5 [&_.swiper-pagination-bullet]:h-2.5 [&_.swiper-pagination-bullet]:rounded-full [&_.swiper-pagination-bullet]:bg-white/60 [&_.swiper-pagination-bullet]:opacity-100 [&_.swiper-pagination-bullet]:transition-all [&_.swiper-pagination-bullet]:duration-300 [&_.swiper-pagination-bullet]:cursor-pointer [&_.swiper-pagination-bullet-active]:!w-7 [&_.swiper-pagination-bullet-active]:!bg-primary [&_.swiper-pagination-bullet-active]:!rounded-full" />
+          </div>
         )}
       </Swiper>
     </section>

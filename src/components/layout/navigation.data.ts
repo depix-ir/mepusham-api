@@ -20,7 +20,7 @@ export interface MegaMenuCategory {
 export const primaryNavItems: PrimaryNavItem[] = [
   { id: "home", label: "خانه", href: "/" },
   { id: "products", label: "محصولات", href: "/products", hasMegaMenu: true },
-  { id: "sale", label: "تخفیف دارها", href: "/sale" },
+  { id: "sale", label: "تخفیف دارها", href: "/products?has_discount=true" },
   { id: "blog", label: "وبلاگ", href: "/blog" },
   { id: "contact", label: "تماس با ما", href: "/contact" },
   { id: "terms", label: "قوانین و مقررات", href: "/terms" },
