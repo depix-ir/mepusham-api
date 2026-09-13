@@ -32,7 +32,7 @@ export function CartButton({ className = "" }: CartButtonProps) {
           />
         </IconButton>
         {count > 0 && (
-          <span className="absolute -top-1 -right-1 bg-error text-error-foreground text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-background">
+          <span className="absolute -top-1 -right-1 bg-error text-primary-foreground bg-primary text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-background">
             {count}
           </span>
         )}

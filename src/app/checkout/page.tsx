@@ -166,7 +166,7 @@ export default function CheckoutPage() {
             )}
 
             {/* Unified Checkout Container */}
-            <div className="bg-background  rounded-2xl p-5 sm:p-8  space-y-8">
+            <div className="">
               {/* 01. Customer & Shipping Address Form */}
               <div className="pt-0">
                 <CustomerInformationForm

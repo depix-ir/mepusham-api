@@ -145,14 +145,6 @@ export function WishlistClientPage() {
           <h1 className="text-xl sm:text-2xl font-black text-foreground">محصولات پسندیده شده</h1>
           <span className="text-xs sm:text-sm text-muted font-medium">({totalLikedCount} محصول)</span>
         </div>
-        <button
-          type="button"
-          onClick={clear}
-          className="text-xs text-muted hover:text-rose-600 transition-colors flex items-center gap-1 cursor-pointer font-medium"
-        >
-          <Trash2 size={15} />
-          <span>پاک‌سازی لیست</span>
-        </button>
       </div>
 
       {/* Dynamic Feedback Banner */}
