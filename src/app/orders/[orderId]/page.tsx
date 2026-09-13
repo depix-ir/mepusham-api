@@ -157,7 +157,7 @@ export default function OrderDetailPage({
         </div>
 
         {/* Main Content Wrapper */}
-        <div className="bg-background border border-border-subtle rounded-2xl p-5 sm:p-6 shadow-2xs space-y-6">
+        <div className="bg-background border border-border-subtle rounded-2xl p-4 sm:p-6 shadow-2xs space-y-6">
           {/* Header */}
           <div className="flex items-center gap-3 border-b border-border-subtle pb-4">
             <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">

@@ -78,7 +78,7 @@ export function AddToCartSuccessModal({
         {/* Modal Header */}
         <div className="flex items-center justify-between pb-3.5 border-b border-border-product/60">
           <div className="flex items-center gap-2 text-emerald-600 font-bold text-base">
-            <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center shrink-0">
+            <div className="w-8 h-8 rounded-full text-emerald-600  flex items-center justify-center shrink-0">
               <Check className="w-4 h-4 stroke-[2.5]" />
             </div>
             <h2 id="cart-modal-title" className="text-foreground font-bold text-sm sm:text-base">
@@ -90,7 +90,7 @@ export function AddToCartSuccessModal({
             type="button"
             onClick={onClose}
             aria-label="بستن"
-            className="w-8 h-8 rounded-full bg-surface-subtle hover:bg-border-product text-muted hover:text-foreground flex items-center justify-center transition-colors cursor-pointer"
+            className="w-8 h-8 rounded-full  text-muted hover:text-foreground flex items-center justify-center transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
