@@ -166,7 +166,7 @@ export default function CheckoutPage() {
             )}
 
             {/* Unified Checkout Container */}
-            <div className="bg-background border border-border-subtle rounded-2xl p-5 sm:p-8 divide-y divide-border-subtle/80 space-y-8">
+            <div className="bg-background  rounded-2xl p-5 sm:p-8  space-y-8">
               {/* 01. Customer & Shipping Address Form */}
               <div className="pt-0">
                 <CustomerInformationForm
@@ -202,7 +202,7 @@ export default function CheckoutPage() {
           </div>
 
           {/* LEFT SECTION (4 Columns Desktop): Order Summary & Payment CTA */}
-          <div className="lg:col-span-4 sticky top-20">
+          <div className="lg:col-span-4 sticky top-[20px]">
             <OrderSummary
               itemsSubtotal={itemsSubtotal}
               shippingOption={selectedShipping}

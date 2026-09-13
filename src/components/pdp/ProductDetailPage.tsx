@@ -207,7 +207,7 @@ export function ProductDetailPage({
                 <span>موجود شد به من اطلاع بده</span>
               </button>
             ) : cartQuantity > 0 ? (
-              <div className=" flex items-center justify-between gap-3 p-1.5 bg-surface-subtle border border-primary/30 rounded-lg transition-all">
+              <div className=" flex items-center justify-between gap-3 p-1.5  border border-primary/30 rounded-lg transition-all">
                 <button
                   type="button"
                   onClick={() => {
@@ -230,7 +230,7 @@ export function ProductDetailPage({
                 </button>
 
                 <div className="flex items-center gap-2 select-none">
-                  <span className="text-base font-extrabold text-primary">{cartQuantity}</span>
+                  <span className="text-base font-bold text-primary">{cartQuantity}</span>
                 </div>
 
                 <button

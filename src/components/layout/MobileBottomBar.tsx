@@ -71,7 +71,7 @@ export function MobileBottomBar({
               <div className="relative">
                 <IconComponent size={22} className="shrink-0" />
                 {item.id === "wishlist" && wishlistCount > 0 && (
-                  <span className="absolute -top-1.5 -right-2 bg-primary text-primary-foreground text-[9px] font-bold rounded-full h-4 min-w-[16px] px-1 flex items-center justify-center border border-background leading-none">
+                  <span className="absolute -top-1.5 -right-2 bg-primary text-primary-foreground text-[12px] font-bold rounded-full h-4 w-4  px-1 flex items-center justify-center border border-background leading-none">
                     {wishlistCount}
                   </span>
                 )}

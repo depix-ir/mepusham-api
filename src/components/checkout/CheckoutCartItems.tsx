@@ -29,7 +29,7 @@ export function CheckoutCartItems({
         </h2>
       </div>
 
-      <div className="divide-y divide-border-subtle/60">
+      <div className="">
         {items.map((item) => {
           const productHref = `/products/${item.productSlug || item.productId}`;
 
@@ -40,7 +40,7 @@ export function CheckoutCartItems({
             >
               <div className="flex items-center gap-3 min-w-0 flex-1">
                 {/* Product Thumbnail */}
-                <Link href={productHref} className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden shrink-0 border border-border-subtle bg-surface-subtle/30">
+                <Link href={productHref} className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden shrink-0  bg-surface-subtle/30">
                   {item.image ? (
                     <Image
                       src={item.image}
