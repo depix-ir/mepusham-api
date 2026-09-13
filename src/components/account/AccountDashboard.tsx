@@ -81,7 +81,7 @@ export function AccountDashboard({
       <Container>
         <div className="space-y-6 sm:space-y-8">
           {/* Greeting & Account Summary Bar */}
-          <div className="bg-surface-subtle/80 border border-border-subtle rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="bg-primery border border-border-subtle rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-bold text-lg shrink-0">
                 {user.firstName ? user.firstName.charAt(0) : "م"}

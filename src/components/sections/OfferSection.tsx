@@ -39,7 +39,7 @@ export function OfferSection({
           {/* Header row with side margin/padding on text and button */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3 px-3 sm:px-2">
             <div className="flex flex-col gap-1">
-              <h2 className="text-lg sm:text-2xl font-black tracking-tight">{title}</h2>
+              <h2 className="text-lg mt-2 sm:text-2xl font-black tracking-tight">{title}</h2>
               {description && (
                 <p className="text-xs sm:text-sm text-primary-foreground/85 font-medium">
                   {description}

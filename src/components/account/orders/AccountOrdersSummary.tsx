@@ -31,7 +31,7 @@ export function AccountOrdersSummary({ orders }: AccountOrdersSummaryProps) {
   };
 
   return (
-    <div className="bg-background border border-border-subtle rounded-2xl p-5 shadow-2xs space-y-4">
+    <div className="bg-background border border-border-subtle rounded-2xl p-4 shadow-2xs space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">

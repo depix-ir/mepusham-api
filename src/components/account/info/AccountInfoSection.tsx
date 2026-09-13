@@ -35,7 +35,6 @@ export function AccountInfoSection({
         </button>
       </div>
 
-      <div className="p-4 bg-background border border-border/80 rounded-2xl space-y-3">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
           <div className="p-3 bg-surface-subtle/60 rounded-xl space-y-0.5 border border-border-subtle/50">
             <span className="text-muted-foreground text-[11px]">نام و نام خانوادگی</span>
@@ -54,7 +53,7 @@ export function AccountInfoSection({
             </p>
           </div>
         </div>
-      </div>
+
 
       <EditProfileModal
         user={user}
