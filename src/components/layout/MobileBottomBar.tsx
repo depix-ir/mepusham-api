@@ -38,12 +38,13 @@ export function MobileBottomBar({
   const { count: wishlistCount } = useWishlist();
 
   // Hide global bottom nav on Product Detail Pages (/products/[slug])
-  // so the Sticky Add To Cart Bar has full focus
+  // and Checkout/Payment pages so sticky action bars have full focus
   const isProductDetailPage =
     pathname?.startsWith("/products/") &&
     pathname.split("/").filter(Boolean).length >= 2;
+  const isCheckoutOrPayment = pathname === "/checkout" || pathname === "/payment";
 
-  if (isProductDetailPage) {
+  if (isProductDetailPage || isCheckoutOrPayment) {
     return null;
   }
 

@@ -18,12 +18,12 @@ export function MobileCheckoutBar({
   disabled = false,
 }: MobileCheckoutBarProps) {
   return (
-    <div className="fixed bottom-0 inset-x-0 z-40 lg:hidden bg-background/95 backdrop-blur-md border-t border-border-subtle p-3.5 sm:px-6 shadow-lg safe-area-bottom">
+    <div className="fixed bottom-0 inset-x-0 z-40 lg:hidden bg-background/95 backdrop-blur-md border-t border-border-subtle p-3.5 sm:px-6 safe-area-bottom">
       <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
         {/* Total Price Display */}
         <div className="flex flex-col gap-0.5">
           <span className="text-[11px] font-medium text-muted">مبلغ قابل پرداخت</span>
-          <span className="text-base font-black text-primary">
+          <span className="text-base font-extrabold text-primary">
             {formatPrice(payableTotal)}
           </span>
         </div>
@@ -33,7 +33,7 @@ export function MobileCheckoutBar({
           type="button"
           onClick={onSubmit}
           disabled={isLoading || disabled}
-          className="h-11 px-5 rounded-xl bg-primary text-primary-foreground font-bold text-xs sm:text-sm flex items-center justify-center gap-2 hover:bg-primary-hover active:bg-primary-active disabled:opacity-50 transition-all shadow-md cursor-pointer shrink-0"
+          className="h-11 px-5 rounded-xl bg-primary text-primary-foreground font-bold text-xs sm:text-sm flex items-center justify-center gap-2 hover:bg-primary-hover active:bg-primary-active disabled:opacity-50 transition-colors cursor-pointer shrink-0"
         >
           {isLoading ? (
             <>

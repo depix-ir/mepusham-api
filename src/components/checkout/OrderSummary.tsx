@@ -23,31 +23,33 @@ export function OrderSummary({
   disabled = false,
 }: OrderSummaryProps) {
   return (
-    <div className="bg-background border border-border shadow-md rounded-2xl p-5 sm:p-6 flex flex-col gap-5">
-      <h2 className="text-base font-bold text-foreground pb-3 border-b border-border-subtle flex items-center justify-between">
-        <span>صورت‌حساب سفارش</span>
-        <span className="text-xs font-normal text-emerald-700 flex items-center gap-1 bg-emerald-50 px-2.5 py-0.5 rounded-full">
-          <ShieldCheck className="w-3.5 h-3.5" />
-          <span>پیش‌فاكتور رسمی</span>
+    <div className="bg-background border border-border-subtle rounded-2xl p-5 sm:p-6 flex flex-col gap-5">
+      <div className="flex items-center justify-between pb-3 border-b border-border-subtle">
+        <h2 className="text-base font-bold text-foreground tracking-tight">
+          خلاصه سفارش
+        </h2>
+        <span className="text-[11px] font-medium text-emerald-700 flex items-center gap-1 bg-emerald-50 px-2 py-0.5 rounded-md">
+          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+          <span>پیش‌فاکتور معتبر</span>
         </span>
-      </h2>
+      </div>
 
       {/* Breakdown */}
       <div className="flex flex-col gap-3 text-xs sm:text-sm">
         <div className="flex items-center justify-between text-muted">
           <span>مجموع قیمت کالاها:</span>
-          <span className="font-bold text-foreground">{formatPrice(itemsSubtotal)}</span>
+          <span className="font-semibold text-foreground">{formatPrice(itemsSubtotal)}</span>
         </div>
 
         <div className="flex items-center justify-between text-muted pb-3 border-b border-border-subtle">
           <span>هزینه ارسال ({shippingOption.title}):</span>
-          <span className="font-bold text-foreground">{formatPrice(shippingOption.price)}</span>
+          <span className="font-semibold text-foreground">{formatPrice(shippingOption.price)}</span>
         </div>
 
         {/* Payable Total */}
         <div className="flex items-center justify-between pt-1">
           <span className="text-sm font-bold text-foreground">مبلغ قابل پرداخت:</span>
-          <span className="text-xl sm:text-2xl font-black text-primary">
+          <span className="text-lg sm:text-xl font-extrabold text-primary">
             {formatPrice(payableTotal)}
           </span>
         </div>
@@ -58,7 +60,7 @@ export function OrderSummary({
         type="button"
         onClick={onSubmit}
         disabled={isLoading || disabled}
-        className="w-full h-12 rounded-xl bg-primary text-primary-foreground font-bold text-sm flex items-center justify-center gap-2 hover:bg-primary-hover active:bg-primary-active disabled:opacity-50 transition-all shadow-md cursor-pointer disabled:cursor-not-allowed"
+        className="w-full h-11 sm:h-12 rounded-xl bg-primary text-primary-foreground font-bold text-sm flex items-center justify-center gap-2 hover:bg-primary-hover active:bg-primary-active disabled:opacity-50 transition-colors cursor-pointer disabled:cursor-not-allowed"
       >
         {isLoading ? (
           <>

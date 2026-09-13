@@ -19,86 +19,95 @@ export function CheckoutCartItems({
   onRemoveItem,
 }: CheckoutCartItemsProps) {
   return (
-    <div className="flex flex-col gap-4">
-      <h3 className="text-xs font-bold text-foreground pb-2 border-b border-border-subtle flex items-center justify-between">
-        <span className="flex items-center gap-1.5">
-          <ShoppingBag className="w-4 h-4 text-primary shrink-0" />
-          <span>اقلام سفارش ({items.length})</span>
-        </span>
-      </h3>
+    <div className="flex flex-col gap-5">
+      <div className="flex items-center gap-2.5 pb-3 border-b border-border-subtle">
+        <div className="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center shrink-0">
+          ۳
+        </div>
+        <h2 className="text-base font-bold text-foreground tracking-tight">
+          بررسی اقلام سفارش ({items.length})
+        </h2>
+      </div>
 
-      <div className="flex flex-col gap-3">
+      <div className="divide-y divide-border-subtle/60">
         {items.map((item) => {
           const productHref = `/products/${item.productSlug || item.productId}`;
 
           return (
             <div
               key={item.id}
-              className="flex items-center gap-3 p-3 rounded-xl bg-surface-subtle/50 border border-border-subtle"
+              className="py-3.5 first:pt-0 last:pb-0 flex items-center justify-between gap-3 sm:gap-4"
             >
-              {/* Product Thumbnail */}
-              <Link href={productHref} className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0 border border-border-subtle bg-background">
-                {item.image ? (
-                  <Image
-                    src={item.image}
-                    alt={item.name}
-                    fill
-                    className="object-cover"
-                    sizes="64px"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-surface-subtle flex items-center justify-center text-muted text-[10px]">
-                    بدون تصویر
-                  </div>
-                )}
-              </Link>
-
-              {/* Product Details */}
-              <div className="flex flex-col gap-1 min-w-0 flex-1">
-                <Link
-                  href={productHref}
-                  className="text-xs font-bold text-foreground truncate hover:text-primary transition-colors"
-                >
-                  {item.name}
+              <div className="flex items-center gap-3 min-w-0 flex-1">
+                {/* Product Thumbnail */}
+                <Link href={productHref} className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden shrink-0 border border-border-subtle bg-surface-subtle/30">
+                  {item.image ? (
+                    <Image
+                      src={item.image}
+                      alt={item.name}
+                      fill
+                      className="object-cover"
+                      sizes="64px"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-muted text-[10px]">
+                      بدون تصویر
+                    </div>
+                  )}
                 </Link>
 
-                {/* Selected Options/Variants */}
-                {item.selectedVariants && item.selectedVariants.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 text-[11px] text-muted">
-                    {item.selectedVariants.map((sv) => (
-                      <span key={sv.attributeId} className="bg-background px-1.5 py-0.5 rounded border border-border-subtle">
-                        {sv.attributeName}: {sv.valueLabel}
-                      </span>
-                    ))}
-                  </div>
-                )}
+                {/* Product Details */}
+                <div className="flex flex-col gap-1 min-w-0">
+                  <Link
+                    href={productHref}
+                    className="text-xs sm:text-sm font-bold text-foreground truncate hover:text-primary transition-colors"
+                  >
+                    {item.name}
+                  </Link>
 
-                {/* Price */}
-                <span className="text-xs font-extrabold text-foreground pt-0.5">
-                  {formatPrice(item.unitPrice * item.quantity)}
-                </span>
+                  {/* Selected Options/Variants */}
+                  {item.selectedVariants && item.selectedVariants.length > 0 && (
+                    <div className="flex flex-wrap gap-x-2 gap-y-0.5 text-[11px] text-muted">
+                      {item.selectedVariants.map((sv) => (
+                        <span key={sv.attributeId}>
+                          {sv.attributeName}: {sv.valueLabel}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Unit Price */}
+                  <span className="text-xs font-bold text-foreground sm:hidden pt-0.5">
+                    {formatPrice(item.unitPrice * item.quantity)}
+                  </span>
+                </div>
+              </div>
+
+              {/* Desktop Price */}
+              <div className="hidden sm:block text-sm font-bold text-foreground shrink-0 px-2">
+                {formatPrice(item.unitPrice * item.quantity)}
               </div>
 
               {/* Quantity Controls & Remove */}
               <div className="flex items-center gap-2 shrink-0">
-                <div className="flex items-center bg-background border border-border-subtle rounded-lg p-0.5">
+                <div className="flex items-center bg-background border border-border-subtle rounded-md h-8 px-1">
                   <button
                     type="button"
                     onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
                     disabled={item.quantity >= item.availableStock}
-                    className="p-1 text-foreground hover:text-primary disabled:opacity-30 disabled:hover:text-foreground cursor-pointer"
+                    className="px-1 text-foreground hover:text-primary disabled:opacity-30 cursor-pointer"
                     aria-label="افزایش تعداد"
                   >
                     <Plus className="w-3.5 h-3.5" />
                   </button>
-                  <span className="w-6 text-center text-xs font-bold text-foreground">
+                  <span className="w-5 text-center text-xs font-bold text-foreground">
                     {item.quantity}
                   </span>
                   <button
                     type="button"
                     onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
                     disabled={item.quantity <= 1}
-                    className="p-1 text-foreground hover:text-primary disabled:opacity-30 disabled:hover:text-foreground cursor-pointer"
+                    className="px-1 text-foreground hover:text-primary disabled:opacity-30 cursor-pointer"
                     aria-label="کاهش تعداد"
                   >
                     <Minus className="w-3.5 h-3.5" />
