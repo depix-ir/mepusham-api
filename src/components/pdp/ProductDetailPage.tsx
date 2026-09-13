@@ -80,14 +80,10 @@ export function ProductDetailPage({
   };
 
   const handleAddToCart = () => {
-    // 1. Validate Product Exists
     if (!product || !product.id) return;
-
-    // 2. Validate Variant Requirement & Selection & Availability
     if (product.options.length > 0 && !variantDetails.allOptionsSelected) return;
     if (!variantDetails.isAvailable) return;
 
-    // Dispatch to global CartStore with quantity 1
     const added = addItem(product, 1, selectedOptions);
 
     if (added) {
@@ -99,7 +95,6 @@ export function ProductDetailPage({
   };
 
   const handleCardAddToCart = (prod: Product) => {
-    // Quick add from related products carousel
     const defaultOpts: Record<string, string> = {};
     prod.options.forEach((opt) => {
       if (opt.values.length > 0) {
@@ -112,7 +107,6 @@ export function ProductDetailPage({
     }
   };
 
-  // Get selected option labels summary for sticky bar & modal
   const selectedVariantSummary = product.options
     .map((opt) => {
       const val = opt.values.find((v) => v.id === selectedOptions[opt.id]);
@@ -124,11 +118,11 @@ export function ProductDetailPage({
   const mainImageUrl = product.images.length > 0 ? product.images[0].url : undefined;
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-28 md:pb-12 flex flex-col gap-8">
-      {/* Main Top Section: Gallery (Left/Right) + Buy Section (Right/Left) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-start">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-24 md:pb-12 flex flex-col gap-10">
+      {/* Primary PDP Layout: Gallery (Col 1-6/7) + Purchase Information Column (Col 7-12) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
         {/* Gallery Column */}
-        <div className="lg:col-span-6 xl:col-span-6 w-full">
+        <div className="lg:col-span-7 xl:col-span-6 w-full">
           <ProductGallery
             productId={product.id}
             images={product.images}
@@ -142,9 +136,9 @@ export function ProductDetailPage({
           />
         </div>
 
-        {/* Product Identity & Buy Actions Column */}
-        <div className="lg:col-span-6 xl:col-span-6 flex flex-col gap-4">
-          {/* Title, Brand, Breadcrumb, SKU, Rating, Wishlist toggle */}
+        {/* Product Identity & Purchase Column with Max Width Constraint */}
+        <div className="lg:col-span-5 xl:col-span-6 flex flex-col gap-4 max-w-xl">
+          {/* Identity: Breadcrumb, Brand, Title, Rating, Wishlist */}
           <ProductIdentity
             productId={product.id}
             title={product.title}
@@ -156,27 +150,24 @@ export function ProductDetailPage({
             onToggleWishlist={() => toggleWishlist(product.id)}
           />
 
-          {/* Pricing Block */}
-          <div className="flex items-center gap-3 py-2">
-            <div className="flex flex-col">
-              {variantDetails.hasDiscount && variantDetails.compareAtPrice && (
-                <span className="text-xs sm:text-sm text-muted line-through font-medium">
-                  {formatPrice(variantDetails.compareAtPrice, false)}
-                </span>
-              )}
-              <span className="text-xl sm:text-3xl font-extrabold text-foreground tracking-tight">
-                {formatPrice(variantDetails.price)}
+          {/* Clean Price Block */}
+          <div className="flex items-baseline gap-3 py-1">
+            <span className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
+              {formatPrice(variantDetails.price)}
+            </span>
+            {variantDetails.hasDiscount && variantDetails.compareAtPrice && (
+              <span className="text-xs sm:text-sm text-muted line-through font-medium">
+                {formatPrice(variantDetails.compareAtPrice, false)}
               </span>
-            </div>
-
+            )}
             {variantDetails.hasDiscount && variantDetails.discountPercent && (
-              <span className="bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full">
-                {variantDetails.discountPercent}٪ تخفیف
+              <span className="text-xs font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-100">
+                ٪{variantDetails.discountPercent} تخفیف
               </span>
             )}
           </div>
 
-          {/* Variants Selector (Colors, Sizes) */}
+          {/* Variants Selector */}
           <VariantSelector
             product={product}
             selectedOptions={selectedOptions}
@@ -185,38 +176,38 @@ export function ProductDetailPage({
             onOpenSizeGuide={() => setIsSizeGuideOpen(true)}
           />
 
-          {/* Stock Status Badge */}
+          {/* Inventory Status */}
           <div className="flex items-center gap-2 text-xs font-medium">
             {variantDetails.isAvailable ? (
-              <div className="flex items-center gap-1.5 text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <div className="flex items-center gap-1.5 text-emerald-700 bg-emerald-50/60 px-2.5 py-1 rounded-md border border-emerald-200/60">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                 {variantDetails.stock <= 5 ? (
-                  <span className="font-bold">تنها {variantDetails.stock} عدد در انبار باقی مانده است!</span>
+                  <span className="font-semibold">تنها {variantDetails.stock} عدد در انبار باقی مانده</span>
                 ) : (
                   <span>موجود در انبار</span>
                 )}
               </div>
             ) : (
-              <div className="flex items-center gap-1.5 text-red-700 bg-red-50 px-3 py-1.5 rounded-lg border border-red-200">
-                <span className="w-2 h-2 rounded-full bg-red-500" />
-                <span className="font-bold">در حال حاضر این تنوع ناموجود است</span>
+              <div className="flex items-center gap-1.5 text-rose-700 bg-rose-50/60 px-2.5 py-1 rounded-md border border-rose-200/60">
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                <span className="font-semibold">این تنوع در حال حاضر ناموجود است</span>
               </div>
             )}
           </div>
 
-          {/* Desktop Quantity & Add to Cart Action Row */}
-          <div className="hidden md:flex items-center gap-4 pt-2">
+          {/* Desktop Quantity & Primary Add to Cart Action */}
+          <div className="hidden md:flex items-center gap-3 pt-1">
             {!variantDetails.isAvailable ? (
               <button
                 type="button"
                 onClick={() => setIsNotifyMeOpen(true)}
-                className="w-full h-13 px-6 rounded-xl bg-amber-500 text-white font-bold text-base flex items-center justify-center gap-2 hover:bg-amber-600 transition-all active:scale-98 shadow-md cursor-pointer"
+                className="w-full h-11 px-5 rounded-lg bg-amber-500 text-white font-bold text-sm flex items-center justify-center gap-2 hover:bg-amber-600 transition-colors cursor-pointer"
               >
-                <Bell className="w-5 h-5" />
+                <Bell className="w-4 h-4" />
                 <span>موجود شد به من اطلاع بده</span>
               </button>
             ) : cartQuantity > 0 ? (
-              <div className="w-full flex items-center justify-between gap-3 p-2 bg-surface-subtle border-2 border-primary/30 rounded-2xl shadow-sm transition-all duration-300 animate-fade-in">
+              <div className="w-full flex items-center justify-between gap-3 p-1.5 bg-surface-subtle border border-primary/30 rounded-lg transition-all">
                 <button
                   type="button"
                   onClick={() => {
@@ -229,26 +220,24 @@ export function ProductDetailPage({
                   }}
                   aria-label={cartQuantity === 1 ? "حذف از سبد خرید" : "کاهش تعداد"}
                   title={cartQuantity === 1 ? "حذف از سبد خرید" : "کاهش تعداد"}
-                  className="w-12 h-12 rounded-xl bg-background border border-border-product flex items-center justify-center text-foreground hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition-all active:scale-95 cursor-pointer shadow-xs"
+                  className="w-9 h-9 rounded-md bg-background border border-border-product flex items-center justify-center text-foreground hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition-colors cursor-pointer"
                 >
                   {cartQuantity === 1 ? (
-                    <Trash2 className="w-5 h-5 text-rose-500" />
+                    <Trash2 className="w-4 h-4 text-rose-500" />
                   ) : (
-                    <Minus className="w-5 h-5 text-foreground" />
+                    <Minus className="w-4 h-4 text-foreground" />
                   )}
                 </button>
 
-                <div className="flex flex-col items-center justify-center">
-                  <div className="flex items-center gap-1.5 font-extrabold text-base text-foreground select-none">
-                    <span className="text-xl text-primary">{cartQuantity}</span>
-                    <span className="text-sm font-bold text-foreground">عدد در سبد خرید</span>
-                  </div>
+                <div className="flex items-center gap-2 select-none">
+                  <span className="text-base font-extrabold text-primary">{cartQuantity}</span>
+                  <span className="text-xs font-semibold text-foreground">عدد در سبد خرید</span>
                   <button
                     type="button"
                     onClick={openCart}
-                    className="text-xs font-semibold text-primary hover:underline cursor-pointer"
+                    className="text-xs text-primary underline mr-1 cursor-pointer"
                   >
-                    مشاهده سبد خرید
+                    (مشاهده)
                   </button>
                 </div>
 
@@ -262,47 +251,53 @@ export function ProductDetailPage({
                   disabled={variantDetails.stock > 0 && cartQuantity >= variantDetails.stock}
                   aria-label="افزایش تعداد"
                   title="افزایش تعداد"
-                  className="w-12 h-12 rounded-xl bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 disabled:opacity-30 disabled:hover:bg-primary transition-all active:scale-95 cursor-pointer shadow-xs"
+                  className="w-9 h-9 rounded-md bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 disabled:opacity-30 transition-colors cursor-pointer"
                 >
-                  <Plus className="w-5 h-5" />
+                  <Plus className="w-4 h-4" />
                 </button>
               </div>
             ) : (
               <button
                 type="button"
                 onClick={handleAddToCart}
-                className="w-full h-13 px-8 rounded-xl bg-primary text-primary-foreground font-bold text-base flex items-center justify-center gap-3 hover:bg-primary/90 transition-all active:scale-98 shadow-lg shadow-primary/20 cursor-pointer"
+                className="w-full h-11 px-6 rounded-lg bg-primary text-primary-foreground font-bold text-sm flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors cursor-pointer shadow-xs"
               >
-                <ShoppingCart className="w-5 h-5" />
+                <ShoppingCart className="w-4 h-4" />
                 <span>افزودن به سبد خرید</span>
               </button>
             )}
           </div>
 
-          {/* Trust Signals (Express Shipping, Guarantee, Returns) */}
+          {/* Compact Trust Signals */}
           <TrustSignals />
 
-          {/* Full Product Description */}
+          {/* Concise Product Description */}
           <ProductDescription description={product.description} />
         </div>
       </div>
 
-      {/* Specifications & Care Accordion Tabs */}
-      <ProductTabsAccordion
-        specifications={product.specifications}
-        careInstructions={product.careInstructions}
-        shippingReturns={product.shippingReturns}
-      />
+      {/* Specifications & Care Accordion */}
+      <div className="max-w-4xl mx-auto w-full">
+        <ProductTabsAccordion
+          specifications={product.specifications}
+          careInstructions={product.careInstructions}
+          shippingReturns={product.shippingReturns}
+        />
+      </div>
 
       {/* Customer Reviews Section */}
-      <ProductReviews rating={product.rating} reviews={product.reviews} />
+      <div className="max-w-4xl mx-auto w-full">
+        <ProductReviews rating={product.rating} reviews={product.reviews} />
+      </div>
 
-      {/* Related Products Carousel Section */}
+      {/* Related Products Section */}
       {relatedProducts.length > 0 && (
-        <RelatedProductsSection
-          products={relatedProducts}
-          onAddToCart={handleCardAddToCart}
-        />
+        <div className="max-w-7xl mx-auto w-full">
+          <RelatedProductsSection
+            products={relatedProducts}
+            onAddToCart={handleCardAddToCart}
+          />
+        </div>
       )}
 
       {/* Mobile Sticky Add to Cart Bottom Bar */}

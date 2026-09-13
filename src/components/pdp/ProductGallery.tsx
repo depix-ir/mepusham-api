@@ -39,7 +39,7 @@ export function ProductGallery({
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [showShareToast, setShowShareToast] = useState(false);
 
-  // Zoom State (Desktop hover & Mobile touch/tap)
+  // Zoom State
   const [isHovered, setIsHovered] = useState(false);
   const [isMobileZoomed, setIsMobileZoomed] = useState(false);
   const [zoomPos, setZoomPos] = useState<{ x: number; y: number }>({ x: 50, y: 50 });
@@ -64,7 +64,6 @@ export function ProductGallery({
   };
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    // Ignore button clicks or multi-touch
     if ((e.target as HTMLElement).closest("button")) return;
     setIsDragging(true);
     startXRef.current = e.clientX;
@@ -87,12 +86,9 @@ export function ProductGallery({
     }
 
     const deltaX = currentXRef.current - startXRef.current;
-    const threshold = 40; // minimum drag distance in px to change slide
+    const threshold = 40;
 
     if (galleryImages.length > 1 && Math.abs(deltaX) > threshold) {
-      // In RTL (Right-to-Left):
-      // Swiping right (deltaX > 0) moves slide to previous
-      // Swiping left (deltaX < 0) moves slide to next
       if (deltaX > 0) {
         handlePrev();
       } else {
@@ -149,8 +145,8 @@ export function ProductGallery({
   };
 
   return (
-    <div className="flex flex-col gap-4 w-full">
-      {/* Main Image Stage with Drag + Touch Swipe & Hover/Touch Zoom */}
+    <div className="flex flex-col gap-3 w-full">
+      {/* Main Image Stage */}
       <div
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -160,7 +156,7 @@ export function ProductGallery({
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUpOrCancel}
         onPointerCancel={handlePointerUpOrCancel}
-        className={`relative w-full aspect-square sm:aspect-[4/5] bg-surface-subtle rounded-2xl overflow-hidden border border-border-product shadow-sm group select-none touch-pan-y ${
+        className={`relative w-full aspect-square sm:aspect-[4/5] bg-surface-subtle rounded-xl overflow-hidden border border-border-product shadow-2xs group select-none touch-pan-y ${
           isDragging ? "cursor-grabbing" : (isHovered || isMobileZoomed) ? "cursor-zoom-out" : "cursor-zoom-in"
         }`}
       >
@@ -180,57 +176,55 @@ export function ProductGallery({
           } pointer-events-none ${isOutOfStock ? "opacity-60 grayscale-[20%]" : ""}`}
         />
 
-
-
         {/* Out of Stock Overlay Badge */}
         {isOutOfStock && (
           <div className="absolute inset-0 bg-black/20 backdrop-blur-[1px] flex items-center justify-center z-10">
-            <span className="bg-foreground text-background text-sm font-bold px-4 py-2 rounded-lg shadow-lg">
+            <span className="bg-foreground text-background text-xs sm:text-sm font-semibold px-3 py-1.5 rounded-md shadow-md">
               ناموجود
             </span>
           </div>
         )}
 
-        {/* Navigation Arrows for Multiple Images */}
+        {/* Navigation Arrows for Multiple Images (Compact Subtle Control) */}
         {galleryImages.length > 1 && (
           <>
             <button
               type="button"
               onClick={handlePrev}
               aria-label="تصویر قبلی"
-              className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-background/80 hover:bg-background text-foreground backdrop-blur-sm flex items-center justify-center shadow-md transition-all active:scale-90 opacity-90 group-hover:opacity-100 cursor-pointer z-10"
+              className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-background/80 hover:bg-background text-foreground backdrop-blur-xs flex items-center justify-center shadow-xs transition-all active:scale-90 opacity-80 group-hover:opacity-100 cursor-pointer z-10"
             >
-              <ChevronLeft className="" />
+              <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               type="button"
               onClick={handleNext}
               aria-label="تصویر بعدی"
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-background/80 hover:bg-background text-foreground backdrop-blur-sm flex items-center justify-center shadow-md transition-all active:scale-90 opacity-90 group-hover:opacity-100 cursor-pointer z-10"
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-background/80 hover:bg-background text-foreground backdrop-blur-xs flex items-center justify-center shadow-xs transition-all active:scale-90 opacity-80 group-hover:opacity-100 cursor-pointer z-10"
             >
-              <ChevronRight className="" />
+              <ChevronRight className="w-4 h-4" />
             </button>
           </>
         )}
 
-        {/* Top Floating Actions: Wishlist & Share */}
-        <div className="absolute top-3 left-3 z-10 flex items-center gap-2">
+        {/* Top Floating Actions (Compact Buttons with Small Visual Icons) */}
+        <div className="absolute top-2.5 left-2.5 z-10 flex items-center gap-1.5">
           {/* Wishlist Button */}
           <button
             type="button"
             onClick={handleToggleWishlist}
             aria-label={isLiked ? "حذف از پسندیده‌ها" : "افزودن به پسندیده‌ها"}
             aria-pressed={isLiked}
-            title={isLiked ? "این محصول پسندیده شده است" : "افزودن به پسندیده‌ها"}
-            className={`w-10 h-10 rounded-full flex items-center justify-center shadow-md backdrop-blur-md transition-all active:scale-90 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+            title={isLiked ? "حذف از پسندیده‌ها" : "افزودن به پسندیده‌ها"}
+            className={`w-8 h-8 rounded-full flex items-center justify-center shadow-xs backdrop-blur-xs transition-all active:scale-90 cursor-pointer focus-visible:outline-none ${
               isLiked
                 ? "bg-rose-50 text-rose-600 border border-rose-200"
                 : "bg-background/80 hover:bg-background text-foreground/80 hover:text-foreground"
             }`}
           >
             <Heart
-              className={`w-5 h-5 transition-transform duration-200 ${
-                isLiked ? "fill-rose-600 stroke-rose-600 scale-110" : ""
+              className={`w-4 h-4 transition-transform duration-200 ${
+                isLiked ? "fill-rose-600 stroke-rose-600 scale-105" : ""
               }`}
             />
           </button>
@@ -241,7 +235,7 @@ export function ProductGallery({
             onClick={() => setIsMobileZoomed((prev) => !prev)}
             aria-label={isMobileZoomed ? "خروج از زوم" : "زوم تصویر"}
             title={isMobileZoomed ? "خروج از زوم" : "زوم تصویر"}
-            className={`w-10 h-10 rounded-full flex items-center justify-center shadow-md backdrop-blur-md transition-all active:scale-90 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+            className={`w-8 h-8 rounded-full flex items-center justify-center shadow-xs backdrop-blur-xs transition-all active:scale-90 cursor-pointer focus-visible:outline-none ${
               isMobileZoomed
                 ? "bg-primary text-primary-foreground"
                 : "bg-background/80 hover:bg-background text-foreground/80 hover:text-foreground"
@@ -255,7 +249,7 @@ export function ProductGallery({
             type="button"
             onClick={handleShare}
             aria-label="اشتراک‌گذاری محصول"
-            className="w-10 h-10 rounded-full bg-background/80 hover:bg-background text-foreground/80 hover:text-foreground flex items-center justify-center shadow-md backdrop-blur-md transition-all active:scale-90 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="w-8 h-8 rounded-full bg-background/80 hover:bg-background text-foreground/80 hover:text-foreground flex items-center justify-center shadow-xs backdrop-blur-xs transition-all active:scale-90 cursor-pointer focus-visible:outline-none"
           >
             <Share2 className="w-4 h-4" />
           </button>
@@ -263,38 +257,37 @@ export function ProductGallery({
 
         {/* Share Toast Notification */}
         {showShareToast && (
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 bg-foreground text-background text-xs font-medium px-4 py-2 rounded-full shadow-lg transition-all animate-fade-in">
-            لینک محصول در حافظه کپی شد
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 bg-foreground text-background text-xs font-medium px-3 py-1.5 rounded-full shadow-md transition-all animate-fade-in">
+            لینک محصول کپی شد
           </div>
         )}
       </div>
 
       {/* Thumbnails Row */}
       {galleryImages.length > 1 && (
-        <div className="flex items-center gap-2.5 overflow-x-auto p-1 scrollbar-none">
+        <div className="flex items-center gap-2 overflow-x-auto p-0.5 scrollbar-none">
           {galleryImages.map((img, idx) => (
             <button
               key={img.id || idx}
               type="button"
               onClick={() => setSelectedIndex(idx)}
-              className={`relative w-16 h-16 sm:w-20 sm:h-20 shrink-0 rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
+              className={`relative w-14 h-14 sm:w-16 sm:h-16 shrink-0 rounded-lg overflow-hidden border transition-all cursor-pointer ${
                 selectedIndex === idx
-                  ? "border-primary shadow-sm scale-105"
-                  : "border-transparent opacity-70 hover:opacity-100"
+                  ? "border-primary ring-1 ring-primary"
+                  : "border-border-product opacity-70 hover:opacity-100"
               }`}
             >
               <Image
                 src={img.url}
                 alt={img.alt || `${title} - تصویر ${idx + 1}`}
                 fill
-                sizes="80px"
+                sizes="64px"
                 className="object-cover object-center"
               />
             </button>
           ))}
         </div>
       )}
-
     </div>
   );
 }
