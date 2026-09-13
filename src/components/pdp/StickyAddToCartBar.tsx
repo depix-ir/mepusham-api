@@ -100,36 +100,43 @@ export function StickyAddToCartBar({
           <button
             type="button"
             onClick={onOpenNotifyModal}
-            className="flex-1 h-11 px-4 rounded-xl bg-amber-500 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 hover:bg-amber-600 transition-all active:scale-98 shadow-md cursor-pointer"
+            className="flex-1 h-12 px-4 rounded-xl bg-amber-500 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 hover:bg-amber-600 transition-all active:scale-98 shadow-md cursor-pointer"
           >
             <Bell className="w-4 h-4" />
             <span>موجود شد اطلاع بده</span>
           </button>
         ) : cartQuantity > 0 ? (
-          <div className="flex-1 h-11 px-2 rounded-xl border-2 border-primary bg-primary/5 flex items-center justify-between gap-1 shadow-xs">
+          <div className="flex-1 h-12 px-2.5 rounded-xl border-2 border-primary/40 bg-primary/5 flex items-center justify-between gap-2 shadow-xs transition-all animate-fade-in">
             <button
               type="button"
               onClick={handleDecrement}
-              aria-label={cartQuantity === 1 ? "حذف از سبد" : "کاهش تعداد"}
-              className="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-primary/10 text-primary active:scale-95 transition-all cursor-pointer"
+              aria-label={cartQuantity === 1 ? "حذف از سبد خرید" : "کاهش تعداد"}
+              title={cartQuantity === 1 ? "حذف از سبد خرید" : "کاهش تعداد"}
+              className="w-9 h-9 rounded-lg flex items-center justify-center bg-background border border-border-product hover:bg-rose-50 hover:border-rose-200 text-foreground active:scale-95 transition-all cursor-pointer"
             >
               {cartQuantity === 1 ? (
-                <Trash2 className="w-4 h-4 text-red-500" />
+                <Trash2 className="w-4 h-4 text-rose-500" />
               ) : (
-                <Minus className="w-4 h-4" />
+                <Minus className="w-4 h-4 text-foreground" />
               )}
             </button>
 
-            <span className="font-extrabold text-sm text-foreground select-none px-2">
-              {cartQuantity} عدد در سبد
-            </span>
+            <div className="flex items-center gap-1 select-none">
+              <span className="font-extrabold text-base text-primary">
+                {cartQuantity}
+              </span>
+              <span className="text-xs font-semibold text-foreground">
+                عدد در سبد
+              </span>
+            </div>
 
             <button
               type="button"
               onClick={handleIncrement}
               disabled={maxStock > 0 && cartQuantity >= maxStock}
               aria-label="افزایش تعداد"
-              className="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-primary/10 text-primary disabled:opacity-30 disabled:hover:bg-transparent active:scale-95 transition-all cursor-pointer"
+              title="افزایش تعداد"
+              className="w-9 h-9 rounded-lg bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 disabled:opacity-30 active:scale-95 transition-all cursor-pointer shadow-xs"
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -138,7 +145,7 @@ export function StickyAddToCartBar({
           <button
             type="button"
             onClick={onAddToCart}
-            className="flex-1 h-11 px-4 rounded-xl bg-primary text-primary-foreground font-bold text-xs sm:text-sm flex items-center justify-center gap-2 hover:bg-primary/90 transition-all active:scale-98 shadow-md cursor-pointer"
+            className="flex-1 h-12 px-4 rounded-xl bg-primary text-primary-foreground font-bold text-xs sm:text-sm flex items-center justify-center gap-2 hover:bg-primary/90 transition-all active:scale-98 shadow-md cursor-pointer"
           >
             <ShoppingCart className="w-4 h-4" />
             <span>افزودن به سبد خرید</span>

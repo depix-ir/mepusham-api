@@ -26,7 +26,6 @@ export function saveWishlistToStorage(productIds: string[]): void {
 
   try {
     const uniqueIds = Array.from(new Set(productIds));
-    localStorage.getItem; // side touch
     localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify(uniqueIds));
   } catch (error) {
     console.error("Failed to save wishlist to localStorage:", error);

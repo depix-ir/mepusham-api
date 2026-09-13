@@ -17,7 +17,6 @@ export interface ProductIdentityProps {
 }
 
 export function ProductIdentity({
-  productId,
   title,
   brand,
   category,

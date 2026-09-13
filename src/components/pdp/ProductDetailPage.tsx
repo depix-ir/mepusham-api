@@ -12,14 +12,13 @@ import { VariantSelector } from "./VariantSelector";
 import { SizeGuideModal } from "./SizeGuideModal";
 import { NotifyMeModal } from "./NotifyMeModal";
 import { AddToCartSuccessModal } from "./AddToCartSuccessModal";
-import { QuantitySelector } from "./QuantitySelector";
 import { TrustSignals } from "./TrustSignals";
 import { ProductDescription } from "./ProductDescription";
 import { ProductTabsAccordion } from "./ProductTabsAccordion";
 import { ProductReviews } from "./ProductReviews";
 import { RelatedProductsSection } from "./RelatedProductsSection";
 import { StickyAddToCartBar } from "./StickyAddToCartBar";
-import { ShoppingCart, Bell } from "lucide-react";
+import { ShoppingCart, Bell, Plus, Minus, Trash2 } from "lucide-react";
 
 export interface ProductDetailPageProps {
   product: Product;
@@ -32,7 +31,7 @@ export function ProductDetailPage({
   relatedProducts = [],
   onAddToCart: customOnAddToCart,
 }: ProductDetailPageProps) {
-  const { addItem, openCart } = useCart();
+  const { items, addItem, updateQuantity, removeItem, openCart } = useCart();
   const { isLiked: checkIsLiked, toggle: toggleWishlist } = useWishlist();
   const isLiked = checkIsLiked(product.id);
 
@@ -47,13 +46,31 @@ export function ProductDetailPage({
     return initial;
   });
 
-  const [quantity, setQuantity] = useState(1);
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
   const [isNotifyMeOpen, setIsNotifyMeOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
   // Derive active variant details
   const variantDetails = getVariantDetails(product, selectedOptions);
+
+  // Match cart item for current selection
+  const cartItem = React.useMemo(() => {
+    if (!product) return undefined;
+    return items.find((item) => {
+      if (item.productId !== product.id) return false;
+      if (variantDetails?.selectedVariant?.id) {
+        return item.variantId === variantDetails.selectedVariant.id;
+      }
+      if (item.selectedVariants && item.selectedVariants.length > 0) {
+        return item.selectedVariants.every(
+          (sv) => selectedOptions?.[sv.attributeId] === sv.valueId
+        );
+      }
+      return true;
+    });
+  }, [items, product, selectedOptions, variantDetails]);
+
+  const cartQuantity = cartItem?.quantity || 0;
 
   const handleSelectOption = (optionId: string, valueId: string) => {
     setSelectedOptions((prev) => ({
@@ -70,15 +87,12 @@ export function ProductDetailPage({
     if (product.options.length > 0 && !variantDetails.allOptionsSelected) return;
     if (!variantDetails.isAvailable) return;
 
-    // 3. Validate Quantity
-    if (quantity <= 0 || (variantDetails.stock > 0 && quantity > variantDetails.stock)) return;
-
-    // Dispatch to global CartStore
-    const added = addItem(product, quantity, selectedOptions);
+    // Dispatch to global CartStore with quantity 1
+    const added = addItem(product, 1, selectedOptions);
 
     if (added) {
       if (customOnAddToCart) {
-        customOnAddToCart(product, quantity, selectedOptions);
+        customOnAddToCart(product, 1, selectedOptions);
       }
       setIsSuccessModalOpen(true);
     }
@@ -116,12 +130,15 @@ export function ProductDetailPage({
         {/* Gallery Column */}
         <div className="lg:col-span-6 xl:col-span-6 w-full">
           <ProductGallery
+            productId={product.id}
             images={product.images}
             title={product.title}
             hasDiscount={variantDetails.hasDiscount}
             discountPercent={variantDetails.discountPercent}
             isOutOfStock={!variantDetails.isAvailable}
             rating={product.rating}
+            isLiked={isLiked}
+            onToggleWishlist={() => toggleWishlist(product.id)}
           />
         </div>
 
@@ -189,30 +206,75 @@ export function ProductDetailPage({
 
           {/* Desktop Quantity & Add to Cart Action Row */}
           <div className="hidden md:flex items-center gap-4 pt-2">
-            <QuantitySelector
-              quantity={quantity}
-              maxStock={variantDetails.stock}
-              onChange={setQuantity}
-              disabled={!variantDetails.isAvailable}
-            />
-
-            {variantDetails.isAvailable ? (
-              <button
-                type="button"
-                onClick={handleAddToCart}
-                className="flex-1 h-12 px-6 rounded-xl bg-primary text-primary-foreground font-bold text-sm flex items-center justify-center gap-2 hover:bg-primary/90 transition-all active:scale-98 shadow-md cursor-pointer"
-              >
-                <ShoppingCart className="" />
-                <span>افزودن به سبد خرید</span>
-              </button>
-            ) : (
+            {!variantDetails.isAvailable ? (
               <button
                 type="button"
                 onClick={() => setIsNotifyMeOpen(true)}
-                className="flex-1 h-12 px-6 rounded-xl bg-amber-500 text-white font-bold text-sm flex items-center justify-center gap-2 hover:bg-amber-600 transition-all active:scale-98 shadow-md cursor-pointer"
+                className="w-full h-13 px-6 rounded-xl bg-amber-500 text-white font-bold text-base flex items-center justify-center gap-2 hover:bg-amber-600 transition-all active:scale-98 shadow-md cursor-pointer"
               >
-                <Bell className="" />
+                <Bell className="w-5 h-5" />
                 <span>موجود شد به من اطلاع بده</span>
+              </button>
+            ) : cartQuantity > 0 ? (
+              <div className="w-full flex items-center justify-between gap-3 p-2 bg-surface-subtle border-2 border-primary/30 rounded-2xl shadow-sm transition-all duration-300 animate-fade-in">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!cartItem) return;
+                    if (cartQuantity <= 1) {
+                      removeItem(cartItem.id);
+                    } else {
+                      updateQuantity(cartItem.id, cartQuantity - 1);
+                    }
+                  }}
+                  aria-label={cartQuantity === 1 ? "حذف از سبد خرید" : "کاهش تعداد"}
+                  title={cartQuantity === 1 ? "حذف از سبد خرید" : "کاهش تعداد"}
+                  className="w-12 h-12 rounded-xl bg-background border border-border-product flex items-center justify-center text-foreground hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition-all active:scale-95 cursor-pointer shadow-xs"
+                >
+                  {cartQuantity === 1 ? (
+                    <Trash2 className="w-5 h-5 text-rose-500" />
+                  ) : (
+                    <Minus className="w-5 h-5 text-foreground" />
+                  )}
+                </button>
+
+                <div className="flex flex-col items-center justify-center">
+                  <div className="flex items-center gap-1.5 font-extrabold text-base text-foreground select-none">
+                    <span className="text-xl text-primary">{cartQuantity}</span>
+                    <span className="text-sm font-bold text-foreground">عدد در سبد خرید</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={openCart}
+                    className="text-xs font-semibold text-primary hover:underline cursor-pointer"
+                  >
+                    مشاهده سبد خرید
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!cartItem) return;
+                    if (variantDetails.stock > 0 && cartQuantity >= variantDetails.stock) return;
+                    updateQuantity(cartItem.id, cartQuantity + 1);
+                  }}
+                  disabled={variantDetails.stock > 0 && cartQuantity >= variantDetails.stock}
+                  aria-label="افزایش تعداد"
+                  title="افزایش تعداد"
+                  className="w-12 h-12 rounded-xl bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 disabled:opacity-30 disabled:hover:bg-primary transition-all active:scale-95 cursor-pointer shadow-xs"
+                >
+                  <Plus className="w-5 h-5" />
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={handleAddToCart}
+                className="w-full h-13 px-8 rounded-xl bg-primary text-primary-foreground font-bold text-base flex items-center justify-center gap-3 hover:bg-primary/90 transition-all active:scale-98 shadow-lg shadow-primary/20 cursor-pointer"
+              >
+                <ShoppingCart className="w-5 h-5" />
+                <span>افزودن به سبد خرید</span>
               </button>
             )}
           </div>
@@ -281,7 +343,7 @@ export function ProductDetailPage({
         productTitle={product.title}
         productImage={mainImageUrl}
         selectedVariantSummary={selectedVariantSummary}
-        quantity={quantity}
+        quantity={1}
         onOpenCart={openCart}
       />
     </div>
