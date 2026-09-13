@@ -147,12 +147,12 @@ export default function CheckoutPage() {
         {/* Main 12-Column RTL Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-          {/* RIGHT SECTION (8 Columns Desktop): Main Checkout Form & Flow */}
-          <div className="lg:col-span-8 flex flex-col gap-8">
+          {/* RIGHT SECTION (8 Columns Desktop): Main Checkout Form Flow */}
+          <div className="lg:col-span-8 flex flex-col gap-6">
 
             {/* Global Errors Banner */}
             {cartValidationErrors.length > 0 && (
-              <div className="flex flex-col gap-2 p-4 rounded-2xl bg-red-50 border border-red-200 text-error text-xs sm:text-sm">
+              <div className="flex flex-col gap-2 p-4 rounded-xl bg-red-50 border border-red-200/80 text-error text-xs sm:text-sm">
                 <div className="flex items-center gap-2 font-bold text-red-800">
                   <AlertCircle className="w-4.5 h-4.5 shrink-0 text-error" />
                   <span>خطا در بررسی سبد خرید و موجودی:</span>
@@ -165,41 +165,44 @@ export default function CheckoutPage() {
               </div>
             )}
 
-            {/* 01. Customer & Shipping Address Form */}
-            <section className="bg-background border border-border-subtle rounded-2xl p-5 sm:p-6 shadow-xs">
-              <CustomerInformationForm
-                customer={customer}
-                onChange={handleFieldChange}
-                errors={formErrors}
-              />
-            </section>
+            {/* Unified Checkout Container */}
+            <div className="bg-background border border-border-subtle rounded-2xl p-5 sm:p-8 divide-y divide-border-subtle/80 space-y-8">
+              {/* 01. Customer & Shipping Address Form */}
+              <div className="pt-0">
+                <CustomerInformationForm
+                  customer={customer}
+                  onChange={handleFieldChange}
+                  errors={formErrors}
+                />
+              </div>
 
-            {/* 02. Shipping Method Selection */}
-            <section className="bg-background border border-border-subtle rounded-2xl p-5 sm:p-6 shadow-xs">
-              <ShippingMethodSelector
-                methods={shippingMethods}
-                selectedMethodId={selectedShippingId}
-                onSelect={(id) => setSelectedShippingId(id)}
-              />
-            </section>
+              {/* 02. Shipping Method Selection */}
+              <div className="pt-8">
+                <ShippingMethodSelector
+                  methods={shippingMethods}
+                  selectedMethodId={selectedShippingId}
+                  onSelect={(id) => setSelectedShippingId(id)}
+                />
+              </div>
 
-            {/* 03. Trust & Policy Section */}
-            <section className="bg-background border border-border-subtle rounded-2xl p-5 sm:p-6 shadow-xs">
-              <TrustSection />
-            </section>
+              {/* 03. Cart Items Review */}
+              <div className="pt-8">
+                <CheckoutCartItems
+                  items={items}
+                  onUpdateQuantity={updateQuantity}
+                  onRemoveItem={removeItem}
+                />
+              </div>
 
-            {/* 04. Compact Cart Items List for Review */}
-            <section className="bg-background border border-border-subtle rounded-2xl p-5 sm:p-6 shadow-xs">
-              <CheckoutCartItems
-                items={items}
-                onUpdateQuantity={updateQuantity}
-                onRemoveItem={removeItem}
-              />
-            </section>
+              {/* 04. Guarantee & Trust Signals */}
+              <div className="pt-8">
+                <TrustSection />
+              </div>
+            </div>
           </div>
 
           {/* LEFT SECTION (4 Columns Desktop): Order Summary & Payment CTA */}
-          <div className="lg:col-span-4 sticky top-6">
+          <div className="lg:col-span-4 sticky top-20">
             <OrderSummary
               itemsSubtotal={itemsSubtotal}
               shippingOption={selectedShipping}

@@ -30,10 +30,14 @@ export function CustomerInformationForm({
 
   return (
     <div className="flex flex-col gap-5">
-      <h2 className="text-sm font-bold text-foreground pb-2 border-b border-border-subtle flex items-center gap-2">
-        <User className="w-4 h-4 text-primary shrink-0" />
-        <span>اطلاعات تحویل‌گیرنده و آدرس</span>
-      </h2>
+      <div className="flex items-center gap-2.5 pb-3 border-b border-border-subtle">
+        <div className="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center shrink-0">
+          ۱
+        </div>
+        <h2 className="text-base font-bold text-foreground tracking-tight">
+          اطلاعات تحویل‌گیرنده و آدرس
+        </h2>
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* First Name */}
@@ -43,6 +47,7 @@ export function CustomerInformationForm({
           value={customer.firstName}
           onChange={(e) => onChange("firstName", e.target.value)}
           error={errors.firstName}
+          className="bg-background border-border-subtle focus:border-primary rounded-lg"
         />
 
         {/* Last Name */}
@@ -52,6 +57,7 @@ export function CustomerInformationForm({
           value={customer.lastName}
           onChange={(e) => onChange("lastName", e.target.value)}
           error={errors.lastName}
+          className="bg-background border-border-subtle focus:border-primary rounded-lg"
         />
       </div>
 
@@ -66,6 +72,7 @@ export function CustomerInformationForm({
           value={customer.phone}
           onChange={(e) => onChange("phone", e.target.value)}
           error={errors.phone}
+          className="bg-background border-border-subtle focus:border-primary rounded-lg"
         />
 
         {/* Postal Code */}
@@ -79,13 +86,14 @@ export function CustomerInformationForm({
           value={customer.postalCode}
           onChange={(e) => onChange("postalCode", e.target.value)}
           error={errors.postalCode}
+          className="bg-background border-border-subtle focus:border-primary rounded-lg"
         />
       </div>
 
       {/* Province & City dropdowns */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Province Select */}
-        <div className="w-full flex flex-col gap-1">
+        <div className="w-full flex flex-col gap-1.5">
           <label htmlFor={provinceSelectId} className="text-xs font-medium text-foreground select-none">
             استان *
           </label>
@@ -94,7 +102,7 @@ export function CustomerInformationForm({
               id={provinceSelectId}
               value={customer.province}
               onChange={handleProvinceChange}
-              className={`w-full h-11 bg-surface-subtle border border-transparent rounded-md px-3 text-sm text-foreground focus:outline-none focus:border-primary focus:bg-background transition-colors appearance-none cursor-pointer ${
+              className={`w-full h-11 bg-background border border-border-subtle rounded-lg px-3 text-sm text-foreground focus:outline-none focus:border-primary transition-colors appearance-none cursor-pointer ${
                 errors.province ? "border-error focus:border-error" : ""
               }`}
             >
@@ -113,7 +121,7 @@ export function CustomerInformationForm({
         </div>
 
         {/* City Select */}
-        <div className="w-full flex flex-col gap-1">
+        <div className="w-full flex flex-col gap-1.5">
           <label htmlFor={citySelectId} className="text-xs font-medium text-foreground select-none">
             شهر *
           </label>
@@ -123,7 +131,7 @@ export function CustomerInformationForm({
               value={customer.city}
               disabled={!customer.province}
               onChange={(e) => onChange("city", e.target.value)}
-              className={`w-full h-11 bg-surface-subtle border border-transparent rounded-md px-3 text-sm text-foreground focus:outline-none focus:border-primary focus:bg-background transition-colors appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
+              className={`w-full h-11 bg-background border border-border-subtle rounded-lg px-3 text-sm text-foreground focus:outline-none focus:border-primary transition-colors appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
                 errors.city ? "border-error focus:border-error" : ""
               }`}
             >
@@ -145,7 +153,7 @@ export function CustomerInformationForm({
       </div>
 
       {/* Address Textarea */}
-      <div className="w-full flex flex-col gap-1">
+      <div className="w-full flex flex-col gap-1.5">
         <label htmlFor="checkout-address" className="text-xs font-medium text-foreground select-none">
           آدرس دقیق (خیابان، کوچه، پلاک، طبقه) *
         </label>
@@ -155,7 +163,7 @@ export function CustomerInformationForm({
           placeholder="خیابان اصلی، کوچه، پلاک، طبقه..."
           value={customer.address}
           onChange={(e) => onChange("address", e.target.value)}
-          className={`w-full bg-surface-subtle border border-transparent rounded-md p-3 text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-primary focus:bg-background transition-colors resize-none ${
+          className={`w-full bg-background border border-border-subtle rounded-lg p-3 text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-primary transition-colors resize-none ${
             errors.address ? "border-error focus:border-error" : ""
           }`}
         />
