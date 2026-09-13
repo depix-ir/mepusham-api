@@ -19,6 +19,7 @@ import { ProductReviews } from "./ProductReviews";
 import { RelatedProductsSection } from "./RelatedProductsSection";
 import { StickyAddToCartBar } from "./StickyAddToCartBar";
 import { ShoppingCart, Bell, Plus, Minus, Trash2 } from "lucide-react";
+import { TomanIcon } from "@/components/icons";
 
 export interface ProductDetailPageProps {
   product: Product;
@@ -151,13 +152,14 @@ export function ProductDetailPage({
           />
 
           {/* Clean Price Block */}
-          <div className="flex items-baseline gap-3 py-1">
-            <span className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
-              {formatPrice(variantDetails.price)}
-            </span>
+          <div className="flex items-center gap-3 py-1">
+            <div className="flex items-center gap-1.5 text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
+              <span>{formatPrice(variantDetails.price)}</span>
+              <TomanIcon size={20} className="text-muted shrink-0" />
+            </div>
             {variantDetails.hasDiscount && variantDetails.compareAtPrice && (
               <span className="text-xs sm:text-sm text-muted line-through font-medium">
-                {formatPrice(variantDetails.compareAtPrice, false)}
+                {formatPrice(variantDetails.compareAtPrice)}
               </span>
             )}
             {variantDetails.hasDiscount && variantDetails.discountPercent && (

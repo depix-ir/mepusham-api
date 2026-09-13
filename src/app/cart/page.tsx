@@ -7,6 +7,7 @@ import { useCart } from "@/store/cart/cart.store";
 import { CartItem } from "@/components/cart/CartItem";
 import { CartEmptyState } from "@/components/cart/CartEmptyState";
 import { formatPrice } from "@/lib/formatting/currency";
+import { TomanIcon } from "@/components/icons";
 import { AlertCircle, ArrowLeft, Trash2, ShoppingBag } from "lucide-react";
 import { CartValidationError } from "@/store/cart/cart.types";
 
@@ -122,9 +123,10 @@ export default function CartPage() {
               <span className="text-sm font-medium text-muted">
                 مبلغ کل کالاها
               </span>
-              <span className="text-lg font-black text-foreground">
-                {formatPrice(total)}
-              </span>
+              <div className="flex items-center gap-1 text-lg font-black text-foreground">
+                <span>{formatPrice(total)}</span>
+                <TomanIcon size={16} className="text-muted shrink-0" />
+              </div>
             </div>
 
             {/* Checkout Button */}

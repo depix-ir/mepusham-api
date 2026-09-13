@@ -3,6 +3,7 @@
 import React from "react";
 import { ShippingOption } from "@/data/shipping";
 import { formatPrice } from "@/lib/formatting/currency";
+import { TomanIcon } from "@/components/icons";
 import { Truck, CheckCircle2, Circle } from "lucide-react";
 
 interface ShippingMethodSelectorProps {
@@ -65,8 +66,9 @@ export function ShippingMethodSelector({
                 </div>
               </div>
 
-              <div className="text-xs sm:text-sm font-extrabold text-foreground shrink-0 pr-3">
-                {formatPrice(method.price)}
+              <div className="flex items-center gap-1 text-xs sm:text-sm font-extrabold text-foreground shrink-0 pr-3">
+                <span>{formatPrice(method.price)}</span>
+                <TomanIcon size={14} className="text-muted shrink-0" />
               </div>
             </div>
           );

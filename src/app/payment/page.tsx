@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useCart } from "@/store/cart/cart.store";
 import { CheckoutPayload } from "@/types/checkout";
 import { formatPrice } from "@/lib/formatting/currency";
+import { TomanIcon } from "@/components/icons";
 import { ShieldCheck, CheckCircle2, ArrowRight, CreditCard, Lock, AlertCircle } from "lucide-react";
 
 export default function PaymentPage() {
@@ -127,9 +128,10 @@ export default function PaymentPage() {
             <div className="md:col-span-5 bg-background border border-border rounded-2xl p-5 flex flex-col gap-4 shadow-sm">
               <div className="flex items-center justify-between pb-2 border-b border-border-subtle">
                 <span className="text-xs font-bold text-muted">مبلغ کل قابل پرداخت</span>
-                <span className="text-lg font-black text-primary">
-                  {formatPrice(payload.pricing.payableTotal)}
-                </span>
+                <div className="flex items-center gap-1 text-lg font-black text-primary">
+                  <span>{formatPrice(payload.pricing.payableTotal)}</span>
+                  <TomanIcon size={16} className="text-primary/70 shrink-0" />
+                </div>
               </div>
 
               <button
