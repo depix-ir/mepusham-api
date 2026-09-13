@@ -78,3 +78,26 @@ export const banners: Banner[] = [
     buttonText: "مشاهده کالکشن",
   },
 ];
+
+export const secondaryBanners: Banner[] = [
+  {
+    id: "sec-banner-1",
+    title: "جدیدترین مدل‌های کیف و کوله",
+    subtitle: "کیفیت عالی، قیمت مناسب و استایل متفاوت",
+    imageUrl: "/images/banner-2.webp",
+    desktopImageUrl: "/images/banner-2.webp",
+    mobileImageUrl: "/images/banner-1.webp",
+    linkUrl: "/category/bags-backpacks",
+    buttonText: "مشاهده کیف‌ها",
+  },
+  {
+    id: "sec-banner-2",
+    title: "مجموعه خاص اکسسوری و شال",
+    subtitle: "مکمل زیبایی و استایل شما برای تمامی فصول",
+    imageUrl: "/images/category-4.webp",
+    desktopImageUrl: "/images/category-4.webp",
+    mobileImageUrl: "/images/category-1.webp",
+    linkUrl: "/category/accessories",
+    buttonText: "دیدن اکسسوری‌ها",
+  },
+];

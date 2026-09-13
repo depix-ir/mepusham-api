@@ -16,16 +16,22 @@ import { ChevronRightIcon, ChevronLeftIcon } from "@/components/icons";
 interface HeroSectionProps {
   banners: Banner[];
   autoPlayInterval?: number;
+  id?: string;
 }
 
 export function HeroSection({
   banners,
   autoPlayInterval = 4500,
+  id = "main",
 }: HeroSectionProps) {
   const bannerList = banners || [];
   const bannerCount = bannerList.length;
 
   if (bannerCount === 0) return null;
+
+  const prevClass = `hero-swiper-button-prev-${id}`;
+  const nextClass = `hero-swiper-button-next-${id}`;
+  const paginationClass = `hero-swiper-pagination-${id}`;
 
   return (
     <section className="w-full max-w-full h-[180px] md:h-[400px] select-none overflow-hidden p-0 m-0 rounded-none border-none relative group">
@@ -45,11 +51,11 @@ export function HeroSection({
         }
         pagination={{
           clickable: true,
-          el: ".hero-swiper-pagination",
+          el: `.${paginationClass}`,
         }}
         navigation={{
-          prevEl: ".hero-swiper-button-prev",
-          nextEl: ".hero-swiper-button-next",
+          prevEl: `.${prevClass}`,
+          nextEl: `.${nextClass}`,
         }}
         className="w-full h-full rounded-none"
       >
@@ -97,7 +103,7 @@ export function HeroSection({
             <button
               type="button"
               aria-label="اسلاید قبلی"
-              className="hero-swiper-button-prev hidden absolute right-3 md:right-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full bg-background/85 hover:bg-background text-foreground shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 cursor-pointer backdrop-blur-sm opacity-90 hover:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed"
+              className={`${prevClass} hidden absolute right-3 md:right-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full bg-background/85 hover:bg-background text-foreground shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 cursor-pointer backdrop-blur-sm opacity-90 hover:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed`}
             >
               <ChevronRightIcon size={24} />
             </button>
@@ -105,7 +111,7 @@ export function HeroSection({
             <button
               type="button"
               aria-label="اسلاید بعدی"
-              className="hero-swiper-button-next hidden absolute left-3 md:left-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full bg-background/85 hover:bg-background text-foreground shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 cursor-pointer backdrop-blur-sm opacity-90 hover:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed"
+              className={`${nextClass} hidden absolute left-3 md:left-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full bg-background/85 hover:bg-background text-foreground shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 cursor-pointer backdrop-blur-sm opacity-90 hover:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed`}
             >
               <ChevronLeftIcon size={24} />
             </button>
@@ -115,7 +121,7 @@ export function HeroSection({
         {/* Pagination Dots */}
         {bannerCount > 1 && (
           <div className="absolute bottom-3 md:bottom-4 inset-x-0 z-20 flex justify-center items-center pointer-events-none">
-            <div className="hero-swiper-pagination pointer-events-auto flex items-center justify-center gap-2 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full !w-auto !relative !inset-auto !transform-none [&_.swiper-pagination-bullet]:w-2.5 [&_.swiper-pagination-bullet]:h-2.5 [&_.swiper-pagination-bullet]:rounded-full [&_.swiper-pagination-bullet]:bg-white/60 [&_.swiper-pagination-bullet]:opacity-100 [&_.swiper-pagination-bullet]:transition-all [&_.swiper-pagination-bullet]:duration-300 [&_.swiper-pagination-bullet]:cursor-pointer [&_.swiper-pagination-bullet-active]:!w-7 [&_.swiper-pagination-bullet-active]:!bg-primary [&_.swiper-pagination-bullet-active]:!rounded-full" />
+            <div className={`${paginationClass} pointer-events-auto flex items-center justify-center gap-2 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full !w-auto !relative !inset-auto !transform-none [&_.swiper-pagination-bullet]:w-2.5 [&_.swiper-pagination-bullet]:h-2.5 [&_.swiper-pagination-bullet]:rounded-full [&_.swiper-pagination-bullet]:bg-white/60 [&_.swiper-pagination-bullet]:opacity-100 [&_.swiper-pagination-bullet]:transition-all [&_.swiper-pagination-bullet]:duration-300 [&_.swiper-pagination-bullet]:cursor-pointer [&_.swiper-pagination-bullet-active]:!w-7 [&_.swiper-pagination-bullet-active]:!bg-primary [&_.swiper-pagination-bullet-active]:!rounded-full`} />
           </div>
         )}
       </Swiper>
