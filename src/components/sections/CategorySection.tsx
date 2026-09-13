@@ -19,8 +19,9 @@ export function CategorySection({
 
   // Variant 1: Photo Cards (Used at the top of the Home Page)
   if (variant === "cards") {
+    const isFourItems = categories.length === 4;
     return (
-      <section className="w-full  ">
+      <section className="w-full">
         <Container>
           {title && (
             <div className="flex items-center justify-between mb-4 md:mb-6">
@@ -29,7 +30,11 @@ export function CategorySection({
               </h2>
             </div>
           )}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-[8px]">
+          <div
+            className={`grid grid-cols-2 ${
+              isFourItems ? "sm:grid-cols-4" : "sm:grid-cols-3 lg:grid-cols-6"
+            } gap-[8px]`}
+          >
             {categories.map((category) => {
               const fallbackImg = "/images/category-1.webp";
               const imgSrc = category.imageUrl || fallbackImg;
@@ -44,7 +49,11 @@ export function CategorySection({
                     src={imgSrc}
                     alt={category.name}
                     fill
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
+                    sizes={
+                      isFourItems
+                        ? "(max-width: 640px) 50vw, 25vw"
+                        : "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
+                    }
                     className="object-cover object-center group-hover:scale-108 transition-transform duration-500"
                   />
                 </Link>

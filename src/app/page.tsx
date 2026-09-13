@@ -1,6 +1,6 @@
 import React from "react";
 import { products } from "@/data/products";
-import { categories, banners } from "@/data/common";
+import { categories, banners, secondaryBanners } from "@/data/common";
 import { HeroSection } from "@/components/sections/HeroSection";
 import { CategorySection } from "@/components/sections/CategorySection";
 import { OfferSection } from "@/components/sections/OfferSection";
@@ -10,14 +10,15 @@ import { CategoryCarouselSection } from "@/components/sections/CategoryCarouselS
 export default function HomePage() {
   const discountedProducts = products.filter((p) => p.pricing.hasDiscount);
   const newArrivals = products.slice(0, 4);
+  const topCategories = categories.slice(0, 4);
 
   return (
     <div className="flex flex-col gap-6 md:gap-10 pb-8">
       {/* Hero Banner Section (Full width, no padding, no border-radius) */}
-      {banners.length > 0 && <HeroSection banners={banners} />}
+      {banners.length > 0 && <HeroSection banners={banners} id="hero-main" />}
 
-      {/* Top Categories Showcase (Photo Cards Grid) */}
-      <CategorySection categories={categories} variant="cards" />
+      {/* Top Categories Showcase (Photo Cards Grid - 4 categories) */}
+      <CategorySection categories={topCategories} variant="cards" />
 
       {/* Special Offers Section (Carousel) */}
       <OfferSection
@@ -36,11 +37,15 @@ export default function HomePage() {
 
       {/* Category Product Carousels (1 Carousel Per Category) */}
       {categories.map((category) => (
-        <CategoryCarouselSection
-          key={category.id}
-          category={category}
-          products={products}
-        />
+        <React.Fragment key={category.id}>
+          <CategoryCarouselSection
+            category={category}
+            products={products}
+          />
+          {category.slug === "bags-backpacks" && secondaryBanners.length > 0 && (
+            <HeroSection banners={secondaryBanners} id="hero-secondary" />
+          )}
+        </React.Fragment>
       ))}
     </div>
   );
