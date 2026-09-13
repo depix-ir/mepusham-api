@@ -3,22 +3,28 @@
 import React from "react";
 import Link from "next/link";
 import { ProductBrand, ProductCategory, ProductRating } from "@/types/product";
-import { Star, ChevronLeft } from "lucide-react";
+import { Star, ChevronLeft, Heart } from "lucide-react";
 
 export interface ProductIdentityProps {
+  productId?: string;
   title: string;
   brand?: ProductBrand;
   category: ProductCategory;
   sku: string;
   rating?: ProductRating;
+  isLiked?: boolean;
+  onToggleWishlist?: () => void;
 }
 
 export function ProductIdentity({
+  productId,
   title,
   brand,
   category,
   sku,
   rating,
+  isLiked = false,
+  onToggleWishlist,
 }: ProductIdentityProps) {
   const scrollToReviews = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -60,10 +66,31 @@ export function ProductIdentity({
         </span>
       </div>
 
-      {/* Product Title */}
-      <h1 className="text-lg sm:text-2xl font-bold text-foreground leading-snug tracking-tight">
-        {title}
-      </h1>
+      {/* Product Title and Wishlist Toggle Button */}
+      <div className="flex items-start justify-between gap-3">
+        <h1 className="text-lg sm:text-2xl font-bold text-foreground leading-snug tracking-tight flex-1">
+          {title}
+        </h1>
+        {onToggleWishlist && (
+          <button
+            type="button"
+            onClick={onToggleWishlist}
+            aria-label={isLiked ? "حذف از پسندیده‌ها" : "افزودن به پسندیده‌ها"}
+            title={isLiked ? "این محصول پسندیده شده است (حذف)" : "افزودن به پسندیده‌ها"}
+            className={`p-2.5 rounded-full border transition-all shrink-0 cursor-pointer flex items-center justify-center ${
+              isLiked
+                ? "bg-rose-50 border-rose-200 text-rose-600 hover:bg-rose-100"
+                : "bg-background border-border-product text-muted hover:text-rose-500 hover:border-rose-200 hover:bg-rose-50/50"
+            }`}
+          >
+            <Heart
+              size={22}
+              fill={isLiked ? "currentColor" : "none"}
+              className={`transition-transform duration-200 ${isLiked ? "scale-110" : ""}`}
+            />
+          </button>
+        )}
+      </div>
 
       {/* Rating & Review Counter Summary */}
       {rating && (

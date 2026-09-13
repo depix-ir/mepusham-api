@@ -3,6 +3,7 @@ import { peydaFont } from "@/lib/fonts";
 import { Header } from "@/components/layout/Header";
 import { MobileBottomBar } from "@/components/layout/MobileBottomBar";
 import { CartProvider } from "@/store/cart/cart.store";
+import { WishlistProvider } from "@/store/wishlist/wishlist.store";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import "./globals.css";
 
@@ -27,10 +28,12 @@ export default function RootLayout({
     <html lang="fa" dir="rtl" className={peydaFont.variable}>
       <body className="min-h-screen bg-background text-foreground antialiased font-sans flex flex-col pb-16 md:pb-0">
         <CartProvider>
-          <Header />
-          <main className="flex-1 w-full">{children}</main>
-          <MobileBottomBar />
-          <CartDrawer />
+          <WishlistProvider>
+            <Header />
+            <main className="flex-1 w-full">{children}</main>
+            <MobileBottomBar />
+            <CartDrawer />
+          </WishlistProvider>
         </CartProvider>
       </body>
     </html>

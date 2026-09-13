@@ -9,6 +9,7 @@ import {
   HeartIcon,
   UserIcon,
 } from "@/components/icons";
+import { useWishlist } from "@/store/wishlist/wishlist.store";
 
 export interface NavItem {
   id: string;
@@ -34,6 +35,7 @@ export function MobileBottomBar({
   activeItemId,
 }: MobileBottomBarProps) {
   const pathname = usePathname();
+  const { count: wishlistCount } = useWishlist();
 
   // Hide global bottom nav on Product Detail Pages (/products/[slug])
   // so the Sticky Add To Cart Bar has full focus
@@ -61,12 +63,19 @@ export function MobileBottomBar({
             <Link
               key={item.id}
               href={item.href}
-              className={`flex flex-col items-center justify-center flex-1 h-full gap-1 transition-colors ${
-                isActive ? "text-primary" : "text-foreground hover:text-primary"
+              className={`relative flex flex-col items-center justify-center flex-1 h-full gap-1 transition-colors ${
+                isActive ? "text-primary font-bold" : "text-foreground hover:text-primary"
               }`}
             >
-              <IconComponent size={22} className="shrink-0" />
-              <span className="text-[10px] font-medium leading-none">
+              <div className="relative">
+                <IconComponent size={22} className="shrink-0" />
+                {item.id === "wishlist" && wishlistCount > 0 && (
+                  <span className="absolute -top-1.5 -right-2 bg-primary text-primary-foreground text-[9px] font-bold rounded-full h-4 min-w-[16px] px-1 flex items-center justify-center border border-background leading-none">
+                    {wishlistCount}
+                  </span>
+                )}
+              </div>
+              <span className="text-[10px] leading-none">
                 {item.label}
               </span>
             </Link>

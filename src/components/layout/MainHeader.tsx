@@ -7,12 +7,15 @@ import { SearchInput } from "@/components/ui/SearchInput";
 import { IconButton } from "@/components/ui/IconButton";
 import { HeartIcon, UserIcon } from "@/components/icons";
 import { CartButton } from "./CartButton";
+import { useWishlist } from "@/store/wishlist/wishlist.store";
 
 interface MainHeaderProps {
   cartItemCount?: number;
 }
 
 export function MainHeader({ cartItemCount = 0 }: MainHeaderProps) {
+  const { count: wishlistCount } = useWishlist();
+
   return (
     <div className="w-full bg-background border-b border-border py-2 md:py-4">
       <Container className="flex items-center justify-between gap-3 md:gap-6">
@@ -34,9 +37,14 @@ export function MainHeader({ cartItemCount = 0 }: MainHeaderProps) {
         {/* Header Action Buttons */}
         <div className="flex items-center gap-2 md:gap-3 shrink-0">
           {/* Wishlist Button (Desktop) */}
-          <Link href="/wishlist" className="hidden md:block">
+          <Link href="/wishlist" className="hidden md:block relative">
             <IconButton ariaLabel="پسندیده‌ها" variant="ghost" size="md">
               <HeartIcon size={22} />
+              {wishlistCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-4 min-w-[16px] px-1 flex items-center justify-center border-2 border-background leading-none">
+                  {wishlistCount}
+                </span>
+              )}
             </IconButton>
           </Link>
 
