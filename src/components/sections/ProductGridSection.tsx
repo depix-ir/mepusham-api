@@ -18,7 +18,7 @@ export function ProductGridSection({
   viewAllUrl,
 }: ProductGridSectionProps) {
   return (
-    <section className="w-full my-6 md:my-10">
+    <section className="w-full">
       <Container>
         <div className="flex items-end justify-between mb-4 md:mb-6">
           <div className="flex flex-col gap-1">

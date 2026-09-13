@@ -20,7 +20,7 @@ export function CategorySection({
   // Variant 1: Photo Cards (Used at the top of the Home Page)
   if (variant === "cards") {
     return (
-      <section className="w-full my-4 md:my-8">
+      <section className="w-full  ">
         <Container>
           {title && (
             <div className="flex items-center justify-between mb-4 md:mb-6">

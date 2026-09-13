@@ -33,7 +33,7 @@ export function OfferSection({
   };
 
   return (
-    <section className="w-full my-6 md:my-10" ref={containerRef}>
+    <section className="w-full" ref={containerRef}>
       <Container>
         <div className="w-full rounded-2xl bg-gradient-to-l from-primary to-primary-hover text-primary-foreground p-2 sm:p-6 md:p-8 shadow-md">
           {/* Header row with side margin/padding on text and button */}
