@@ -4,7 +4,7 @@ import React, { useId } from "react";
 import { CustomerInformation, CheckoutFormErrors } from "@/types/checkout";
 import { provinces, getCitiesByProvince } from "@/data/locations";
 import { Input } from "@/components/ui/Input";
-import { User, Phone, MapPin, Building, Hash } from "lucide-react";
+import { Phone, MapPin, Building, Hash } from "lucide-react";
 
 interface CustomerInformationFormProps {
   customer: CustomerInformation;
@@ -42,6 +42,7 @@ export function CustomerInformationForm({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* First Name */}
         <Input
+          id="input-firstName"
           label="نام *"
           placeholder="مثال: مریم"
           value={customer.firstName}
@@ -52,6 +53,7 @@ export function CustomerInformationForm({
 
         {/* Last Name */}
         <Input
+          id="input-lastName"
           label="نام خانوادگی *"
           placeholder="مثال: محمدی"
           value={customer.lastName}
@@ -64,6 +66,7 @@ export function CustomerInformationForm({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Phone */}
         <Input
+          id="input-phone"
           label="شماره موبایل *"
           placeholder="۰۹۱۲۳۴۵۶۷۸۹"
           type="tel"
@@ -77,6 +80,7 @@ export function CustomerInformationForm({
 
         {/* Postal Code */}
         <Input
+          id="input-postalCode"
           label="کد پستی *"
           placeholder="۱۰ رقم بدون فاصله"
           type="text"
@@ -93,7 +97,7 @@ export function CustomerInformationForm({
       {/* Province & City dropdowns */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Province Select */}
-        <div className="w-full flex flex-col gap-1.5">
+        <div className="w-full flex flex-col gap-1.5" id="container-province">
           <label htmlFor={provinceSelectId} className="text-xs font-medium text-foreground select-none">
             استان *
           </label>
@@ -121,7 +125,7 @@ export function CustomerInformationForm({
         </div>
 
         {/* City Select */}
-        <div className="w-full flex flex-col gap-1.5">
+        <div className="w-full flex flex-col gap-1.5" id="container-city">
           <label htmlFor={citySelectId} className="text-xs font-medium text-foreground select-none">
             شهر *
           </label>
