@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import { loadWishlistFromStorage, saveWishlistToStorage } from "./wishlist.persistence";
 
 export interface WishlistContextType {
@@ -16,23 +16,24 @@ export interface WishlistContextType {
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
 
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
-  const [likedProductIds, setLikedProductIds] = useState<string[]>([]);
-  const isInitialMount = useRef(true);
+  const [likedProductIds, setLikedProductIds] = useState<string[]>(() => {
+    if (typeof window !== "undefined") {
+      return loadWishlistFromStorage();
+    }
+    return [];
+  });
+  const [isHydrated, setIsHydrated] = useState(false);
 
-  // Safely initialize state on client hydration
   useEffect(() => {
-    const stored = loadWishlistFromStorage();
-    setLikedProductIds(stored);
+    const timer = setTimeout(() => setIsHydrated(true), 0);
+    return () => clearTimeout(timer);
   }, []);
 
   // Save to storage on state change after initial hydration
   useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      return;
-    }
+    if (!isHydrated) return;
     saveWishlistToStorage(likedProductIds);
-  }, [likedProductIds]);
+  }, [likedProductIds, isHydrated]);
 
   const isLiked = useCallback(
     (productId: string) => {

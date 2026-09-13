@@ -3,34 +3,46 @@
 import React, { useState, useRef } from "react";
 import Image from "next/image";
 import { ProductImage, ProductRating } from "@/types/product";
-import { Badge } from "@/components/ui/Badge";
-import { formatPercent } from "@/lib/formatting/currency";
+import { useWishlist } from "@/store/wishlist/wishlist.store";
 import {
   Heart,
   Share2,
   ChevronLeft,
   ChevronRight,
+  ZoomIn,
+  ZoomOut,
 } from "lucide-react";
 
 export interface ProductGalleryProps {
+  productId?: string;
   images: ProductImage[];
   title: string;
   hasDiscount?: boolean;
   discountPercent?: number;
   isOutOfStock?: boolean;
   rating?: ProductRating;
+  isLiked?: boolean;
+  onToggleWishlist?: () => void;
 }
 
 export function ProductGallery({
+  productId,
   images,
   title,
-  hasDiscount = false,
-  discountPercent,
   isOutOfStock = false,
+  isLiked: customIsLiked,
+  onToggleWishlist,
 }: ProductGalleryProps) {
+  const wishlist = useWishlist();
+  const isLiked = customIsLiked !== undefined ? customIsLiked : (productId ? wishlist.isLiked(productId) : false);
+
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [wishlistState, setWishlistState] = useState<"idle" | "active" | "loading">("idle");
   const [showShareToast, setShowShareToast] = useState(false);
+
+  // Zoom State (Desktop hover & Mobile touch/tap)
+  const [isHovered, setIsHovered] = useState(false);
+  const [isMobileZoomed, setIsMobileZoomed] = useState(false);
+  const [zoomPos, setZoomPos] = useState<{ x: number; y: number }>({ x: 50, y: 50 });
 
   // Drag / Swipe State
   const [isDragging, setIsDragging] = useState(false);
@@ -89,12 +101,31 @@ export function ProductGallery({
     }
   };
 
-  const toggleWishlist = () => {
-    if (wishlistState === "loading") return;
-    setWishlistState("loading");
-    setTimeout(() => {
-      setWishlistState((prev) => (prev === "active" ? "idle" : "active"));
-    }, 250);
+  const handleToggleWishlist = () => {
+    if (onToggleWishlist) {
+      onToggleWishlist();
+    } else if (productId) {
+      wishlist.toggle(productId);
+    }
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+    const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
+    setZoomPos({ x, y });
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length === 1) {
+      const touch = e.touches[0];
+      const rect = e.currentTarget.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      const x = Math.max(0, Math.min(100, ((touch.clientX - rect.left) / rect.width) * 100));
+      const y = Math.max(0, Math.min(100, ((touch.clientY - rect.top) / rect.height) * 100));
+      setZoomPos({ x, y });
+    }
   };
 
   const handleShare = async () => {
@@ -119,14 +150,18 @@ export function ProductGallery({
 
   return (
     <div className="flex flex-col gap-4 w-full">
-      {/* Main Image Stage with Drag + Touch Swipe */}
+      {/* Main Image Stage with Drag + Touch Swipe & Hover/Touch Zoom */}
       <div
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onMouseMove={handleMouseMove}
+        onTouchMove={handleTouchMove}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUpOrCancel}
         onPointerCancel={handlePointerUpOrCancel}
         className={`relative w-full aspect-square sm:aspect-[4/5] bg-surface-subtle rounded-2xl overflow-hidden border border-border-product shadow-sm group select-none touch-pan-y ${
-          isDragging ? "cursor-grabbing" : "cursor-grab"
+          isDragging ? "cursor-grabbing" : (isHovered || isMobileZoomed) ? "cursor-zoom-out" : "cursor-zoom-in"
         }`}
       >
         <Image
@@ -136,9 +171,13 @@ export function ProductGallery({
           priority
           sizes="(max-width: 768px) 100vw, 50vw"
           draggable={false}
-          className={`object-cover object-center transition-all duration-300 pointer-events-none ${
-            isOutOfStock ? "opacity-60 grayscale-[20%]" : ""
-          }`}
+          style={{
+            transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
+            transform: (isHovered || isMobileZoomed) ? "scale(2.25)" : "scale(1)",
+          }}
+          className={`object-cover object-center transition-transform ${
+            (isHovered || isMobileZoomed) ? "duration-100 ease-out" : "duration-300 ease-in-out"
+          } pointer-events-none ${isOutOfStock ? "opacity-60 grayscale-[20%]" : ""}`}
         />
 
 
@@ -179,20 +218,36 @@ export function ProductGallery({
           {/* Wishlist Button */}
           <button
             type="button"
-            onClick={toggleWishlist}
-            aria-label={wishlistState === "active" ? "حذف از علاقه‌مندی‌ها" : "افزودن به علاقه‌مندی‌ها"}
-            aria-pressed={wishlistState === "active"}
+            onClick={handleToggleWishlist}
+            aria-label={isLiked ? "حذف از پسندیده‌ها" : "افزودن به پسندیده‌ها"}
+            aria-pressed={isLiked}
+            title={isLiked ? "این محصول پسندیده شده است" : "افزودن به پسندیده‌ها"}
             className={`w-10 h-10 rounded-full flex items-center justify-center shadow-md backdrop-blur-md transition-all active:scale-90 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
-              wishlistState === "active"
-                ? "bg-red-50 text-red-500 border border-red-200"
+              isLiked
+                ? "bg-rose-50 text-rose-600 border border-rose-200"
                 : "bg-background/80 hover:bg-background text-foreground/80 hover:text-foreground"
             }`}
           >
             <Heart
-              className={` transition-colors ${
-                wishlistState === "active" ? "fill-red-500 stroke-red-500" : ""
+              className={`w-5 h-5 transition-transform duration-200 ${
+                isLiked ? "fill-rose-600 stroke-rose-600 scale-110" : ""
               }`}
             />
+          </button>
+
+          {/* Toggle Mobile Zoom Button */}
+          <button
+            type="button"
+            onClick={() => setIsMobileZoomed((prev) => !prev)}
+            aria-label={isMobileZoomed ? "خروج از زوم" : "زوم تصویر"}
+            title={isMobileZoomed ? "خروج از زوم" : "زوم تصویر"}
+            className={`w-10 h-10 rounded-full flex items-center justify-center shadow-md backdrop-blur-md transition-all active:scale-90 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+              isMobileZoomed
+                ? "bg-primary text-primary-foreground"
+                : "bg-background/80 hover:bg-background text-foreground/80 hover:text-foreground"
+            }`}
+          >
+            {isMobileZoomed ? <ZoomOut className="w-4 h-4" /> : <ZoomIn className="w-4 h-4" />}
           </button>
 
           {/* Share Button */}
