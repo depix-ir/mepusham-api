@@ -17,7 +17,7 @@ import { WishlistTrustSection } from "./WishlistTrustSection";
 import { ShoppingBag, Trash2, AlertCircle, CheckCircle2 } from "lucide-react";
 
 export function WishlistClientPage() {
-  const { likedProductIds, remove, clear } = useWishlist();
+  const { likedProductIds, clear } = useWishlist();
   const { addItem, openCart } = useCart();
   const [feedbackMessage, setFeedbackMessage] = useState<{
     type: "success" | "warning";
@@ -189,22 +189,11 @@ export function WishlistClientPage() {
 
       {/* Main Grid: Desktop 8/4 Layout | Mobile Mobile-first Order */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-        {/* Wishlist Product Cards Grid (Desktop Right 8 cols / Mobile below summary) */}
-        <div className="lg:col-span-8 order-2 lg:order-1 flex flex-col gap-6">
+        {/* Wishlist Product Cards Grid (Desktop Right 8 cols / Mobile first) */}
+        <div className="lg:col-span-8 order-1 lg:order-1 flex flex-col gap-6">
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 md:gap-5">
             {likedProducts.map((product) => (
-              <div key={product.id} className="relative group/wishlist-item flex flex-col h-full">
-                {/* Remove overlay button specific to Wishlist page container */}
-                <button
-                  type="button"
-                  onClick={() => remove(product.id)}
-                  aria-label={`حذف ${product.title} از لیست پسندیده‌ها`}
-                  title="حذف از پسندیده‌ها"
-                  className="absolute top-2 right-2 z-20 p-1.5 rounded-full bg-white/95 text-muted hover:text-rose-600 shadow-md transition-colors cursor-pointer"
-                >
-                  <Trash2 size={15} />
-                </button>
-
+              <div key={product.id} className="flex flex-col h-full">
                 {/* Shared Standard Product Card */}
                 <ProductCard product={product} />
               </div>
@@ -212,8 +201,8 @@ export function WishlistClientPage() {
           </div>
         </div>
 
-        {/* Wishlist Summary Sidebar (Desktop Left 4 cols / Mobile top) */}
-        <div className="lg:col-span-4 order-1 lg:order-2 flex flex-col gap-4 sticky top-24">
+        {/* Wishlist Summary Sidebar (Desktop Left 4 cols / Mobile bottom) */}
+        <div className="lg:col-span-4 order-2 lg:order-2 flex flex-col gap-4 lg:sticky lg:top-24">
           <div className="bg-background border border-border-product rounded-2xl p-4 sm:p-5 flex flex-col gap-4 shadow-xs">
             <h2 className="text-base font-bold text-foreground pb-3 border-b border-border-product">
               خلاصه لیست پسندیده‌ها

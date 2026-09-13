@@ -26,11 +26,17 @@ export function ProductCard({
   className = "",
 }: ProductCardProps) {
   const { addItem, openCart } = useCart();
-  const { isLiked: checkIsLiked } = useWishlist();
+  const { isLiked: checkIsLiked, toggle: toggleWishlist } = useWishlist();
   const isLiked = checkIsLiked(product.id);
   const pricing = getProductCardPricing(product);
   const isOutOfStock =
     !product.inventory.hasAvailableVariants || product.inventory.totalStock === 0;
+
+  const handleWishlistToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleWishlist(product.id);
+  };
 
   const handleCartClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -95,15 +101,20 @@ export function ProductCard({
           />
         )}
 
-        {/* Wishlist Status Indicator - NON-INTERACTIVE DISPLAY ONLY */}
-        {isLiked && (
-          <div
-            className="absolute top-2 left-2 z-10 p-1.5 rounded-full bg-white/90 backdrop-blur-xs text-rose-500 shadow-xs pointer-events-none select-none flex items-center justify-center"
-            aria-hidden="true"
-          >
-            <Heart size={16} fill="currentColor" className="text-rose-500" />
-          </div>
-        )}
+        {/* Wishlist Interactive Toggle Button */}
+        <button
+          type="button"
+          onClick={handleWishlistToggle}
+          aria-label={isLiked ? `حذف ${product.title} از لیست پسندیده‌ها` : `افزودن ${product.title} به لیست پسندیده‌ها`}
+          title={isLiked ? "حذف از پسندیده‌ها" : "افزودن به پسندیده‌ها"}
+          className={`absolute top-2 left-2 z-10 p-1.5 rounded-full shadow-xs transition-all cursor-pointer flex items-center justify-center ${
+            isLiked
+              ? "bg-white/95 backdrop-blur-xs text-rose-500 hover:bg-white hover:scale-110"
+              : "bg-white/80 backdrop-blur-xs text-neutral-400 hover:text-rose-500 hover:bg-white hover:scale-110"
+          }`}
+        >
+          <Heart size={16} fill={isLiked ? "currentColor" : "none"} className={isLiked ? "text-rose-500" : ""} />
+        </button>
 
         {/* Discount Badge */}
         {pricing.hasDiscount && pricing.discountPercent && !isOutOfStock && (
