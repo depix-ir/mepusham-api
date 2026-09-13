@@ -29,7 +29,7 @@ export function CategorySection({
               </h2>
             </div>
           )}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4 md:gap-5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-[8px]">
             {categories.map((category) => {
               const fallbackImg = "/images/category-1.webp";
               const imgSrc = category.imageUrl || fallbackImg;
@@ -38,7 +38,7 @@ export function CategorySection({
                 <Link
                   key={category.id}
                   href={`/category/${category.slug}`}
-                  className="group relative block w-full aspect-[4/3] sm:aspect-[3/4] rounded-2xl overflow-hidden bg-surface-subtle border border-border-product shadow-xs hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                  className="group relative block w-full aspect-square rounded-2xl overflow-hidden bg-surface-subtle border border-border-product shadow-xs hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
                 >
                   <Image
                     src={imgSrc}
@@ -47,12 +47,6 @@ export function CategorySection({
                     sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
                     className="object-cover object-center group-hover:scale-108 transition-transform duration-500"
                   />
-                  {/* Subtle Gradient & Text Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent flex items-end p-3 sm:p-4">
-                    <span className="text-xs sm:text-sm font-bold text-white group-hover:text-primary-200 transition-colors line-clamp-1">
-                      {category.name}
-                    </span>
-                  </div>
                 </Link>
               );
             })}

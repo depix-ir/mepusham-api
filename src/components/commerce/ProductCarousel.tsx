@@ -88,7 +88,7 @@ export function ProductCarousel({
         onMouseLeave={handleMouseLeaveOrUp}
         onMouseUp={handleMouseLeaveOrUp}
         onMouseMove={handleMouseMove}
-        className={`flex gap-2 sm:gap-4 overflow-x-auto no-scrollbar scroll-smooth py-1 px-0 dir-rtl select-none ${
+        className={`flex gap-[4px] overflow-x-auto no-scrollbar scroll-smooth py-1 px-0 dir-rtl select-none ${
           isMouseDown ? "cursor-grabbing scroll-auto" : "cursor-grab"
         }`}
       >
