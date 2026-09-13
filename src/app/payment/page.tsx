@@ -4,10 +4,11 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/store/cart/cart.store";
+import { accountService } from "@/lib/account/accountService";
 import { CheckoutPayload } from "@/types/checkout";
 import { formatPrice } from "@/lib/formatting/currency";
 import { TomanIcon } from "@/components/icons";
-import { ShieldCheck, CheckCircle2, ArrowRight, CreditCard, Lock, AlertCircle } from "lucide-react";
+import { ShieldCheck, CreditCard, Lock, AlertCircle } from "lucide-react";
 
 export default function PaymentPage() {
   const router = useRouter();
@@ -23,50 +24,28 @@ export default function PaymentPage() {
     }
   });
 
-  const [isPaid, setIsPaid] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleSimulatePayment = () => {
+    if (!payload || isProcessing) return;
     setIsProcessing(true);
+
     setTimeout(() => {
-      setIsProcessing(false);
-      setIsPaid(true);
+      // Create new Order snapshot in accountService single source of truth
+      const createdOrder = accountService.createOrder(payload);
+
+      // Clear cart & clear temporary checkout payload
       clearCart();
       try {
         sessionStorage.removeItem("pending_checkout_payload");
       } catch {
         // ignore
       }
-    }, 1200);
+
+      // Redirect to Order Confirmation post-purchase view
+      router.push(`/order-confirmation/${createdOrder.id}`);
+    }, 1000);
   };
-
-  if (isPaid) {
-    return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
-        <div className="w-full max-w-md bg-background border border-border-subtle rounded-2xl p-6 sm:p-8 text-center flex flex-col items-center gap-6 shadow-md">
-          <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center animate-bounce">
-            <CheckCircle2 className="w-9 h-9" />
-          </div>
-          <div className="flex flex-col gap-2">
-            <h1 className="text-xl font-black text-foreground">
-              پرداخت با موفقیت انجام شد!
-            </h1>
-            <p className="text-xs sm:text-sm text-muted leading-relaxed">
-              سفارش شما ثبت گردید و جهت پردازش به انبار ارسال شد.
-            </p>
-          </div>
-
-          <Link
-            href="/products"
-            className="w-full h-11 rounded-xl bg-primary text-primary-foreground font-bold text-xs sm:text-sm flex items-center justify-center gap-2 hover:bg-primary-hover transition-all shadow-md"
-          >
-            <span>بازگشت به فروشگاه</span>
-            <ArrowRight className="w-4 h-4 rtl:rotate-180" />
-          </Link>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">

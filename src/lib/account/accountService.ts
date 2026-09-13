@@ -34,9 +34,158 @@ class AccountService {
 
   getOrderById(orderId: string): Order | undefined {
     const orders = this.getOrders();
+    // Normalize comparison by stripping potential # or whitespace
+    const cleanId = orderId.replace(/^#/, "").trim();
     return orders.find(
-      (o) => o.id === orderId || o.orderNumber === orderId
+      (o) => o.id === cleanId || o.orderNumber === cleanId || o.id === orderId || o.orderNumber === orderId
     );
+  }
+
+  createOrder(payload: {
+    customer: {
+      firstName: string;
+      lastName: string;
+      phone: string;
+      province: string;
+      city: string;
+      address: string;
+      postalCode: string;
+    };
+    shipping: {
+      methodId: string;
+      price: number;
+      title: string;
+      estimatedDelivery?: string;
+    };
+    items: {
+      productId: string;
+      variantId?: string;
+      quantity: number;
+      unitPrice: number;
+    }[];
+    pricing: {
+      itemsSubtotal: number;
+      shippingCost: number;
+      payableTotal: number;
+    };
+    createdAt?: string;
+  }): Order {
+    const orders = this.getOrders();
+    const newOrderNumber = `${12458 + orders.length}`;
+    const newOrderId = `order-${newOrderNumber}`;
+
+    // Dynamically look up products to construct full item snapshots
+    // Importing products inline or referencing module catalog
+    const { products } = require("@/data/products");
+
+    const orderItems: Order["items"] = payload.items.map((item, index) => {
+      const product = products.find((p: any) => p.id === item.productId);
+      const title = product ? product.title : "محصول خریداری شده";
+      const image = product?.images?.[0]?.url || "/images/bag-1.webp";
+
+      let variantInfo: { color?: string; size?: string } | undefined;
+      if (product && item.variantId) {
+        const variantObj = product.variants?.find((v: any) => v.id === item.variantId);
+        if (variantObj && variantObj.optionValues) {
+          variantInfo = {};
+          variantObj.optionValues.forEach((optVal: any) => {
+            const opt = product.options?.find((o: any) => o.id === optVal.optionId);
+            const val = opt?.values?.find((v: any) => v.id === optVal.valueId);
+            if (opt?.type === "color" && val) variantInfo!.color = val.label;
+            if (opt?.type === "size" && val) variantInfo!.size = val.label;
+          });
+        }
+      }
+
+      return {
+        id: `item-${Date.now()}-${index}`,
+        productId: item.productId,
+        title,
+        image,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+        finalUnitPrice: item.unitPrice,
+        variant: variantInfo,
+      };
+    });
+
+    const nowFa = new Date().toLocaleDateString("fa-IR");
+
+    const newOrder: Order = {
+      id: newOrderId,
+      orderNumber: newOrderNumber,
+      createdAt: nowFa,
+      status: "processing",
+      itemsSubtotal: payload.pricing.itemsSubtotal,
+      shippingCost: payload.pricing.shippingCost,
+      payableTotal: payload.pricing.payableTotal,
+      shippingMethod: {
+        id: payload.shipping.methodId,
+        title: payload.shipping.title,
+        carrierName: payload.shipping.title,
+      },
+      shippingAddress: {
+        recipientName: `${payload.customer.firstName} ${payload.customer.lastName}`.trim(),
+        phone: payload.customer.phone,
+        province: payload.customer.province,
+        city: payload.customer.city,
+        address: payload.customer.address,
+        postalCode: payload.customer.postalCode,
+      },
+      items: orderItems,
+      timeline: [
+        {
+          id: `tl-${Date.now()}-1`,
+          status: "pending",
+          title: "ثبت سفارش",
+          description: "سفارش شما با موفقیت ثبت شد",
+          date: nowFa,
+          completed: true,
+        },
+        {
+          id: `tl-${Date.now()}-2`,
+          status: "confirmed",
+          title: "تأیید سفارش",
+          description: "پرداخت آنلاین تأیید شد",
+          date: nowFa,
+          completed: true,
+        },
+        {
+          id: `tl-${Date.now()}-3`,
+          status: "processing",
+          title: "در حال آماده‌سازی",
+          description: "مرسوله در انبار اصلی در حال بسته‌بندی است",
+          date: nowFa,
+          completed: true,
+        },
+        {
+          id: `tl-${Date.now()}-4`,
+          status: "shipped",
+          title: "تحویل به پست",
+          description: "تحویل شرکت پست جهت ارسال داده خواهد شد",
+          completed: false,
+        },
+        {
+          id: `tl-${Date.now()}-5`,
+          status: "delivered",
+          title: "تحویل به مشتری",
+          completed: false,
+        },
+      ],
+    };
+
+    const updated = [newOrder, ...orders];
+    this.persistOrders(updated);
+    return newOrder;
+  }
+
+  private persistOrders(orders: Order[]): void {
+    if (typeof window === "undefined") return;
+    try {
+      localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+    } catch (e) {
+      console.error("Failed to save orders to localStorage", e);
+    }
   }
 
   /* ================= ADDRESSES ================= */
