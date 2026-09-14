@@ -3,7 +3,7 @@
 import React from "react";
 import { formatPrice } from "@/lib/formatting/currency";
 import { TomanIcon } from "@/components/icons";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft, ArrowRight } from "lucide-react";
 
 interface MobileCheckoutBarProps {
   payableTotal: number;
@@ -45,7 +45,7 @@ export function MobileCheckoutBar({
           ) : (
             <>
               <span>انتقال به صفحه پرداخت</span>
-              <ArrowLeft className="w-4 h-4 rtl:rotate-180" />
+              <ArrowRight className="w-4 h-4 rtl:rotate-180" />
             </>
           )}
         </button>

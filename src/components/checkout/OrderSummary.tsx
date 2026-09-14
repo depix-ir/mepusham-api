@@ -4,7 +4,7 @@ import React from "react";
 import { ShippingOption } from "@/data/shipping";
 import { formatPrice } from "@/lib/formatting/currency";
 import { TomanIcon } from "@/components/icons";
-import { ShieldCheck, Loader2, ArrowLeft } from "lucide-react";
+import { ShieldCheck, Loader2, ArrowLeft, ArrowRight } from "lucide-react";
 
 interface OrderSummaryProps {
   itemsSubtotal: number;
@@ -78,7 +78,7 @@ export function OrderSummary({
         ) : (
           <>
             <span>انتقال به صفحه پرداخت</span>
-            <ArrowLeft className="w-4 h-4 rtl:rotate-180" />
+            <ArrowRight className="w-4 h-4 rtl:rotate-180" />
           </>
         )}
       </button>

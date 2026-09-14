@@ -30,7 +30,7 @@ export function CustomerInformationForm({
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex items-center gap-2.5 pb-3 border-b border-border-subtle">
+      <div className="flex items-center gap-2.5 ">
         <div className="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center shrink-0">
           ۱
         </div>

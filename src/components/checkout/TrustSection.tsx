@@ -45,8 +45,8 @@ export function TrustSection() {
           onClick={() => setIsModalOpen(true)}
           className="text-[11px] direction-ltr font-medium text-muted hover:text-primary inline-flex items-center gap-1 transition-colors cursor-pointer pt-1"
         >
-          <span>مطالعه شرایط بازگشت و مرجوعی کالا</span>
           <ChevronLeft className="w-3 h-3 rtl:rotate-180" />
+          <span>مطالعه شرایط بازگشت و مرجوعی کالا</span>
         </button>
       </div>
 

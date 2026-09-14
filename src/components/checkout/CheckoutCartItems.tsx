@@ -21,7 +21,7 @@ export function CheckoutCartItems({
 }: CheckoutCartItemsProps) {
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex items-center gap-2.5 pb-3 border-b border-border-subtle">
+      <div className="flex items-center gap-2.5  ">
         <div className="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center shrink-0">
           ۳
         </div>
@@ -30,7 +30,7 @@ export function CheckoutCartItems({
         </h2>
       </div>
 
-      <div className="">
+      <div className="p-4 bg-surface-subtle  border-border-subtle rounded-xl ">
         {items.map((item) => {
           const productHref = `/products/${item.productSlug || item.productId}`;
 
