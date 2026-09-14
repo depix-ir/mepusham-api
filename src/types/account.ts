@@ -74,11 +74,20 @@ export type TicketStatus =
   | "waiting-support"
   | "closed";
 
+export interface TicketAttachment {
+  id: string;
+  name: string;
+  size: number;
+  type: string;
+  url: string;
+}
+
 export interface TicketMessage {
   id: string;
   sender: "user" | "support";
   text: string;
   createdAt: string;
+  attachments?: TicketAttachment[];
 }
 
 export interface SupportTicket {

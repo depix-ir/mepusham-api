@@ -303,6 +303,7 @@ class AccountService {
     orderId?: string;
     orderNumber?: string;
     message: string;
+    attachments?: import("@/types/account").TicketAttachment[];
   }): SupportTicket {
     const tickets = this.getTickets();
     const ticketNum = `${1250 + tickets.length}`;
@@ -322,6 +323,7 @@ class AccountService {
           sender: "user",
           text: params.message,
           createdAt: "هم‌اکنون",
+          attachments: params.attachments,
         },
       ],
     };
@@ -331,7 +333,11 @@ class AccountService {
     return newTicket;
   }
 
-  addTicketMessage(ticketId: string, text: string): SupportTicket {
+  addTicketMessage(
+    ticketId: string,
+    text: string,
+    attachments?: import("@/types/account").TicketAttachment[]
+  ): SupportTicket {
     const tickets = this.getTickets();
     let updatedTicket: SupportTicket | undefined;
 
@@ -342,6 +348,7 @@ class AccountService {
           sender: "user",
           text,
           createdAt: "هم‌اکنون",
+          attachments,
         };
         const newStatus: TicketStatus = "waiting-support";
         updatedTicket = {
