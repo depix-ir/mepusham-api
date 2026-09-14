@@ -1,4 +1,7 @@
-import type { Metadata, Viewport } from "next";
+"use client";
+
+import React from "react";
+import { usePathname } from "next/navigation";
 import { peydaFont } from "@/lib/fonts";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -10,17 +13,24 @@ import { ToastProvider } from "@/components/ui/Toast";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import "./globals.css";
 
-export const metadata: Metadata = {
-  title: "مپوشام | فروشگاه اینترنتی پوشاک زنانه و دخترانه",
-  description: "فروشگاه آنلاین لباس زنانه، دخترانه، کفش، کیف و اکسسوری‌های مد و فشن",
-};
+function AppShell({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const isAdminPage = pathname.startsWith("/admin");
 
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 1,
-  themeColor: "#1C68CC",
-};
+  if (isAdminPage) {
+    return <main className="flex-1 w-full">{children}</main>;
+  }
+
+  return (
+    <>
+      <Header />
+      <main className="flex-1 w-full">{children}</main>
+      <Footer />
+      <MobileBottomBar />
+      <CartDrawer />
+    </>
+  );
+}
 
 export default function RootLayout({
   children,
@@ -34,11 +44,7 @@ export default function RootLayout({
           <AuthProvider>
             <CartProvider>
               <WishlistProvider>
-                <Header />
-                <main className="flex-1 w-full">{children}</main>
-                <Footer />
-                <MobileBottomBar />
-                <CartDrawer />
+                <AppShell>{children}</AppShell>
               </WishlistProvider>
             </CartProvider>
           </AuthProvider>

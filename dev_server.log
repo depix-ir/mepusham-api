@@ -1,0 +1,13 @@
+$ next dev
+▲ Next.js 16.3.4 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+✓ Ready in 550ms
+✓ Running next.config.ts took 43ms
+
+○ Compiling /admin/dashboard ...
+ HEAD /admin/dashboard 200 in 4.1s (next.js: 3.6s, application-code: 440ms)
+ GET /admin/dashboard 200 in 137ms (next.js: 11ms, application-code: 127ms)
+ GET /admin/dashboard 200 in 152ms (next.js: 5ms, application-code: 148ms)
+ GET /admin/dashboard 200 in 115ms (next.js: 9ms, application-code: 107ms)
+ GET /admin/dashboard 200 in 107ms (next.js: 5ms, application-code: 102ms)
