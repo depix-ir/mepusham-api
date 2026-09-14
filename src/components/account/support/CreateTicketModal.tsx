@@ -96,7 +96,7 @@ export function CreateTicketModal({
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border-subtle bg-surface-subtle/50">
           <div className="flex items-center gap-2">
-            <HelpCircle className="w-5 h-5 text-primary" />
+            <HelpCircle className="w-4 h-4 text-primary" />
             <h3 id="create-ticket-title" className="text-base font-bold text-foreground">
               ایجاد تیکت پشتیبانی جدید
             </h3>
@@ -104,9 +104,9 @@ export function CreateTicketModal({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg hover:bg-surface-subtle transition-colors cursor-pointer"
+            className=""
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 

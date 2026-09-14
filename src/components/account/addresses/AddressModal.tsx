@@ -147,13 +147,13 @@ export function AddressModal({
       aria-labelledby="address-modal-title"
     >
       <div
-        className="relative w-full max-w-lg bg-background border border-border rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200"
+        className="relative w-full  bg-background border border-border rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border-subtle bg-surface-subtle/50">
           <div className="flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-primary" />
+            <MapPin className="w-4 h-4 text-primary" />
             <h3 id="address-modal-title" className="text-base font-bold text-foreground">
               {address ? "ویرایش آدرس" : "افزودن آدرس جدید"}
             </h3>
@@ -161,9 +161,9 @@ export function AddressModal({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg hover:bg-surface-subtle transition-colors cursor-pointer"
+            className=""
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 

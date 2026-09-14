@@ -62,16 +62,16 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           >
             <div className="flex items-center gap-2.5 flex-1 min-w-0">
               {toast.type === "error" && (
-                <AlertCircle className="w-5 h-5 text-red-300 shrink-0" />
+                <AlertCircle className="w-4 h-4 text-red-300 shrink-0" />
               )}
               {toast.type === "success" && (
-                <CheckCircle2 className="w-5 h-5 text-emerald-300 shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-emerald-300 shrink-0" />
               )}
               {toast.type === "warning" && (
-                <AlertTriangle className="w-5 h-5 text-amber-300 shrink-0" />
+                <AlertTriangle className="w-4 h-4 text-amber-300 shrink-0" />
               )}
               {toast.type === "info" && (
-                <Info className="w-5 h-5 text-sky-300 shrink-0" />
+                <Info className="w-4 h-4 text-sky-300 shrink-0" />
               )}
               <span className="text-xs sm:text-sm font-medium leading-tight break-words">
                 {toast.message}

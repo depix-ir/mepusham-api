@@ -158,9 +158,9 @@ export function WishlistClientPage() {
         >
           <div className="flex items-start gap-2.5">
             {feedbackMessage.type === "success" ? (
-              <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
             ) : (
-              <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+              <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
             )}
             <div className="flex flex-col gap-0.5">
               <span className="text-xs sm:text-sm font-bold">{feedbackMessage.text}</span>

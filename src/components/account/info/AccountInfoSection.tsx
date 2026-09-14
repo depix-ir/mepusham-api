@@ -21,7 +21,7 @@ export function AccountInfoSection({
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <h2 className="text-base sm:text-lg font-bold text-foreground flex items-center gap-2">
-          <UserIcon className="w-5 h-5 text-primary" />
+          <UserIcon className="w-4 h-4 text-primary" />
           <span>اطلاعات حساب</span>
         </h2>
 
@@ -36,14 +36,14 @@ export function AccountInfoSection({
       </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-          <div className="p-3 bg-surface-subtle/60 rounded-xl space-y-0.5 border border-border-subtle/50">
+          <div className="p-3 bg-surface-subtle/60 rounded-xl space-y-0.5 ">
             <span className="text-muted-foreground text-[11px]">نام و نام خانوادگی</span>
             <p className="font-bold text-foreground text-sm">
               {user.firstName} {user.lastName}
             </p>
           </div>
 
-          <div className="p-3 bg-surface-subtle/60 rounded-xl space-y-0.5 border border-border-subtle/50">
+          <div className="p-3 bg-surface-subtle/60 rounded-xl space-y-0.5 ">
             <span className="text-muted-foreground text-[11px] flex items-center gap-1">
               <Phone className="w-3 h-3 text-primary" />
               <span>شماره همراه</span>

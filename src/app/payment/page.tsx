@@ -108,7 +108,7 @@ export default function PaymentPage() {
 
         {!payload ? (
           <div className="p-6 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center gap-3">
-            <AlertCircle className="w-5 h-5 shrink-0 text-amber-600" />
+            <AlertCircle className="w-4 h-4 shrink-0 text-amber-600" />
             <span>اطلاعات سفارشی یافت نشد. لطفاً ابتدا از طریق سبد خرید وارد مرحله پرداخت شوید.</span>
           </div>
         ) : (

@@ -104,9 +104,9 @@ export function TicketDetailModal({
             <button
               type="button"
               onClick={onClose}
-              className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg hover:bg-surface-subtle transition-colors cursor-pointer"
+              className=""
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
         </div>

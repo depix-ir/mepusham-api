@@ -50,7 +50,7 @@ export function OrderCard({ order }: OrderCardProps) {
   const remainingCount = order.items.length - maxThumbnails;
 
   return (
-    <div className="w-full bg-surface-subtle/60  rounded-2xl p-4 sm:p-5 shadow-2xs hover:border-border transition-all space-y-4">
+    <div className="w-full bg-background border border-border  rounded-2xl p-4 sm:p-5 shadow-2xs hover:border-border transition-all space-y-4">
       {/* Top Header Row */}
       <div className="flex items-center justify-between gap-3  pb-3">
         <div className="flex items-center gap-2 flex-wrap">
@@ -69,7 +69,7 @@ export function OrderCard({ order }: OrderCardProps) {
       </div>
 
       {/* Middle Row: Product Thumbnails + Price Summary */}
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center bg-surface-subtle p-4 rounded justify-between gap-4">
         {/* Product Thumbnails Preview */}
         <div className="flex items-center gap-2 overflow-x-auto py-0.5 no-scrollbar">
           {visibleItems.map((item, idx) => (

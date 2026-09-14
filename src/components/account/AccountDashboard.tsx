@@ -81,17 +81,17 @@ export function AccountDashboard({
       <Container>
         <div className="space-y-6 sm:space-y-8">
           {/* Greeting & Account Summary Bar */}
-          <div className="bg-primery border border-border-subtle rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="bg-primary/100  rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-bold text-lg shrink-0">
+              <div className="w-12 h-12 rounded-2xl bg-primary-foreground text-primary flex items-center justify-center font-bold text-lg shrink-0">
                 {user.firstName ? user.firstName.charAt(0) : "م"}
               </div>
               <div>
-                <h1 className="text-lg sm:text-xl font-bold text-foreground flex items-center gap-2">
+                <h1 className="text-lg sm:text-xl font-bold text-surface flex items-center gap-2">
                   <span>سلام، {user.firstName || "کاربر گرامی"}</span>
                   <Sparkles className="w-4 h-4 text-amber-500 fill-amber-500" />
                 </h1>
-                <p className="text-xs text-muted-foreground mt-0.5">
+                <p className="text-xs text-primary-foreground mt-0.5">
                   خوش آمدید • مدیریت سفارش‌ها و حساب کاربری
                 </p>
               </div>
@@ -99,14 +99,14 @@ export function AccountDashboard({
 
             {/* Subtle Summary Pills */}
             <div className="flex items-center gap-2 sm:gap-3 text-xs overflow-x-auto pb-1 sm:pb-0 no-scrollbar">
-              <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-background border border-border-subtle shrink-0">
+              <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-background  shrink-0">
                 <ShoppingBag className="w-3.5 h-3.5 text-primary" />
                 <span className="text-muted-foreground">کل سفارش‌ها:</span>
                 <span className="font-bold text-foreground">{totalOrdersCount}</span>
               </div>
 
               {shippedOrdersCount > 0 && (
-                <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary/10 border border-primary/20 shrink-0">
+                <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-background  shrink-0">
                   <Truck className="w-3.5 h-3.5 text-primary" />
                   <span className="text-primary font-bold">
                     {shippedOrdersCount} در حال ارسال
@@ -114,7 +114,7 @@ export function AccountDashboard({
                 </div>
               )}
 
-              <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-background border border-border-subtle shrink-0">
+              <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-background  shrink-0">
                 <PackageCheck className="w-3.5 h-3.5 text-emerald-600" />
                 <span className="text-muted-foreground">تحویل شده:</span>
                 <span className="font-bold text-foreground">{deliveredOrdersCount}</span>
@@ -130,7 +130,7 @@ export function AccountDashboard({
               <AccountOrdersSummary orders={orders} />
 
               {/* Addresses Section */}
-              <div className="bg-background border border-border-subtle rounded-2xl p-4 sm:p-5 shadow-2xs">
+              <div className="bg-background border border-border rounded-2xl p-4 sm:p-5 shadow-2xs">
                 <AddressesSection
                   addresses={addresses}
                   onSaveAddress={handleSaveAddress}
@@ -143,7 +143,7 @@ export function AccountDashboard({
             {/* Secondary Column (4 Cols Desktop) */}
             <div className="lg:col-span-4 space-y-6">
               {/* Personal Information Section */}
-              <div className="bg-background border border-border-subtle rounded-2xl p-4 sm:p-5 shadow-2xs">
+              <div className="bg-background border border-border rounded-2xl p-4 sm:p-5 shadow-2xs">
                 <AccountInfoSection
                   user={user}
                   onUpdateProfile={onUpdateProfile}
@@ -151,7 +151,7 @@ export function AccountDashboard({
               </div>
 
               {/* Support & Tickets Section */}
-              <div className="bg-background border border-border-subtle rounded-2xl p-4 sm:p-5 shadow-2xs">
+              <div className="bg-background border border-border rounded-2xl p-4 sm:p-5 shadow-2xs">
                 <SupportSection
                   tickets={tickets}
                   orders={orders}

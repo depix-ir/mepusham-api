@@ -44,7 +44,7 @@ export function ReturnPolicyModal({ isOpen, onClose }: ReturnPolicyModalProps) {
         {/* Modal Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border-subtle">
           <div className="flex items-center gap-2">
-            <RotateCcw className="w-5 h-5 text-primary" />
+            <RotateCcw className="w-4 h-4 text-primary" />
             <h3 id="return-policy-title" className="text-base font-bold text-foreground">
               شرایط بازگشت و مرجوعی کالا
             </h3>
@@ -55,7 +55,7 @@ export function ReturnPolicyModal({ isOpen, onClose }: ReturnPolicyModalProps) {
             className="p-1.5 text-muted hover:text-foreground rounded-lg hover:bg-surface-subtle transition-colors cursor-pointer"
             aria-label="بستن پنجره"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 

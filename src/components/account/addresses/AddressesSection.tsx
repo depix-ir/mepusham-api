@@ -36,7 +36,7 @@ export function AddressesSection({
       {/* Section Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-base sm:text-lg font-bold text-foreground flex items-center gap-2">
-          <MapPin className="w-5 h-5 text-primary" />
+          <MapPin className="w-4 h-4 text-primary" />
           <span>آدرس‌های من</span>
         </h2>
 

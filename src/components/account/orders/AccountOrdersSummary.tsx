@@ -31,7 +31,7 @@ export function AccountOrdersSummary({ orders }: AccountOrdersSummaryProps) {
   };
 
   return (
-    <div className="bg-background border border-border-subtle rounded-2xl p-4 shadow-2xs space-y-4">
+    <div className="bg-background border border-border rounded-2xl p-4 shadow-2xs space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -55,8 +55,8 @@ export function AccountOrdersSummary({ orders }: AccountOrdersSummaryProps) {
 
       {/* Latest Order Summary Snippet */}
       {latestOrder ? (
-        <div className="p-3.5 bg-surface-subtle/50 border border-border-subtle rounded-xl flex items-center justify-between gap-3 text-xs">
-          <div className="space-y-1 min-w-0">
+        <div className="p-3.5 bg-surface-subtle/50  rounded-xl flex  items-center justify-between  text-xs">
+          <div className="space-y-3 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="font-bold text-foreground" dir="ltr">
                 سفارش #{latestOrder.orderNumber}
@@ -84,7 +84,7 @@ export function AccountOrdersSummary({ orders }: AccountOrdersSummaryProps) {
 
           <Link
             href={`/orders/${latestOrder.id}`}
-            className="inline-flex items-center justify-center px-3 py-1.5 rounded-lg bg-background border border-border-subtle text-xs font-bold text-foreground hover:bg-surface-subtle transition-colors shrink-0"
+            className="inline-flex items-center justify-center px-3 py-1.5 rounded-lg bg-background border border-border/80 text-xs font-bold text-foreground hover:bg-surface-subtle transition-colors shrink-0"
           >
             مشاهده جزئیات
           </Link>

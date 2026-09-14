@@ -47,7 +47,7 @@ export function OrdersSection({
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <h2 className="text-base sm:text-lg font-bold text-foreground flex items-center gap-2">
-            <ShoppingBag className="w-5 h-5 text-primary" />
+            <ShoppingBag className="w-4 h-4 text-primary" />
             <span>سفارش‌های من</span>
           </h2>
           <span className="text-xs text-muted-foreground font-medium">

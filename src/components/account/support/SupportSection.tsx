@@ -61,7 +61,7 @@ export function SupportSection({
       {/* Section Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-base sm:text-lg font-bold text-foreground flex items-center gap-2">
-          <Headset className="w-5 h-5 text-primary" />
+          <Headset className="w-4 h-4 text-primary" />
           <span>پشتیبانی و تیکت‌ها</span>
         </h2>
 
@@ -118,7 +118,7 @@ export function SupportSection({
       ) : (
         <div className="p-6 border border-dashed border-border rounded-2xl text-center space-y-3 bg-surface-subtle/30">
           <div className="w-10 h-10 rounded-full bg-surface-muted text-muted-foreground mx-auto flex items-center justify-center">
-            <MessageSquare className="w-5 h-5" />
+            <MessageSquare className="w-4 h-4" />
           </div>
           <div className="space-y-0.5">
             <p className="text-xs font-bold text-foreground">مشکلی در سفارش یا سوالی دارید؟</p>

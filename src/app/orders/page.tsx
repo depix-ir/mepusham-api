@@ -84,8 +84,8 @@ export default function OrdersPage() {
         {/* Page Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3  pb-4">
           <div className="space-y-1">
-            <h1 className="text-lg sm:text-xl font-bold text-foreground flex items-center gap-2">
-              <ShoppingBag className="w-5 h-5 text-primary" />
+            <h1 className="text-lg sm:text-xl font-bold text-primary flex items-center gap-2">
+              <ShoppingBag className="w-4 h-4 text-primary" />
               <span>سفارش‌های من</span>
             </h1>
             <p className="text-xs text-muted-foreground">

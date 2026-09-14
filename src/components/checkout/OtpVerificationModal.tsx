@@ -170,7 +170,7 @@ export function OtpVerificationModal({
           className="absolute left-4 top-4 p-1.5 rounded-lg text-muted hover:text-foreground hover:bg-surface-subtle transition-colors cursor-pointer"
           aria-label="بستن"
         >
-          <X className="w-5 h-5" />
+          <X className="w-4 h-4" />
         </button>
 
         <div className="text-center space-y-2 pt-2">

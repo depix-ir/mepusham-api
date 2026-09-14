@@ -74,7 +74,7 @@ export function OrderDetailsModal({
         {/* Modal Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border-subtle bg-surface-subtle/50">
           <div className="flex items-center gap-2">
-            <PackageCheck className="w-5 h-5 text-primary" />
+            <PackageCheck className="w-4 h-4 text-primary" />
             <div>
               <h3 id="order-details-title" className="text-sm sm:text-base font-bold text-foreground">
                 جزئیات سفارش <span dir="ltr">#{order.orderNumber}</span>
@@ -88,10 +88,10 @@ export function OrderDetailsModal({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg hover:bg-surface-subtle transition-colors cursor-pointer"
+            className=""
             aria-label="بستن"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
