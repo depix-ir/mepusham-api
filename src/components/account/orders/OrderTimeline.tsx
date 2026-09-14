@@ -46,7 +46,7 @@ export function OrderTimeline({ timeline, compact = false }: OrderTimelineProps)
   // Full timeline view
   return (
     <div className="w-full py-2">
-      <div className="relative flex items-center justify-between">
+      <div className="relative flex items-start justify-between">
         {/* Horizontal Line connecting steps */}
         <div className="absolute top-3.5 left-4 right-4 h-0.5 bg-border-subtle -z-0" />
 

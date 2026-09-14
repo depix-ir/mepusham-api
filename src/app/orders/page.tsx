@@ -66,7 +66,7 @@ export default function OrdersPage() {
   });
 
   return (
-    <div className="py-6 sm:py-10 bg-background min-h-screen pb-24 md:pb-12">
+    <div className="py-6 max-w-[800px] m-auto sm:py-10 bg-background min-h-screen pb-24 md:pb-12">
       <Container className="max-w-4xl space-y-6">
         {/* Breadcrumb Navigation */}
         <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -82,7 +82,7 @@ export default function OrdersPage() {
         </nav>
 
         {/* Page Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border-subtle pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3  pb-4">
           <div className="space-y-1">
             <h1 className="text-lg sm:text-xl font-bold text-foreground flex items-center gap-2">
               <ShoppingBag className="w-5 h-5 text-primary" />
@@ -102,7 +102,7 @@ export default function OrdersPage() {
 
         {/* Minimal Tab Filters */}
         {orders.length > 0 && (
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar border-b border-border-subtle">
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar ">
             {filterTabs.map((tab) => {
               const isActive = activeFilter === tab.id;
               const count =

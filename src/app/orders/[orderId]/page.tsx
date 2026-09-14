@@ -122,7 +122,7 @@ export default function OrderDetailPage({
   };
 
   return (
-    <div className="py-6 sm:py-10 bg-background min-h-screen pb-24 md:pb-12">
+    <div className="py-6 sm:py-10 max-w-[800px] m-auto bg-background min-h-screen pb-24 md:pb-12">
       <Container className="max-w-3xl space-y-6">
         {/* Breadcrumb Navigation */}
         <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -157,11 +157,11 @@ export default function OrderDetailPage({
         </div>
 
         {/* Main Content Wrapper */}
-        <div className="bg-background border border-border-subtle rounded-2xl p-4 sm:p-6 shadow-2xs space-y-6">
+        <div className="bg-background   rounded-2xl   shadow-2xs space-y-6">
           {/* Header */}
-          <div className="flex items-center gap-3 border-b border-border-subtle pb-4">
+          <div className="flex items-center gap-3  pb-4">
             <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-              <PackageCheck className="w-5 h-5" />
+              <PackageCheck className="w-4 h-4" />
             </div>
             <div>
               <h1 className="text-base sm:text-lg font-bold text-foreground">
@@ -174,7 +174,7 @@ export default function OrderDetailPage({
           </div>
 
           {/* Timeline */}
-          <div className="bg-surface-subtle/50 border border-border-subtle rounded-xl p-4">
+          <div className="">
             <OrderTimeline timeline={order.timeline} />
           </div>
 
@@ -210,7 +210,7 @@ export default function OrderDetailPage({
               </button>
             </div>
           ) : (
-            <div className="bg-surface-subtle/60 border border-border-subtle rounded-xl p-3.5 text-xs text-muted-foreground flex items-center gap-2">
+            <div className="bg-surface-subtle/60  rounded-xl p-3.5 text-xs text-muted-foreground flex items-center gap-2">
               <Truck className="w-4 h-4 text-muted-foreground shrink-0" />
               <span>روش ارسال: <strong>{order.shippingMethod.title}</strong> (کد رهگیری پس از تحویل به پست ثبت می‌شود)</span>
             </div>
@@ -219,7 +219,7 @@ export default function OrderDetailPage({
           {/* Purchased Items List */}
           <div className="space-y-2">
             <h2 className="text-xs font-bold text-foreground">کالاهای سفارش ({order.items.length})</h2>
-            <div className="bg-background border border-border-subtle rounded-xl p-3 divide-y divide-border-subtle">
+            <div className="bg-surface-subtle/60  rounded-xl p-3 divide-y divide-border-subtle">
               {order.items.map((item) => (
                 <OrderItemRow key={item.id} item={item} />
               ))}
@@ -232,7 +232,7 @@ export default function OrderDetailPage({
               <MapPin className="w-4 h-4 text-primary" />
               <span>آدرس تحویل سفارش</span>
             </h2>
-            <div className="bg-surface-subtle/50 border border-border-subtle rounded-xl p-4 text-xs text-foreground space-y-1">
+            <div className="bg-surface-subtle/50  rounded-xl p-4 text-xs text-foreground space-y-1">
               <p className="font-bold">{order.shippingAddress.recipientName} ({order.shippingAddress.phone})</p>
               <p className="text-muted-foreground">
                 {order.shippingAddress.province}، {order.shippingAddress.city}، {order.shippingAddress.address}
@@ -244,7 +244,7 @@ export default function OrderDetailPage({
           </div>
 
           {/* Financial Summary */}
-          <div className="bg-surface-subtle/50 border border-border-subtle rounded-xl p-4 space-y-2.5 text-xs">
+          <div className="bg-surface-subtle/50  rounded-xl p-4 space-y-2.5 text-xs">
             <div className="flex justify-between text-muted-foreground">
               <span>مجموع کالاها</span>
               <div className="flex items-center gap-1 font-bold text-foreground">
@@ -267,7 +267,7 @@ export default function OrderDetailPage({
               </div>
             </div>
 
-            <div className="pt-2.5 border-t border-border-subtle flex justify-between font-bold text-sm text-foreground">
+            <div className="pt-2.5  flex justify-between font-bold text-sm text-foreground">
               <span>مبلغ قابل پرداخت</span>
               <div className="flex items-center gap-1 text-primary text-base">
                 <span>{formatPrice(order.payableTotal)}</span>
@@ -280,9 +280,9 @@ export default function OrderDetailPage({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
             <Link
               href="/account"
-              className="p-3.5 bg-surface-subtle/60 border border-border-subtle rounded-xl flex items-center gap-3 hover:border-border transition-colors group"
+              className="p-3.5 bg-surface-subtle/60  rounded-xl flex items-center gap-3 hover:border-border transition-colors group"
             >
-              <HelpCircle className="w-5 h-5 text-primary shrink-0" />
+              <HelpCircle className="w-4 h-4 text-primary shrink-0" />
               <div className="space-y-0.5">
                 <span className="text-xs font-bold text-foreground block group-hover:text-primary transition-colors">
                   ارتباط با پشتیبانی
@@ -295,9 +295,9 @@ export default function OrderDetailPage({
 
             <Link
               href="/returns"
-              className="p-3.5 bg-surface-subtle/60 border border-border-subtle rounded-xl flex items-center gap-3 hover:border-border transition-colors group"
+              className="p-3.5 bg-surface-subtle/60  rounded-xl flex items-center gap-3 hover:border-border transition-colors group"
             >
-              <RotateCcw className="w-5 h-5 text-muted-foreground shrink-0 group-hover:text-foreground transition-colors" />
+              <RotateCcw className="w-4 h-4 text-muted-foreground shrink-0 group-hover:text-foreground transition-colors" />
               <div className="space-y-0.5">
                 <span className="text-xs font-bold text-foreground block group-hover:text-primary transition-colors">
                   قوانین و رویه مرجوعی

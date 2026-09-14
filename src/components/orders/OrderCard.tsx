@@ -50,9 +50,9 @@ export function OrderCard({ order }: OrderCardProps) {
   const remainingCount = order.items.length - maxThumbnails;
 
   return (
-    <div className="w-full bg-background border border-border-subtle rounded-2xl p-4 sm:p-5 shadow-2xs hover:border-border transition-all space-y-4">
+    <div className="w-full bg-surface-subtle/60  rounded-2xl p-4 sm:p-5 shadow-2xs hover:border-border transition-all space-y-4">
       {/* Top Header Row */}
-      <div className="flex items-center justify-between gap-3 border-b border-border-subtle/80 pb-3">
+      <div className="flex items-center justify-between gap-3  pb-3">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-sm font-bold text-foreground" dir="ltr">
             سفارش #{order.orderNumber}
@@ -139,7 +139,7 @@ export function OrderCard({ order }: OrderCardProps) {
       )}
 
       {/* Bottom CTA Action Bar */}
-      <div className="flex items-center justify-between gap-2 pt-2 border-t border-border-subtle/60">
+      <div className="flex items-center justify-between gap-2 pt-2 ">
         <span className="text-xs text-muted-foreground hidden sm:inline">
           روش ارسال: {order.shippingMethod.title}
         </span>
