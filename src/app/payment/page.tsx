@@ -77,7 +77,7 @@ export default function PaymentPage() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="w-full border-b border-border-subtle bg-background py-4 px-4 sm:px-6">
+      <header className="w-full    bg-background py-4 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <Link href="/" className="text-base font-black text-foreground">
             درگاه پرداخت امن (شبیه‌ساز)
@@ -90,7 +90,7 @@ export default function PaymentPage() {
       </header>
 
       <main className="flex-1 max-w-3xl w-full mx-auto px-4 py-8 flex flex-col gap-6">
-        <div className="flex items-center justify-between pb-4 border-b border-border-subtle">
+        <div className="flex items-center justify-between pb-4   ">
           <div className="flex items-center gap-3">
             <CreditCard className="w-6 h-6 text-primary" />
             <div>
@@ -115,7 +115,7 @@ export default function PaymentPage() {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
             {/* Payment Details */}
             <div className="md:col-span-7 bg-background border border-border-subtle rounded-2xl p-5 flex flex-col gap-4 shadow-xs">
-              <h2 className="text-xs font-bold text-foreground border-b border-border-subtle pb-2">
+              <h2 className="text-xs font-bold text-foreground    pb-2">
                 اطلاعات تحویل و سفارش
               </h2>
               <div className="space-y-2 text-xs text-foreground/80">
@@ -140,7 +140,7 @@ export default function PaymentPage() {
 
             {/* Payment Summary */}
             <div className="md:col-span-5 bg-background border border-border-subtle rounded-2xl p-5 flex flex-col gap-4 shadow-sm">
-              <div className="flex items-center justify-between pb-2 border-b border-border-subtle">
+              <div className="flex items-center justify-between pb-2   ">
                 <span className="text-xs font-bold text-muted-foreground">مبلغ کل قابل پرداخت</span>
                 <div className="flex items-center gap-1 text-lg font-black text-primary">
                   <span>{formatPrice(payload.pricing.payableTotal)}</span>

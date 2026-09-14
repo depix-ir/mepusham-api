@@ -59,7 +59,7 @@ export default function OrderConfirmationPage({
       <Container className="max-w-lg mx-auto">
         <div className="bg-background border border-border-subtle rounded-2xl p-6 sm:p-8 text-center space-y-6 shadow-xs">
           {/* Success Check Icon */}
-          <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto animate-bounce">
+          <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto ">
             <CheckCircle2 className="w-9 h-9" />
           </div>
 
