@@ -108,7 +108,10 @@ export function Search({
          ========================================================================= */}
       <div className="relative flex items-center w-full h-[50px] bg-surface-subtle rounded-full px-4 border border-transparent focus-within:border-primary focus-within:bg-background transition-all">
         {brandMark && (
-          <div className="shrink-0 md:hidden flex items-center pl-2 border-l border-border/60 text-xs font-bold text-primary select-none">
+          <div
+            className="shrink-0 md:hidden flex items-center pl-2 border-l border-border/60 text-xs font-bold text-primary select-none z-10"
+            onClick={(e) => e.stopPropagation()}
+          >
             {brandMark}
           </div>
         )}

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Container } from "@/components/ui/Container";
+import { ChevronDownIcon } from "@/components/icons";
 import { MegaMenu } from "./MegaMenu";
 import { primaryNavItems, PrimaryNavItem } from "./navigation.data";
 
@@ -168,13 +169,21 @@ export function DesktopNavigation({
                   onKeyDown={isProducts ? handleProductsKeyDown : undefined}
                   aria-expanded={isProducts ? isMegaMenuOpen : undefined}
                   aria-haspopup={isProducts ? "true" : undefined}
-                  className={`relative py-3 transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-xs ${
+                  className={`relative py-3 transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-xs inline-flex items-center gap-1.5 ${
                     isActive
                       ? "text-primary font-bold after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary after:rounded-full"
                       : "text-foreground hover:text-primary font-medium"
                   }`}
                 >
-                  {item.label}
+                  <span>{item.label}</span>
+                  {isProducts && (
+                    <ChevronDownIcon
+                      size={16}
+                      className={`transition-transform duration-200 ${
+                        isMegaMenuOpen ? "rotate-180" : ""
+                      }`}
+                    />
+                  )}
                 </Link>
               </li>
             );

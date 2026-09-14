@@ -32,7 +32,7 @@ export function CartButton({ className = "" }: CartButtonProps) {
           />
         </IconButton>
         {count > 0 && (
-          <span className="absolute -top-1 -right-1 bg-error text-primary-foreground bg-primary text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-background">
+          <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold w-4 h-4 rounded-full inline-flex items-center justify-center border-2 border-background leading-none">
             {count}
           </span>
         )}
@@ -50,11 +50,11 @@ export function CartButton({ className = "" }: CartButtonProps) {
         </div>
         <span className="font-semibold text-sm whitespace-nowrap">سبد خرید</span>
         {count > 0 ? (
-          <span className="bg-primary-foreground text-primary text-xs font-bold px-2 py-0.5 rounded-full align-center justify-center  min-w-[20px] min-h-[20px] text-center shrink-0 leading-none shadow-2xs">
+          <span className="bg-primary-foreground text-primary text-xs font-bold px-2 h-5 rounded-full inline-flex items-center justify-center min-w-[20px] shrink-0 leading-none shadow-2xs pt-0.5">
             {count}
           </span>
         ) : (
-          <span className="bg-primary-hover/50 text-primary-foreground/90 text-xs font-medium px-2 py-0.5 rounded-full min-w-[20px] text-center shrink-0 leading-none">
+          <span className="bg-primary-hover/50 text-primary-foreground/90 text-xs font-medium px-2 h-5 rounded-full inline-flex items-center justify-center min-w-[20px] shrink-0 leading-none pt-0.5">
             ۰
           </span>
         )}
