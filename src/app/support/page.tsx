@@ -132,7 +132,7 @@ export default function SupportPage() {
               <MessageSquare className="w-4 h-4" />
               <span>تیکت‌های من</span>
               {tickets.length > 0 && (
-                <span className="w-5 h-5 rounded-full bg-white/20 text-white text-[10px] flex items-center justify-center font-mono">
+                <span className="  ">
                   {tickets.length}
                 </span>
               )}
