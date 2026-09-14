@@ -30,7 +30,15 @@ export function MainHeader({ cartItemCount = 0 }: MainHeaderProps) {
         {/* Search Bar - Responsive */}
         <div className="flex-1 max-w-full md:max-w-2xl">
           <SearchInput
-            brandMark={<span className="text-primary font-black text-sm">مپوشام</span>}
+            brandMark={
+              <Link
+                href="/"
+                onClick={(e) => e.stopPropagation()}
+                className="text-primary font-black text-sm hover:opacity-80 transition-opacity cursor-pointer"
+              >
+                مپوشام
+              </Link>
+            }
           />
         </div>
 

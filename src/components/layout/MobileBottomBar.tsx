@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   HomeIcon,
   ProductsIcon,
+  OrdersIcon,
   HeartIcon,
   UserIcon,
 } from "@/components/icons";
@@ -21,6 +22,7 @@ export interface NavItem {
 export const defaultBottomNavItems: NavItem[] = [
   { id: "home", label: "خانه", href: "/", icon: HomeIcon },
   { id: "products", label: "محصولات", href: "/products", icon: ProductsIcon },
+  { id: "orders", label: "سفارش‌ها", href: "/orders", icon: OrdersIcon },
   { id: "wishlist", label: "پسندیده‌ها", href: "/wishlist", icon: HeartIcon },
   { id: "account", label: "حساب کاربری", href: "/account", icon: UserIcon },
 ];
