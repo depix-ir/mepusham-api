@@ -981,7 +981,7 @@ export const products: Product[] = [
     brand: brands[0],
     category: categories[3],
     images: [
-      { id: "img-watch-05-1", url: "/images/watch-5.webp", alt: "ساعت مچی قاب مربعی", sortOrder: 0 },
+      { id: "img-watch-05-1", url: "/images/watch-3.webp", alt: "ساعت مچی قاب مربعی", sortOrder: 0 },
     ],
     options: [],
     variants: [],

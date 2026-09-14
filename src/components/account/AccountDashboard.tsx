@@ -89,7 +89,7 @@ export function AccountDashboard({
               <div>
                 <h1 className="text-lg sm:text-xl font-bold text-surface flex items-center gap-2">
                   <span>سلام، {user.firstName || "کاربر گرامی"}</span>
-                  <Sparkles className="w-4 h-4 text-amber-500 fill-amber-500" />
+                  <Sparkles className="w-3 h-3   text-amber-500 fill-amber-500" />
                 </h1>
                 <p className="text-xs text-primary-foreground mt-0.5">
                   خوش آمدید • مدیریت سفارش‌ها و حساب کاربری

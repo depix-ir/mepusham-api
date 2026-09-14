@@ -103,7 +103,7 @@ export function CheckoutCartItems({
                   >
                     <Plus className="w-3.5 h-3.5" />
                   </button>
-                  <span className="w-5 text-center text-xs font-bold text-foreground">
+                  <span className="w-3 text-center text-xs font-bold text-foreground">
                     {item.quantity}
                   </span>
                   <button

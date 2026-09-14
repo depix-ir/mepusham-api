@@ -281,7 +281,7 @@ export default function SupportPage() {
                         ) : (
                           <div className="p-8 border border-dashed border-border rounded-2xl text-center space-y-3 bg-surface-subtle/30">
                             <div className="w-10 h-10 rounded-full bg-surface-muted text-muted-foreground mx-auto flex items-center justify-center">
-                              <MessageSquare className="w-5 h-5" />
+                              <MessageSquare className="w-3 h-3" />
                             </div>
                             <div className="space-y-1">
                               <p className="text-xs font-bold text-foreground">

@@ -157,7 +157,7 @@ export function TicketForm({ orders, onCancel, onSubmit }: TicketFormProps) {
             onClick={() => fileInputRef.current?.click()}
             className="w-full h-20 border border-dashed border-border hover:border-primary rounded-xl flex flex-col items-center justify-center gap-1.5 bg-surface-subtle/40 hover:bg-surface-subtle transition-colors cursor-pointer text-muted-foreground hover:text-primary"
           >
-            <Paperclip className="w-5 h-5" />
+            <Paperclip className="w-3 h-3" />
             <span className="text-xs font-medium">برای بارگذاری فایل کلیک کنید</span>
           </button>
 

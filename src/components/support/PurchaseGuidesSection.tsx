@@ -27,7 +27,7 @@ export function PurchaseGuidesSection() {
     <section className="space-y-6">
       <div className="space-y-2">
         <div className="flex items-center gap-2">
-          <BookOpen className="w-5 h-5 text-primary" />
+          <BookOpen className="w-3 h-3 text-primary" />
           <h2 className="text-xl sm:text-2xl font-bold text-foreground">
             راهنمای خرید و قوانین
           </h2>
@@ -50,7 +50,7 @@ export function PurchaseGuidesSection() {
             >
               <div className="space-y-2">
                 <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center transition-transform group-hover:scale-105">
-                  <IconComponent className="w-5 h-5" />
+                  <IconComponent className="w-3 h-3" />
                 </div>
                 <h3 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">
                   {guide.title}

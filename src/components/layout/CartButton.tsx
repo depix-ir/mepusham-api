@@ -50,11 +50,11 @@ export function CartButton({ className = "" }: CartButtonProps) {
         </div>
         <span className="font-semibold text-sm whitespace-nowrap">سبد خرید</span>
         {count > 0 ? (
-          <span className="bg-primary-foreground text-primary text-xs font-bold px-2 h-5 rounded-full inline-flex items-center justify-center min-w-[20px] shrink-0 leading-none shadow-2xs pt-0.5">
+          <span className="bg-primary-foreground text-primary text-xs font-bold px-2 h-3 rounded-full inline-flex items-center justify-center min-w-[20px] shrink-0 leading-none shadow-2xs pt-0.5">
             {count}
           </span>
         ) : (
-          <span className="bg-primary-hover/50 text-primary-foreground/90 text-xs font-medium px-2 h-5 rounded-full inline-flex items-center justify-center min-w-[20px] shrink-0 leading-none pt-0.5">
+          <span className="bg-primary-hover/50 text-primary-foreground/90 text-xs font-medium px-2 h-3 rounded-full inline-flex items-center justify-center min-w-[20px] shrink-0 leading-none pt-0.5">
             ۰
           </span>
         )}

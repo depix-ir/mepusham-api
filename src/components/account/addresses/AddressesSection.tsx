@@ -36,7 +36,7 @@ export function AddressesSection({
       {/* Section Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-base sm:text-lg font-bold text-foreground flex items-center gap-2">
-          <MapPin className="w-4 h-4 text-primary" />
+          <MapPin className="w-4 h-3 text-primary" />
           <span>آدرس‌های من</span>
         </h2>
 
@@ -45,7 +45,7 @@ export function AddressesSection({
           onClick={handleOpenAdd}
           className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline cursor-pointer"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-4 h-3" />
           <span>افزودن آدرس جدید</span>
         </button>
       </div>
