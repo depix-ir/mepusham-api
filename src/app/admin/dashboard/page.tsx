@@ -299,7 +299,7 @@ export default function AdminDashboardPage() {
       {/* Grid Section: Recent Orders & Low Stock Items */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Orders Table (Span 2) */}
-        <div className="lg:col-span-2 bg-background border border-border rounded-md p-4 flex flex-col justify-between space-y-4">
+        <div className="lg:col-span-2 bg-background border border-border rounded-md p-4 flex flex-col  space-y-4">
           <div className="flex items-center justify-between pb-2 border-b border-border">
             <h3 className="text-sm font-bold text-foreground">سفارش‌های اخیر</h3>
             <Link
