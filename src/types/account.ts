@@ -2,6 +2,7 @@ export type OrderStatus =
   | "pending"
   | "confirmed"
   | "processing"
+  | "handed_to_carrier"
   | "shipped"
   | "delivered"
   | "cancelled"
@@ -103,14 +104,39 @@ export interface SupportTicket {
 }
 
 export const orderStatusLabels: Record<OrderStatus, string> = {
-  pending: "در انتظار تأیید",
+  pending: "در حال بررسی",
   confirmed: "تأیید شده",
-  processing: "در حال آماده‌سازی",
-  shipped: "در حال ارسال",
-  delivered: "تحویل داده شده",
+  processing: "درحال آماده سازی",
+  handed_to_carrier: "تحویل به پست",
+  shipped: "ارسال شد",
+  delivered: "تحویل داده شد",
   cancelled: "لغو شده",
   returned: "مرجوع شده",
 };
+
+/**
+ * Checks if admin is allowed to manually transition an order to a new status.
+ * Admin-controlled status flow:
+ * pending / confirmed -> processing -> handed_to_carrier
+ * Also cancellation is allowed for pending, confirmed, processing, handed_to_carrier.
+ * Shipping provider-controlled:
+ * shipped, delivered
+ */
+export function getNextAdminStatus(currentStatus: OrderStatus): OrderStatus | null {
+  switch (currentStatus) {
+    case "pending":
+    case "confirmed":
+      return "processing";
+    case "processing":
+      return "handed_to_carrier";
+    default:
+      return null;
+  }
+}
+
+export function canAdminCancelOrder(status: OrderStatus): boolean {
+  return ["pending", "confirmed", "processing", "handed_to_carrier"].includes(status);
+}
 
 export const ticketStatusLabels: Record<TicketStatus, string> = {
   open: "در حال بررسی",

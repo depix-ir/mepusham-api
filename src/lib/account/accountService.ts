@@ -41,6 +41,137 @@ class AccountService {
     );
   }
 
+  updateOrderStatus(
+    orderId: string,
+    newStatus: import("@/types/account").OrderStatus,
+    shippingInfo?: { trackingCode?: string; carrierName?: string }
+  ): Order {
+    const orders = this.getOrders();
+    let updatedOrder: Order | undefined;
+
+    const updated = orders.map((order) => {
+      if (order.id === orderId || order.orderNumber === orderId) {
+        const nowFa = new Date().toLocaleDateString("fa-IR") + " - " + new Date().toLocaleTimeString("fa-IR", { hour: "2-digit", minute: "2-digit" });
+        const updatedTimeline = order.timeline ? [...order.timeline] : [];
+
+        // Check if item for this status exists or add it
+        const existingTlIndex = updatedTimeline.findIndex((t) => t.status === newStatus);
+        if (existingTlIndex >= 0) {
+          updatedTimeline[existingTlIndex] = {
+            ...updatedTimeline[existingTlIndex],
+            completed: true,
+            date: nowFa,
+          };
+        } else {
+          const statusLabels = require("@/types/account").orderStatusLabels;
+          updatedTimeline.push({
+            id: `tl-${Date.now()}`,
+            status: newStatus,
+            title: statusLabels[newStatus] || newStatus,
+            date: nowFa,
+            completed: true,
+          });
+        }
+
+        updatedOrder = {
+          ...order,
+          status: newStatus,
+          shippingMethod: {
+            ...order.shippingMethod,
+            trackingCode: shippingInfo?.trackingCode ?? order.shippingMethod.trackingCode,
+            carrierName: shippingInfo?.carrierName ?? order.shippingMethod.carrierName,
+          },
+          timeline: updatedTimeline,
+        };
+        return updatedOrder;
+      }
+      return order;
+    });
+
+    if (!updatedOrder) {
+      throw new Error("سفارش مورد نظر یافت نشد.");
+    }
+
+    this.persistOrders(updated);
+    return updatedOrder;
+  }
+
+  bulkUpdateOrderStatus(
+    orderIds: string[],
+    targetStatus?: import("@/types/account").OrderStatus
+  ): { updatedCount: number; updatedOrders: Order[] } {
+    const orders = this.getOrders();
+    const { getNextAdminStatus } = require("@/types/account");
+    let updatedCount = 0;
+
+    const updated = orders.map((order) => {
+      if (orderIds.includes(order.id) || orderIds.includes(order.orderNumber)) {
+        const nextStatus = targetStatus ?? getNextAdminStatus(order.status);
+        if (nextStatus) {
+          updatedCount++;
+          const nowFa = new Date().toLocaleDateString("fa-IR") + " - " + new Date().toLocaleTimeString("fa-IR", { hour: "2-digit", minute: "2-digit" });
+          const updatedTimeline = order.timeline ? [...order.timeline] : [];
+          const existingTlIndex = updatedTimeline.findIndex((t) => t.status === nextStatus);
+          if (existingTlIndex >= 0) {
+            updatedTimeline[existingTlIndex] = {
+              ...updatedTimeline[existingTlIndex],
+              completed: true,
+              date: nowFa,
+            };
+          }
+
+          return {
+            ...order,
+            status: nextStatus,
+            timeline: updatedTimeline,
+          };
+        }
+      }
+      return order;
+    });
+
+    this.persistOrders(updated);
+    return { updatedCount, updatedOrders: updated };
+  }
+
+  cancelOrder(orderId: string): Order {
+    return this.updateOrderStatus(orderId, "cancelled");
+  }
+
+  bulkCancelOrders(orderIds: string[]): { cancelledCount: number; updatedOrders: Order[] } {
+    const orders = this.getOrders();
+    const { canAdminCancelOrder } = require("@/types/account");
+    let cancelledCount = 0;
+
+    const updated = orders.map((order) => {
+      if (
+        (orderIds.includes(order.id) || orderIds.includes(order.orderNumber)) &&
+        canAdminCancelOrder(order.status)
+      ) {
+        cancelledCount++;
+        const nowFa = new Date().toLocaleDateString("fa-IR");
+        const updatedTimeline = order.timeline ? [...order.timeline] : [];
+        updatedTimeline.push({
+          id: `tl-cancel-${Date.now()}`,
+          status: "cancelled",
+          title: "لغو سفارش توسط ادمین",
+          date: nowFa,
+          completed: true,
+        });
+
+        return {
+          ...order,
+          status: "cancelled" as const,
+          timeline: updatedTimeline,
+        };
+      }
+      return order;
+    });
+
+    this.persistOrders(updated);
+    return { cancelledCount, updatedOrders: updated };
+  }
+
   createOrder(payload: {
     customer: {
       firstName: string;
