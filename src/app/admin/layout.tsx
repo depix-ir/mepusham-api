@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { AdminSidebar, NavItem } from "@/components/admin/AdminSidebar";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { ToastProvider, useToast } from "@/components/ui/Toast";
+import { ProductProvider } from "@/context/ProductContext";
 
 function AdminLayoutContent({
   children,
@@ -15,14 +16,17 @@ function AdminLayoutContent({
   const { showToast } = useToast();
 
   const handleNavItemClick = (item: NavItem) => {
-    if (item.href !== "/admin/dashboard") {
+    // Exclude implemented pages from showing "coming soon" toast
+    if (
+      item.href !== "/admin/dashboard" &&
+      !item.href.startsWith("/admin/products")
+    ) {
       showToast(`بخش «${item.title}» به زودی اضافه خواهد شد.`, "info");
     }
   };
 
   return (
     <div className="min-h-screen bg-surface-muted text-foreground flex flex-col dir-rtl font-sans antialiased">
-
       {/* Sidebar (Desktop & Mobile Drawer) */}
       <AdminSidebar
         collapsed={collapsed}
@@ -65,7 +69,9 @@ export default function AdminLayout({
 }) {
   return (
     <ToastProvider>
-      <AdminLayoutContent>{children}</AdminLayoutContent>
+      <ProductProvider>
+        <AdminLayoutContent>{children}</AdminLayoutContent>
+      </ProductProvider>
     </ToastProvider>
   );
 }

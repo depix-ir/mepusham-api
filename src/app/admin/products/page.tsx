@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import {
-  Package,
   Plus,
   Search,
   Filter,
@@ -15,26 +16,22 @@ import {
   Boxes,
   CheckSquare,
   Square,
-  Check,
-  ChevronLeft,
-  ChevronRight,
-  AlertCircle,
+  ChevronDown,
+  ChevronUp,
   RotateCcw,
   SlidersHorizontal,
   CheckCircle2,
   PackageX,
-  PackageCheck,
   FileText,
-  ChevronDown,
-  ArrowUpDown,
-  Tag,
-  DollarSign,
   AlertTriangle,
+  Package,
+  ChevronRight,
+  ChevronLeft,
+  Layers,
 } from "lucide-react";
 
-import { products as initialProducts } from "@/data/products";
-import { categories, brands } from "@/data/common";
-import { Product, ProductStatus } from "@/types/product";
+import { useProducts } from "@/context/ProductContext";
+import { Product, ProductStatus, ProductVariant } from "@/types/product";
 import { formatPrice } from "@/lib/formatting/currency";
 import { useToast } from "@/components/ui/Toast";
 
@@ -83,20 +80,31 @@ const getStatusInfo = (status: ProductStatus) => {
 
 type ModalType =
   | { type: "view"; product: Product }
-  | { type: "edit"; product: Product }
   | { type: "stock"; product: Product }
-  | { type: "delete"; product: Product }
-  | { type: "add" }
+  | { type: "delete_product"; product: Product }
+  | { type: "delete_variant"; product: Product; variant: ProductVariant }
+  | { type: "edit_variant"; product: Product; variant: ProductVariant }
   | { type: "bulk_status" }
   | { type: "bulk_stock" }
   | { type: "bulk_delete" }
   | null;
 
 export default function AdminProductsPage() {
+  const router = useRouter();
   const { showToast } = useToast();
-
-  // Master State
-  const [productList, setProductList] = useState<Product[]>(initialProducts);
+  const {
+    products,
+    categories,
+    brands,
+    isLoaded,
+    deleteProduct,
+    deleteBulkProducts,
+    deleteVariant,
+    updateVariant,
+    bulkUpdateStatus,
+    bulkUpdateStock,
+    updateProduct,
+  } = useProducts();
 
   // Filters & Search
   const [searchQuery, setSearchQuery] = useState("");
@@ -108,45 +116,42 @@ export default function AdminProductsPage() {
     "newest" | "oldest" | "price_asc" | "price_desc" | "stock_asc" | "stock_desc"
   >("newest");
 
-  // Selection & Pagination
+  // Expanded Product IDs
+  const [expandedProductIds, setExpandedProductIds] = useState<string[]>([]);
+
+  // Selection (Product IDs and Variant Keys e.g. "prodId:varId")
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
+  const [selectedVariantKeys, setSelectedVariantKeys] = useState<string[]>([]);
+
+  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  // UI Drawers & Modals & Action Menus
+  // Mobile Drawers & Action Menus
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
   const [activeModal, setActiveModal] = useState<ModalType>(null);
 
   // Form states inside modals
-  const [editFormData, setEditFormData] = useState<{
-    title: string;
+  const [stockInputValue, setStockInputValue] = useState<number>(0);
+  const [editVariantData, setEditVariantData] = useState<{
     price: number;
     compareAtPrice: number | undefined;
     stock: number;
-    status: ProductStatus;
+    sku: string;
+    status: "active" | "inactive";
   }>({
-    title: "",
     price: 0,
     compareAtPrice: undefined,
     stock: 0,
+    sku: "",
     status: "active",
   });
 
-  const [stockInputValue, setStockInputValue] = useState<number>(0);
   const [bulkTargetStatus, setBulkTargetStatus] = useState<ProductStatus>("active");
   const [bulkStockValue, setBulkStockValue] = useState<number>(10);
 
-  const [newProductData, setNewProductData] = useState({
-    title: "",
-    categoryId: categories[0]?.id || "",
-    brandId: brands[0]?.id || "",
-    price: 1000000,
-    stock: 10,
-    status: "active" as ProductStatus,
-  });
-
-  // Calculate Active Filters Count
+  // Active filters count
   const activeFiltersCount = useMemo(() => {
     let count = 0;
     if (searchQuery.trim()) count++;
@@ -163,7 +168,6 @@ export default function AdminProductsPage() {
     selectedBrand,
   ]);
 
-  // Reset Filters
   const handleResetFilters = () => {
     setSearchQuery("");
     setSelectedCategory("all");
@@ -174,19 +178,29 @@ export default function AdminProductsPage() {
     setCurrentPage(1);
   };
 
-  // Filter & Sort Logic
+  // Filter & Sort Products
   const filteredProducts = useMemo(() => {
-    return productList.filter((product) => {
+    return products.filter((product) => {
       // Search
       if (searchQuery.trim()) {
-        const query = searchQuery.toLowerCase().trim();
-        const titleMatch = product.title.toLowerCase().includes(query);
-        const slugMatch = product.slug.toLowerCase().includes(query);
-        const categoryMatch = product.category.name.toLowerCase().includes(query);
-        const brandMatch = product.brand?.name.toLowerCase().includes(query);
-        const tagMatch = product.tags?.some((t) => t.toLowerCase().includes(query));
+        const q = searchQuery.toLowerCase().trim();
+        const titleMatch = product.title.toLowerCase().includes(q);
+        const slugMatch = product.slug.toLowerCase().includes(q);
+        const catMatch = product.category.name.toLowerCase().includes(q);
+        const brandMatch = product.brand?.name.toLowerCase().includes(q);
+        const tagMatch = product.tags?.some((t) => t.toLowerCase().includes(q));
+        const variantSkuMatch = product.variants.some((v) =>
+          v.sku?.toLowerCase().includes(q)
+        );
 
-        if (!titleMatch && !slugMatch && !categoryMatch && !brandMatch && !tagMatch) {
+        if (
+          !titleMatch &&
+          !slugMatch &&
+          !catMatch &&
+          !brandMatch &&
+          !tagMatch &&
+          !variantSkuMatch
+        ) {
           return false;
         }
       }
@@ -223,7 +237,7 @@ export default function AdminProductsPage() {
       return true;
     });
   }, [
-    productList,
+    products,
     searchQuery,
     selectedCategory,
     selectedStatus,
@@ -265,75 +279,71 @@ export default function AdminProductsPage() {
     return sortedProducts.slice(start, start + itemsPerPage);
   }, [sortedProducts, validPage, itemsPerPage]);
 
-  // Checkbox Selection Logic
-  const isAllSelected =
+  // Toggle Expander
+  const toggleExpandProduct = (id: string) => {
+    setExpandedProductIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  // Checkbox Selection
+  const isAllPageSelected =
     paginatedProducts.length > 0 &&
     paginatedProducts.every((p) => selectedProductIds.includes(p.id));
 
-  const handleSelectAll = () => {
-    if (isAllSelected) {
-      setSelectedProductIds((prev) =>
-        prev.filter((id) => !paginatedProducts.some((p) => p.id === id))
-      );
+  const handleSelectAllPage = () => {
+    if (isAllPageSelected) {
+      const pageIds = paginatedProducts.map((p) => p.id);
+      setSelectedProductIds((prev) => prev.filter((id) => !pageIds.includes(id)));
     } else {
       const pageIds = paginatedProducts.map((p) => p.id);
       setSelectedProductIds((prev) => Array.from(new Set([...prev, ...pageIds])));
     }
   };
 
-  const handleToggleSelectProduct = (id: string) => {
-    setSelectedProductIds((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+  const handleToggleSelectProduct = (product: Product) => {
+    const isSelected = selectedProductIds.includes(product.id);
+    if (isSelected) {
+      setSelectedProductIds((prev) => prev.filter((id) => id !== product.id));
+      // Deselect its variants
+      setSelectedVariantKeys((prev) =>
+        prev.filter((key) => !key.startsWith(`${product.id}:`))
+      );
+    } else {
+      setSelectedProductIds((prev) => [...prev, product.id]);
+      // Select all its variants
+      const varKeys = product.variants.map((v) => `${product.id}:${v.id}`);
+      setSelectedVariantKeys((prev) => Array.from(new Set([...prev, ...varKeys])));
+    }
+  };
+
+  const handleToggleSelectVariant = (productId: string, variantId: string) => {
+    const key = `${productId}:${variantId}`;
+    setSelectedVariantKeys((prev) =>
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
     );
   };
 
-  // Actions Logic
-  const handleOpenEditModal = (product: Product) => {
-    setEditFormData({
-      title: product.title,
-      price: product.pricing.minPrice,
-      compareAtPrice: product.pricing.minCompareAtPrice,
-      stock: product.inventory.totalStock,
-      status: product.status,
-    });
-    setActiveModal({ type: "edit", product });
-    setActiveMenuId(null);
+  const totalSelectedCount = selectedProductIds.length + selectedVariantKeys.length;
+
+  // Option Value Helper
+  const getOptionValueLabel = (product: Product, optionId: string, valueId: string) => {
+    const option = product.options.find((o) => o.id === optionId);
+    if (!option) return valueId;
+    const valObj = option.values.find((v) => v.id === valueId);
+    return valObj ? valObj.label : valueId;
   };
 
-  const handleSaveEditProduct = () => {
-    if (activeModal?.type !== "edit" || !activeModal.product) return;
-
-    const prodId = activeModal.product.id;
-    setProductList((prev) =>
-      prev.map((p) => {
-        if (p.id !== prodId) return p;
-        const hasDiscount =
-          !!editFormData.compareAtPrice && editFormData.compareAtPrice > editFormData.price;
-        return {
-          ...p,
-          title: editFormData.title,
-          status: editFormData.status,
-          pricing: {
-            ...p.pricing,
-            minPrice: editFormData.price,
-            maxPrice: editFormData.price,
-            minCompareAtPrice: editFormData.compareAtPrice,
-            hasDiscount,
-          },
-          inventory: {
-            ...p.inventory,
-            totalStock: editFormData.stock,
-            hasAvailableVariants: editFormData.stock > 0,
-          },
-          updatedAt: new Date().toISOString(),
-        };
-      })
-    );
-
-    showToast(`محصول «${editFormData.title}» با موفقیت ویرایش شد.`, "success");
-    setActiveModal(null);
+  const getVariantCombinationText = (product: Product, variant: ProductVariant) => {
+    if (!variant.optionValues || variant.optionValues.length === 0) {
+      return "پیش‌فرض";
+    }
+    return variant.optionValues
+      .map((ov) => getOptionValueLabel(product, ov.optionId, ov.valueId))
+      .join(" / ");
   };
 
+  // Action Handlers
   const handleOpenStockModal = (product: Product) => {
     setStockInputValue(product.inventory.totalStock);
     setActiveModal({ type: "stock", product });
@@ -342,159 +352,117 @@ export default function AdminProductsPage() {
 
   const handleSaveStock = () => {
     if (activeModal?.type !== "stock" || !activeModal.product) return;
-
-    const prodId = activeModal.product.id;
-    setProductList((prev) =>
-      prev.map((p) => {
-        if (p.id !== prodId) return p;
-        return {
-          ...p,
-          inventory: {
-            ...p.inventory,
-            totalStock: stockInputValue,
-            hasAvailableVariants: stockInputValue > 0,
-          },
-          updatedAt: new Date().toISOString(),
-        };
-      })
-    );
-
-    showToast(
-      `موجودی محصول «${activeModal.product.title}» به ${stockInputValue} تغییر یافت.`,
-      "success"
-    );
+    const prod = activeModal.product;
+    updateProduct(prod.id, {
+      inventory: {
+        ...prod.inventory,
+        totalStock: stockInputValue,
+        hasAvailableVariants: stockInputValue > 0,
+      },
+    });
+    showToast(`موجودی محصول «${prod.title}» تغییر یافت.`, "success");
     setActiveModal(null);
   };
 
-  const handleConfirmDelete = () => {
-    if (activeModal?.type !== "delete" || !activeModal.product) return;
-
-    const prodId = activeModal.product.id;
-    setProductList((prev) => prev.filter((p) => p.id !== prodId));
-    setSelectedProductIds((prev) => prev.filter((id) => id !== prodId));
-
-    showToast(`محصول «${activeModal.product.title}» با موفقیت حذف شد.`, "success");
+  const handleConfirmDeleteProduct = () => {
+    if (activeModal?.type !== "delete_product" || !activeModal.product) return;
+    const prod = activeModal.product;
+    deleteProduct(prod.id);
+    setSelectedProductIds((prev) => prev.filter((id) => id !== prod.id));
+    setSelectedVariantKeys((prev) =>
+      prev.filter((k) => !k.startsWith(`${prod.id}:`))
+    );
+    showToast(`محصول «${prod.title}» و تمام واریانت‌های آن حذف شدند.`, "success");
     setActiveModal(null);
   };
 
-  const handleCreateProduct = () => {
-    if (!newProductData.title.trim()) {
-      showToast("لطفاً نام محصول را وارد کنید.", "warning");
-      return;
-    }
+  const handleOpenEditVariantModal = (product: Product, variant: ProductVariant) => {
+    setEditVariantData({
+      price: variant.pricing?.price ?? product.pricing.minPrice,
+      compareAtPrice: variant.pricing?.compareAtPrice,
+      stock: variant.inventory?.stock ?? 0,
+      sku: variant.sku || "",
+      status: variant.status || "active",
+    });
+    setActiveModal({ type: "edit_variant", product, variant });
+  };
 
-    const categoryObj =
-      categories.find((c) => c.id === newProductData.categoryId) || categories[0];
-    const brandObj = brands.find((b) => b.id === newProductData.brandId) || brands[0];
-
-    const newProd: Product = {
-      id: `prod-custom-${Date.now()}`,
-      slug: `product-${Date.now()}`,
-      title: newProductData.title,
-      description: "توضیحات محصول جدید افزوده‌شده از پنل مدیریت.",
-      category: categoryObj,
-      brand: brandObj,
-      images: [
-        {
-          id: `img-${Date.now()}`,
-          url: "/images/bag-1.webp",
-          alt: newProductData.title,
-          sortOrder: 0,
-        },
-      ],
-      options: [],
-      variants: [],
+  const handleSaveEditVariant = () => {
+    if (activeModal?.type !== "edit_variant" || !activeModal.variant) return;
+    const { product, variant } = activeModal;
+    updateVariant(product.id, variant.id, {
+      sku: editVariantData.sku,
+      status: editVariantData.status,
       pricing: {
-        minPrice: newProductData.price,
-        maxPrice: newProductData.price,
-        hasDiscount: false,
+        price: editVariantData.price,
+        compareAtPrice: editVariantData.compareAtPrice,
       },
       inventory: {
-        totalStock: newProductData.stock,
+        stock: editVariantData.stock,
         trackStock: true,
-        hasAvailableVariants: newProductData.stock > 0,
       },
-      status: newProductData.status,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    setProductList((prev) => [newProd, ...prev]);
-    showToast(`محصول «${newProd.title}» با موفقیت ایجاد شد.`, "success");
-    setActiveModal(null);
-    setNewProductData({
-      title: "",
-      categoryId: categories[0]?.id || "",
-      brandId: brands[0]?.id || "",
-      price: 1000000,
-      stock: 10,
-      status: "active",
     });
+    showToast(`واریانت ${editVariantData.sku || ""} با موفقیت به روز شد.`, "success");
+    setActiveModal(null);
   };
 
-  // Bulk Actions
+  const handleConfirmDeleteVariant = () => {
+    if (activeModal?.type !== "delete_variant" || !activeModal.variant) return;
+    const { product, variant } = activeModal;
+    deleteVariant(product.id, variant.id);
+    setSelectedVariantKeys((prev) =>
+      prev.filter((k) => k !== `${product.id}:${variant.id}`)
+    );
+    showToast("واریانت با موفقیت حذف شد.", "success");
+    setActiveModal(null);
+  };
+
+  // Bulk Handlers
   const handleApplyBulkStatus = () => {
-    if (selectedProductIds.length === 0) return;
-
-    setProductList((prev) =>
-      prev.map((p) => {
-        if (selectedProductIds.includes(p.id)) {
-          return { ...p, status: bulkTargetStatus, updatedAt: new Date().toISOString() };
-        }
-        return p;
-      })
-    );
-
-    showToast(
-      `وضعیت انتشار ${selectedProductIds.length} محصول به‌روزرسانی شد.`,
-      "success"
-    );
+    if (selectedProductIds.length > 0) {
+      bulkUpdateStatus(selectedProductIds, bulkTargetStatus);
+    }
+    showToast("وضعیت محصولات انتخاب‌شده به‌روزرسانی شد.", "success");
     setSelectedProductIds([]);
+    setSelectedVariantKeys([]);
     setActiveModal(null);
   };
 
   const handleApplyBulkStock = () => {
-    if (selectedProductIds.length === 0) return;
-
-    setProductList((prev) =>
-      prev.map((p) => {
-        if (selectedProductIds.includes(p.id)) {
-          return {
-            ...p,
-            inventory: {
-              ...p.inventory,
-              totalStock: bulkStockValue,
-              hasAvailableVariants: bulkStockValue > 0,
-            },
-            updatedAt: new Date().toISOString(),
-          };
-        }
-        return p;
-      })
-    );
-
-    showToast(
-      `موجودی ${selectedProductIds.length} محصول به ${bulkStockValue} تغییر یافت.`,
-      "success"
-    );
+    if (selectedProductIds.length > 0) {
+      bulkUpdateStock(selectedProductIds, bulkStockValue);
+    }
+    showToast("موجودی محصولات انتخاب‌شده به‌روزرسانی شد.", "success");
     setSelectedProductIds([]);
+    setSelectedVariantKeys([]);
     setActiveModal(null);
   };
 
   const handleApplyBulkDelete = () => {
-    if (selectedProductIds.length === 0) return;
-
-    const count = selectedProductIds.length;
-    setProductList((prev) => prev.filter((p) => !selectedProductIds.includes(p.id)));
+    if (selectedProductIds.length > 0) {
+      deleteBulkProducts(selectedProductIds);
+    }
+    showToast("محصولات انتخاب‌شده حذف شدند.", "success");
     setSelectedProductIds([]);
-    showToast(`${count} محصول با موفقیت حذف شدند.`, "success");
+    setSelectedVariantKeys([]);
     setActiveModal(null);
   };
+
+  if (!isLoaded) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-3">
+        <div className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin" />
+        <p className="text-xs text-muted-foreground font-medium">
+          در حال بارگذاری اطلاعات محصولات...
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 pb-12">
       {/* =========================================================================
-          1. HEADER SECTION
+          1. PAGE HEADER
          ========================================================================= */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border/60">
         <div>
@@ -503,22 +471,22 @@ export default function AdminProductsPage() {
               محصولات
             </h1>
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20">
-              {productList.length} کالا
+              {products.length} کالا
             </span>
           </div>
           <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-            مدیریت کاتالوگ محصولات، موجودی انبار، وضعیت انتشار و قیمت‌گذاری
+            مدیریت یکپارچه کاتالوگ محصولات، واریانت‌ها، موجودی انبار و قیمت‌گذاری
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setActiveModal({ type: "add" })}
+          <Link
+            href="/admin/products/new"
             className="inline-flex items-center justify-center gap-2 h-10 px-4 text-xs sm:text-sm font-semibold rounded-md bg-primary text-primary-foreground hover:bg-primary-hover active:bg-primary-active transition-colors shadow-xs"
           >
             <Plus className="w-4 h-4" />
             <span>افزودن محصول</span>
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -532,7 +500,7 @@ export default function AdminProductsPage() {
           <div className="relative flex-1">
             <input
               type="text"
-              placeholder="جستجو در نام محصول، برند، دسته‌بندی یا برچسب..."
+              placeholder="جستجو در عنوان، SKU، دسته‌بندی، برند یا برچسب..."
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
@@ -634,7 +602,7 @@ export default function AdminProductsPage() {
             <button
               onClick={handleResetFilters}
               className="inline-flex items-center gap-1.5 h-10 px-3 text-xs font-semibold text-error bg-error/10 hover:bg-error/20 rounded-md transition-colors shrink-0"
-              title="پاک کردن همه فیلترها"
+              title="حذف فیلترها"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span>حذف فیلترها ({activeFiltersCount})</span>
@@ -681,14 +649,14 @@ export default function AdminProductsPage() {
         </button>
       </div>
 
-      {/* Mobile Filter Drawer / Bottom Sheet */}
+      {/* Mobile Filter Drawer */}
       {mobileFilterOpen && (
         <div className="fixed inset-0 z-50 lg:hidden flex flex-col justify-end">
           <div
             className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity"
             onClick={() => setMobileFilterOpen(false)}
           />
-          <div className="relative bg-background border-t border-border rounded-t-2xl p-5 space-y-4 max-h-[85vh] overflow-y-auto animate-in slide-in-from-bottom-5 duration-200 z-10">
+          <div className="relative bg-background border-t border-border rounded-t-2xl p-5 space-y-4 max-h-[85vh] overflow-y-auto z-10">
             <div className="flex items-center justify-between pb-3 border-b border-border">
               <div className="flex items-center gap-2">
                 <Filter className="w-4 h-4 text-primary" />
@@ -812,14 +780,14 @@ export default function AdminProductsPage() {
       )}
 
       {/* =========================================================================
-          3. BULK ACTIONS BAR (When items are selected)
+          3. BULK ACTIONS BAR
          ========================================================================= */}
-      {selectedProductIds.length > 0 && (
+      {totalSelectedCount > 0 && (
         <div className="sticky top-20 z-10 bg-primary text-primary-foreground p-3 sm:p-4 rounded-md shadow-md flex flex-wrap items-center justify-between gap-3 animate-in fade-in slide-in-from-top-2 duration-150">
           <div className="flex items-center gap-2">
             <CheckSquare className="w-4 h-4" />
             <span className="text-xs sm:text-sm font-bold">
-              {selectedProductIds.length} محصول انتخاب شده است
+              {totalSelectedCount} آیتم انتخاب شده است
             </span>
           </div>
 
@@ -843,7 +811,10 @@ export default function AdminProductsPage() {
               حذف گروهی
             </button>
             <button
-              onClick={() => setSelectedProductIds([])}
+              onClick={() => {
+                setSelectedProductIds([]);
+                setSelectedVariantKeys([]);
+              }}
               className="h-8 px-2.5 text-xs text-white/80 hover:text-white"
               title="انصراف از انتخاب"
             >
@@ -854,7 +825,7 @@ export default function AdminProductsPage() {
       )}
 
       {/* =========================================================================
-          4. PRODUCTS LIST / TABLE & COMPACT ROWS
+          4. PRODUCTS & NESTED VARIANTS LIST (DESKTOP TABLE & MOBILE COMPACT)
          ========================================================================= */}
       {paginatedProducts.length === 0 ? (
         /* EMPTY STATE */
@@ -867,7 +838,7 @@ export default function AdminProductsPage() {
           </h3>
           <p className="text-xs text-muted-foreground max-w-sm">
             محصولی با مشخصات و فیلترهای انتخابی شما وجود ندارد. فیلترها را تغییر دهید یا
-            محصول جدید بیفزایید.
+            محصول جدید ایجاد کنید.
           </p>
           {activeFiltersCount > 0 && (
             <button
@@ -875,134 +846,152 @@ export default function AdminProductsPage() {
               className="inline-flex items-center gap-1.5 h-9 px-4 text-xs font-semibold rounded-md bg-surface-subtle hover:bg-surface-muted text-foreground transition-colors mt-2"
             >
               <RotateCcw className="w-3.5 h-3.5" />
-              <span>پاک کردن فیلترها</span>
+              <span>حذف فیلترها</span>
             </button>
           )}
         </div>
       ) : (
         <>
-          {/* DESKTOP TABLE (lg & up) */}
+          {/* DESKTOP TABLE */}
           <div className="hidden lg:block bg-background border border-border rounded-md overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-right text-xs">
                 <thead>
                   <tr className="bg-surface-subtle border-b border-border text-muted-foreground text-[11px] font-semibold select-none">
-                    <th className="py-3 px-4 w-10 text-center">
+                    <th className="py-3 px-3 w-8 text-center"></th>
+                    <th className="py-3 px-3 w-10 text-center">
                       <button
-                        onClick={handleSelectAll}
+                        onClick={handleSelectAllPage}
                         className="text-muted-foreground hover:text-foreground"
                       >
-                        {isAllSelected ? (
+                        {isAllPageSelected ? (
                           <CheckSquare className="w-4 h-4 text-primary" />
                         ) : (
                           <Square className="w-4 h-4" />
                         )}
                       </button>
                     </th>
-                    <th className="py-3 px-3">تصویر و نام محصول</th>
+                    <th className="py-3 px-3">محصول</th>
                     <th className="py-3 px-3">برند / دسته</th>
-                    <th className="py-3 px-3">قیمت و تخفیف</th>
-                    <th className="py-3 px-3">موجودی</th>
-                    <th className="py-3 px-3">وضعیت انتشار</th>
-                    <th className="py-3 px-3">آخرین تغییر</th>
-                    <th className="py-3 px-4 text-left">عملیات</th>
+                    <th className="py-3 px-3">تعداد واریانت</th>
+                    <th className="py-3 px-3">قیمت / بازه قیمت</th>
+                    <th className="py-3 px-3">موجودی کل</th>
+                    <th className="py-3 px-3">وضعیت</th>
+                    <th className="py-3 px-3">تاریخ بروزرسانی</th>
+                    <th className="py-3 px-4 text-left">عملیات Product</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/60">
                   {paginatedProducts.map((product) => {
                     const isSelected = selectedProductIds.includes(product.id);
+                    const isExpanded = expandedProductIds.includes(product.id);
                     const statusInfo = getStatusInfo(product.status);
                     const StatusIcon = statusInfo.icon;
                     const mainImage = product.images[0]?.url || "/images/bag-1.webp";
+                    const variantCount = product.variants?.length || 0;
 
                     return (
-                      <tr
-                        key={product.id}
-                        className={`hover:bg-surface-subtle/70 transition-colors ${
-                          isSelected ? "bg-primary/5" : ""
-                        }`}
-                      >
-                        {/* Checkbox */}
-                        <td className="py-3 px-4 text-center">
-                          <button
-                            onClick={() => handleToggleSelectProduct(product.id)}
-                            className="text-muted-foreground hover:text-foreground"
-                          >
-                            {isSelected ? (
-                              <CheckSquare className="w-4 h-4 text-primary" />
-                            ) : (
-                              <Square className="w-4 h-4" />
-                            )}
-                          </button>
-                        </td>
+                      <React.Fragment key={product.id}>
+                        {/* PARENT PRODUCT PRIMARY ROW */}
+                        <tr
+                          className={`hover:bg-surface-subtle/70 transition-colors ${
+                            isSelected ? "bg-primary/5" : ""
+                          }`}
+                        >
+                          {/* Expand Toggle Button */}
+                          <td className="py-3 px-3 text-center">
+                            <button
+                              onClick={() => toggleExpandProduct(product.id)}
+                              className="p-1 rounded hover:bg-surface-subtle text-muted-foreground hover:text-foreground transition-colors"
+                              title={isExpanded ? "بستن واریانت‌ها" : "مشاهده واریانت‌ها"}
+                            >
+                              {isExpanded ? (
+                                <ChevronUp className="w-4 h-4 text-primary" />
+                              ) : (
+                                <ChevronDown className="w-4 h-4" />
+                              )}
+                            </button>
+                          </td>
 
-                        {/* Product Image & Title */}
-                        <td className="py-3 px-3 min-w-[220px]">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-md bg-surface-subtle border border-border shrink-0 overflow-hidden relative">
-                              <Image
-                                src={mainImage}
-                                alt={product.title}
-                                fill
-                                className="object-cover"
-                                sizes="40px"
-                              />
+                          {/* Checkbox */}
+                          <td className="py-3 px-3 text-center">
+                            <button
+                              onClick={() => handleToggleSelectProduct(product)}
+                              className="text-muted-foreground hover:text-foreground"
+                            >
+                              {isSelected ? (
+                                <CheckSquare className="w-4 h-4 text-primary" />
+                              ) : (
+                                <Square className="w-4 h-4" />
+                              )}
+                            </button>
+                          </td>
+
+                          {/* Image & Title */}
+                          <td className="py-3 px-3 min-w-[220px]">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-md bg-surface-subtle border border-border shrink-0 overflow-hidden relative">
+                                <Image
+                                  src={mainImage}
+                                  alt={product.title}
+                                  fill
+                                  className="object-cover"
+                                  sizes="40px"
+                                />
+                              </div>
+                              <div className="min-w-0">
+                                <p
+                                  className="font-bold text-foreground text-xs line-clamp-1 hover:text-primary cursor-pointer transition-colors"
+                                  onClick={() =>
+                                    setActiveModal({ type: "view", product })
+                                  }
+                                >
+                                  {product.title}
+                                </p>
+                                <span className="text-[10px] text-muted-foreground dir-ltr text-right block truncate">
+                                  ID: {product.id}
+                                </span>
+                              </div>
                             </div>
-                            <div className="min-w-0">
-                              <p
-                                className="font-bold text-foreground text-xs line-clamp-1 hover:text-primary cursor-pointer transition-colors"
-                                onClick={() =>
-                                  setActiveModal({ type: "view", product })
-                                }
-                              >
-                                {product.title}
-                              </p>
-                              <span className="text-[10px] text-muted-foreground dir-ltr text-right block truncate">
-                                ID: {product.id}
+                          </td>
+
+                          {/* Brand & Category */}
+                          <td className="py-3 px-3">
+                            <div className="flex flex-col gap-0.5">
+                              <span className="font-semibold text-foreground text-xs">
+                                {product.category.name}
+                              </span>
+                              <span className="text-[11px] text-muted-foreground">
+                                {product.brand?.name || "بدون برند"}
                               </span>
                             </div>
-                          </div>
-                        </td>
+                          </td>
 
-                        {/* Brand & Category */}
-                        <td className="py-3 px-3">
-                          <div className="flex flex-col gap-0.5">
-                            <span className="font-semibold text-foreground text-xs">
-                              {product.category.name}
+                          {/* Variant Count */}
+                          <td className="py-3 px-3">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-surface-subtle border border-border text-foreground">
+                              <Layers className="w-3 h-3 text-primary" />
+                              <span>{variantCount} واریانت</span>
                             </span>
-                            <span className="text-[11px] text-muted-foreground">
-                              {product.brand?.name || "بدون برند"}
-                            </span>
-                          </div>
-                        </td>
+                          </td>
 
-                        {/* Price & Discount */}
-                        <td className="py-3 px-3">
-                          <div className="flex flex-col">
-                            <span className="font-extrabold text-foreground text-xs">
-                              {formatPrice(product.pricing.minPrice, true)}
-                            </span>
-                            {product.pricing.minCompareAtPrice &&
-                              product.pricing.minCompareAtPrice >
-                                product.pricing.minPrice && (
-                                <div className="flex items-center gap-1 mt-0.5">
-                                  <span className="text-[10px] text-muted-foreground line-through">
-                                    {formatPrice(
-                                      product.pricing.minCompareAtPrice,
-                                      false
-                                    )}
+                          {/* Price */}
+                          <td className="py-3 px-3">
+                            <div className="flex flex-col">
+                              <span className="font-extrabold text-foreground text-xs">
+                                {formatPrice(product.pricing.minPrice, true)}
+                              </span>
+                              {product.pricing.maxPrice &&
+                                product.pricing.maxPrice > product.pricing.minPrice && (
+                                  <span className="text-[10px] text-muted-foreground">
+                                    تا {formatPrice(product.pricing.maxPrice, true)}
                                   </span>
-                                  <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1 rounded">
-                                    تخفیف‌دار
-                                  </span>
-                                </div>
-                              )}
-                          </div>
-                        </td>
+                                )}
+                            </div>
+                          </td>
 
-                        {/* Stock */}
-                        <td className="py-3 px-3">
-                          <div className="flex items-center gap-1.5">
+                          {/* Total Stock */}
+                          <td className="py-3 px-3">
                             <span
                               className={`font-bold px-2 py-0.5 rounded text-[11px] ${
                                 product.inventory.totalStock === 0
@@ -1016,62 +1005,217 @@ export default function AdminProductsPage() {
                                 ? "ناموجود"
                                 : `${product.inventory.totalStock} عدد`}
                             </span>
-                          </div>
-                        </td>
+                          </td>
 
-                        {/* Publication Status */}
-                        <td className="py-3 px-3">
-                          <span
-                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold border ${statusInfo.className}`}
-                          >
-                            <StatusIcon className="w-3 h-3 shrink-0" />
-                            <span>{statusInfo.label}</span>
-                          </span>
-                        </td>
+                          {/* Status */}
+                          <td className="py-3 px-3">
+                            <span
+                              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold border ${statusInfo.className}`}
+                            >
+                              <StatusIcon className="w-3 h-3 shrink-0" />
+                              <span>{statusInfo.label}</span>
+                            </span>
+                          </td>
 
-                        {/* Last Updated Date */}
-                        <td className="py-3 px-3 text-muted-foreground text-[11px]">
-                          {formatDate(product.updatedAt)}
-                        </td>
+                          {/* Date */}
+                          <td className="py-3 px-3 text-muted-foreground text-[11px]">
+                            {formatDate(product.updatedAt)}
+                          </td>
 
-                        {/* Actions */}
-                        <td className="py-3 px-4 text-left relative">
-                          <div className="flex items-center justify-end gap-1">
-                            <button
-                              onClick={() =>
-                                setActiveModal({ type: "view", product })
-                              }
-                              className="p-1.5 rounded text-muted-foreground hover:text-primary hover:bg-surface-subtle transition-colors"
-                              title="مشاهده جزئیات"
-                            >
-                              <Eye className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleOpenEditModal(product)}
-                              className="p-1.5 rounded text-muted-foreground hover:text-foreground hover:bg-surface-subtle transition-colors"
-                              title="ویرایش محصول"
-                            >
-                              <Edit className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleOpenStockModal(product)}
-                              className="p-1.5 rounded text-muted-foreground hover:text-amber-600 hover:bg-amber-50 transition-colors"
-                              title="مدیریت موجودی"
-                            >
-                              <Boxes className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() =>
-                                setActiveModal({ type: "delete", product })
-                              }
-                              className="p-1.5 rounded text-muted-foreground hover:text-error hover:bg-error/10 transition-colors"
-                              title="حذف محصول"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
+                          {/* Product Actions */}
+                          <td className="py-3 px-4 text-left">
+                            <div className="flex items-center justify-end gap-1">
+                              <button
+                                onClick={() =>
+                                  setActiveModal({ type: "view", product })
+                                }
+                                className="p-1.5 rounded text-muted-foreground hover:text-primary hover:bg-surface-subtle transition-colors"
+                                title="مشاهده سریع"
+                              >
+                                <Eye className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() =>
+                                  router.push(`/admin/products/${product.id}`)
+                                }
+                                className="p-1.5 rounded text-muted-foreground hover:text-foreground hover:bg-surface-subtle transition-colors"
+                                title="ویرایش کامل محصول"
+                              >
+                                <Edit className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => handleOpenStockModal(product)}
+                                className="p-1.5 rounded text-muted-foreground hover:text-amber-600 hover:bg-amber-50 transition-colors"
+                                title="مدیریت موجودی کل"
+                              >
+                                <Boxes className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() =>
+                                  setActiveModal({
+                                    type: "delete_product",
+                                    product,
+                                  })
+                                }
+                                className="p-1.5 rounded text-muted-foreground hover:text-error hover:bg-error/10 transition-colors"
+                                title="حذف محصول و تمام واریانت‌ها"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+
+                        {/* EXPANDED NESTED VARIANTS ROW */}
+                        {isExpanded && (
+                          <tr className="bg-surface-subtle/40 border-b border-border/80">
+                            <td colSpan={10} className="p-4 pr-12">
+                              <div className="bg-background border border-border/80 rounded-md p-3 space-y-2">
+                                <div className="flex items-center justify-between pb-2 border-b border-border/50">
+                                  <h4 className="text-xs font-extrabold text-foreground flex items-center gap-1.5">
+                                    <Layers className="w-3.5 h-3.5 text-primary" />
+                                    <span>
+                                      لیست واریانت‌های «{product.title}» ({variantCount})
+                                    </span>
+                                  </h4>
+                                </div>
+
+                                {variantCount === 0 ? (
+                                  <p className="text-xs text-muted-foreground py-2">
+                                    هیچ واریانتی برای این محصول تعریف نشده است.
+                                  </p>
+                                ) : (
+                                  <table className="w-full text-right text-xs">
+                                    <thead>
+                                      <tr className="border-b border-border/50 text-[10px] text-muted-foreground font-semibold">
+                                        <th className="py-1.5 px-2 w-8 text-center"></th>
+                                        <th className="py-1.5 px-2">ترکیب Optionها</th>
+                                        <th className="py-1.5 px-2">SKU</th>
+                                        <th className="py-1.5 px-2">قیمت واریانت</th>
+                                        <th className="py-1.5 px-2">موجودی</th>
+                                        <th className="py-1.5 px-2">وضعیت</th>
+                                        <th className="py-1.5 px-2 text-left">عملیات</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-border/30">
+                                      {product.variants.map((variant) => {
+                                        const varKey = `${product.id}:${variant.id}`;
+                                        const isVarSelected =
+                                          selectedVariantKeys.includes(varKey);
+                                        const varCombText = getVariantCombinationText(
+                                          product,
+                                          variant
+                                        );
+
+                                        return (
+                                          <tr
+                                            key={variant.id}
+                                            className={`hover:bg-surface-subtle transition-colors ${
+                                              isVarSelected ? "bg-primary/5" : ""
+                                            }`}
+                                          >
+                                            <td className="py-2 px-2 text-center">
+                                              <button
+                                                onClick={() =>
+                                                  handleToggleSelectVariant(
+                                                    product.id,
+                                                    variant.id
+                                                  )
+                                                }
+                                                className="text-muted-foreground hover:text-foreground"
+                                              >
+                                                {isVarSelected ? (
+                                                  <CheckSquare className="w-3.5 h-3.5 text-primary" />
+                                                ) : (
+                                                  <Square className="w-3.5 h-3.5" />
+                                                )}
+                                              </button>
+                                            </td>
+
+                                            <td className="py-2 px-2 font-bold text-foreground text-xs">
+                                              {varCombText}
+                                            </td>
+
+                                            <td className="py-2 px-2 text-[11px] font-mono text-muted-foreground dir-ltr text-right">
+                                              {variant.sku || "—"}
+                                            </td>
+
+                                            <td className="py-2 px-2 font-semibold text-foreground">
+                                              {formatPrice(
+                                                variant.pricing?.price ??
+                                                  product.pricing.minPrice,
+                                                true
+                                              )}
+                                              {variant.pricing?.compareAtPrice && (
+                                                <span className="text-[10px] text-muted-foreground line-through mr-1">
+                                                  {formatPrice(
+                                                    variant.pricing.compareAtPrice,
+                                                    false
+                                                  )}
+                                                </span>
+                                              )}
+                                            </td>
+
+                                            <td className="py-2 px-2">
+                                              <span className="font-bold text-[11px] px-1.5 py-0.5 rounded bg-surface-subtle border border-border">
+                                                {variant.inventory?.stock ?? 0} عدد
+                                              </span>
+                                            </td>
+
+                                            <td className="py-2 px-2">
+                                              <span
+                                                className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                                                  variant.status === "inactive"
+                                                    ? "bg-rose-50 text-rose-700"
+                                                    : "bg-emerald-50 text-emerald-700"
+                                                }`}
+                                              >
+                                                {variant.status === "inactive"
+                                                  ? "غیرفعال"
+                                                  : "فعال"}
+                                              </span>
+                                            </td>
+
+                                            <td className="py-2 px-2 text-left">
+                                              <div className="flex items-center justify-end gap-1">
+                                                <button
+                                                  onClick={() =>
+                                                    handleOpenEditVariantModal(
+                                                      product,
+                                                      variant
+                                                    )
+                                                  }
+                                                  className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-surface-subtle"
+                                                  title="ویرایش این واریانت"
+                                                >
+                                                  <Edit className="w-3.5 h-3.5" />
+                                                </button>
+                                                <button
+                                                  onClick={() =>
+                                                    setActiveModal({
+                                                      type: "delete_variant",
+                                                      product,
+                                                      variant,
+                                                    })
+                                                  }
+                                                  className="p-1 rounded text-muted-foreground hover:text-error hover:bg-error/10"
+                                                  title="حذف این واریانت"
+                                                >
+                                                  <Trash2 className="w-3.5 h-3.5" />
+                                                </button>
+                                              </div>
+                                            </td>
+                                          </tr>
+                                        );
+                                      })}
+                                    </tbody>
+                                  </table>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
                     );
                   })}
                 </tbody>
@@ -1079,10 +1223,11 @@ export default function AdminProductsPage() {
             </div>
           </div>
 
-          {/* MOBILE COMPACT LIST (Under lg) */}
+          {/* MOBILE COMPACT LIST */}
           <div className="lg:hidden space-y-3">
             {paginatedProducts.map((product) => {
               const isSelected = selectedProductIds.includes(product.id);
+              const isExpanded = expandedProductIds.includes(product.id);
               const statusInfo = getStatusInfo(product.status);
               const mainImage = product.images[0]?.url || "/images/bag-1.webp";
 
@@ -1096,7 +1241,7 @@ export default function AdminProductsPage() {
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-2.5 min-w-0">
                       <button
-                        onClick={() => handleToggleSelectProduct(product.id)}
+                        onClick={() => handleToggleSelectProduct(product)}
                         className="text-muted-foreground hover:text-foreground shrink-0"
                       >
                         {isSelected ? (
@@ -1138,9 +1283,9 @@ export default function AdminProductsPage() {
                         <MoreVertical className="w-4 h-4" />
                       </button>
 
-                      {/* Mobile Dropdown Action Menu */}
+                      {/* Dropdown Menu */}
                       {activeMenuId === product.id && (
-                        <div className="absolute left-0 top-8 z-20 w-40 bg-background border border-border rounded-md shadow-lg py-1 text-xs animate-in fade-in slide-in-from-top-1 duration-150">
+                        <div className="absolute left-0 top-8 z-20 w-40 bg-background border border-border rounded-md shadow-lg py-1 text-xs">
                           <button
                             onClick={() => {
                               setActiveModal({ type: "view", product });
@@ -1152,11 +1297,14 @@ export default function AdminProductsPage() {
                             <span>مشاهده</span>
                           </button>
                           <button
-                            onClick={() => handleOpenEditModal(product)}
+                            onClick={() => {
+                              router.push(`/admin/products/${product.id}`);
+                              setActiveMenuId(null);
+                            }}
                             className="w-full flex items-center gap-2 px-3 py-2 text-foreground hover:bg-surface-subtle"
                           >
                             <Edit className="w-3.5 h-3.5 text-muted-foreground" />
-                            <span>ویرایش</span>
+                            <span>ویرایش کامل</span>
                           </button>
                           <button
                             onClick={() => handleOpenStockModal(product)}
@@ -1168,13 +1316,13 @@ export default function AdminProductsPage() {
                           <div className="my-1 border-t border-border" />
                           <button
                             onClick={() => {
-                              setActiveModal({ type: "delete", product });
+                              setActiveModal({ type: "delete_product", product });
                               setActiveMenuId(null);
                             }}
                             className="w-full flex items-center gap-2 px-3 py-2 text-error hover:bg-error/10"
                           >
                             <Trash2 className="w-3.5 h-3.5 text-error" />
-                            <span>حذف</span>
+                            <span>حذف محصول</span>
                           </button>
                         </div>
                       )}
@@ -1183,21 +1331,21 @@ export default function AdminProductsPage() {
 
                   <div className="flex items-center justify-between pt-2 border-t border-border/50 text-xs">
                     <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => toggleExpandProduct(product.id)}
+                        className="inline-flex items-center gap-1 text-[11px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full"
+                      >
+                        <span>{product.variants?.length || 0} واریانت</span>
+                        {isExpanded ? (
+                          <ChevronUp className="w-3 h-3" />
+                        ) : (
+                          <ChevronDown className="w-3 h-3" />
+                        )}
+                      </button>
                       <span
                         className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold border ${statusInfo.className}`}
                       >
                         {statusInfo.label}
-                      </span>
-                      <span
-                        className={`font-bold px-2 py-0.5 rounded text-[10px] ${
-                          product.inventory.totalStock === 0
-                            ? "bg-rose-50 text-rose-700"
-                            : product.inventory.totalStock <= 5
-                            ? "bg-amber-50 text-amber-700"
-                            : "bg-surface-subtle text-foreground"
-                        }`}
-                      >
-                        موجودی: {product.inventory.totalStock}
                       </span>
                     </div>
 
@@ -1205,6 +1353,44 @@ export default function AdminProductsPage() {
                       {formatPrice(product.pricing.minPrice, true)}
                     </span>
                   </div>
+
+                  {/* Mobile Expanded Variants */}
+                  {isExpanded && (
+                    <div className="mt-2 pt-2 border-t border-border/80 space-y-2 bg-surface-subtle/50 p-2.5 rounded-md">
+                      <p className="text-[11px] font-extrabold text-foreground">
+                        واریانت‌ها:
+                      </p>
+                      {product.variants?.map((v) => (
+                        <div
+                          key={v.id}
+                          className="flex items-center justify-between bg-background p-2 rounded border border-border text-xs"
+                        >
+                          <div>
+                            <span className="font-bold text-foreground">
+                              {getVariantCombinationText(product, v)}
+                            </span>
+                            <span className="text-[10px] text-muted-foreground block dir-ltr">
+                              {v.sku}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-foreground">
+                              {formatPrice(
+                                v.pricing?.price ?? product.pricing.minPrice,
+                                true
+                              )}
+                            </span>
+                            <button
+                              onClick={() => handleOpenEditVariantModal(product, v)}
+                              className="p-1 rounded text-muted-foreground hover:text-foreground"
+                            >
+                              <Edit className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -1276,7 +1462,7 @@ export default function AdminProductsPage() {
       )}
 
       {/* =========================================================================
-          6. MODALS DIALOGS
+          6. MODALS & DIALOGS
          ========================================================================= */}
 
       {/* A) VIEW PRODUCT MODAL */}
@@ -1286,9 +1472,9 @@ export default function AdminProductsPage() {
             className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity"
             onClick={() => setActiveModal(null)}
           />
-          <div className="relative bg-background border border-border rounded-xl shadow-xl w-full max-w-lg p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150 z-10 max-h-[90vh] overflow-y-auto">
+          <div className="relative bg-background border border-border rounded-xl shadow-xl w-full max-w-lg p-6 space-y-4 z-10 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3 border-b border-border">
-              <h3 className="text-base font-bold text-foreground">مشخصات محصول</h3>
+              <h3 className="text-base font-bold text-foreground">مشخصات کامل محصول</h3>
               <button
                 onClick={() => setActiveModal(null)}
                 className="p-1 text-muted-foreground hover:text-foreground rounded-md"
@@ -1347,9 +1533,9 @@ export default function AdminProductsPage() {
                 </span>
               </div>
               <div className="bg-surface-subtle p-2.5 rounded-md">
-                <span className="text-muted-foreground block text-[11px]">وضعیت:</span>
+                <span className="text-muted-foreground block text-[11px]">تعداد واریانت:</span>
                 <span className="font-bold text-foreground">
-                  {getStatusInfo(activeModal.product.status).label}
+                  {activeModal.product.variants?.length || 0} واریانت
                 </span>
               </div>
             </div>
@@ -1366,148 +1552,18 @@ export default function AdminProductsPage() {
         </div>
       )}
 
-      {/* B) EDIT PRODUCT MODAL */}
-      {activeModal?.type === "edit" && activeModal.product && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity"
-            onClick={() => setActiveModal(null)}
-          />
-          <div className="relative bg-background border border-border rounded-xl shadow-xl w-full max-w-md p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150 z-10">
-            <div className="flex items-center justify-between pb-3 border-b border-border">
-              <h3 className="text-base font-bold text-foreground">ویرایش محصول</h3>
-              <button
-                onClick={() => setActiveModal(null)}
-                className="p-1 text-muted-foreground hover:text-foreground rounded-md"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="space-y-3 text-xs">
-              <div>
-                <label className="block text-foreground font-semibold mb-1">
-                  نام محصول
-                </label>
-                <input
-                  type="text"
-                  value={editFormData.title}
-                  onChange={(e) =>
-                    setEditFormData((prev) => ({ ...prev, title: e.target.value }))
-                  }
-                  className="w-full h-10 px-3 bg-surface-subtle border border-border rounded-md text-foreground focus:outline-none focus:border-primary"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-foreground font-semibold mb-1">
-                    قیمت (تومان)
-                  </label>
-                  <input
-                    type="number"
-                    value={editFormData.price}
-                    onChange={(e) =>
-                      setEditFormData((prev) => ({
-                        ...prev,
-                        price: Number(e.target.value),
-                      }))
-                    }
-                    className="w-full h-10 px-3 bg-surface-subtle border border-border rounded-md text-foreground focus:outline-none focus:border-primary"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-foreground font-semibold mb-1">
-                    قیمت قبل تخفیف
-                  </label>
-                  <input
-                    type="number"
-                    value={editFormData.compareAtPrice || ""}
-                    onChange={(e) =>
-                      setEditFormData((prev) => ({
-                        ...prev,
-                        compareAtPrice: e.target.value
-                          ? Number(e.target.value)
-                          : undefined,
-                      }))
-                    }
-                    placeholder="اختیاری"
-                    className="w-full h-10 px-3 bg-surface-subtle border border-border rounded-md text-foreground focus:outline-none focus:border-primary"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-foreground font-semibold mb-1">
-                    موجودی
-                  </label>
-                  <input
-                    type="number"
-                    value={editFormData.stock}
-                    onChange={(e) =>
-                      setEditFormData((prev) => ({
-                        ...prev,
-                        stock: Number(e.target.value),
-                      }))
-                    }
-                    className="w-full h-10 px-3 bg-surface-subtle border border-border rounded-md text-foreground focus:outline-none focus:border-primary"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-foreground font-semibold mb-1">
-                    وضعیت انتشار
-                  </label>
-                  <select
-                    value={editFormData.status}
-                    onChange={(e) =>
-                      setEditFormData((prev) => ({
-                        ...prev,
-                        status: e.target.value as ProductStatus,
-                      }))
-                    }
-                    className="w-full h-10 px-3 bg-surface-subtle border border-border rounded-md text-foreground focus:outline-none focus:border-primary"
-                  >
-                    <option value="active">منتشرشده</option>
-                    <option value="draft">پیش‌نویس</option>
-                    <option value="archived">آرشیو شده</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <div className="pt-3 flex justify-end gap-2 border-t border-border">
-              <button
-                onClick={() => setActiveModal(null)}
-                className="h-9 px-4 text-xs font-bold rounded-md bg-surface-subtle hover:bg-surface-muted text-foreground transition-colors"
-              >
-                انصراف
-              </button>
-              <button
-                onClick={handleSaveEditProduct}
-                className="h-9 px-4 text-xs font-bold rounded-md bg-primary text-primary-foreground hover:bg-primary-hover transition-colors"
-              >
-                ذخیره تغییرات
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* C) MANAGE STOCK QUICK MODAL */}
+      {/* B) MANAGE STOCK QUICK MODAL */}
       {activeModal?.type === "stock" && activeModal.product && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
             className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity"
             onClick={() => setActiveModal(null)}
           />
-          <div className="relative bg-background border border-border rounded-xl shadow-xl w-full max-w-sm p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150 z-10">
+          <div className="relative bg-background border border-border rounded-xl shadow-xl w-full max-w-sm p-6 space-y-4 z-10">
             <div className="flex items-center justify-between pb-2 border-b border-border">
               <div className="flex items-center gap-2">
                 <Boxes className="w-4 h-4 text-primary" />
-                <h3 className="text-base font-bold text-foreground">مدیریت موجودی</h3>
+                <h3 className="text-base font-bold text-foreground">مدیریت موجودی کل</h3>
               </div>
               <button
                 onClick={() => setActiveModal(null)}
@@ -1554,14 +1610,137 @@ export default function AdminProductsPage() {
         </div>
       )}
 
-      {/* D) CONFIRM DELETE SINGLE MODAL */}
-      {activeModal?.type === "delete" && activeModal.product && (
+      {/* C) EDIT VARIANT MODAL */}
+      {activeModal?.type === "edit_variant" && activeModal.variant && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
             className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity"
             onClick={() => setActiveModal(null)}
           />
-          <div className="relative bg-background border border-border rounded-xl shadow-xl w-full max-w-sm p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150 z-10">
+          <div className="relative bg-background border border-border rounded-xl shadow-xl w-full max-w-sm p-6 space-y-4 z-10">
+            <div className="flex items-center justify-between pb-2 border-b border-border">
+              <h3 className="text-base font-bold text-foreground">ویرایش واریانت</h3>
+              <button
+                onClick={() => setActiveModal(null)}
+                className="p-1 text-muted-foreground hover:text-foreground rounded-md"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <p className="text-xs font-bold text-primary">
+              {getVariantCombinationText(activeModal.product, activeModal.variant)}
+            </p>
+
+            <div className="space-y-3 text-xs">
+              <div>
+                <label className="block font-semibold mb-1">کد شناسایی (SKU)</label>
+                <input
+                  type="text"
+                  value={editVariantData.sku}
+                  onChange={(e) =>
+                    setEditVariantData((prev) => ({ ...prev, sku: e.target.value }))
+                  }
+                  className="w-full h-9 px-3 bg-surface-subtle border border-border rounded text-foreground dir-ltr text-right"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block font-semibold mb-1">قیمت (تومان)</label>
+                  <input
+                    type="number"
+                    value={editVariantData.price}
+                    onChange={(e) =>
+                      setEditVariantData((prev) => ({
+                        ...prev,
+                        price: Number(e.target.value),
+                      }))
+                    }
+                    className="w-full h-9 px-3 bg-surface-subtle border border-border rounded text-foreground"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-semibold mb-1">قیمت قبل تخفیف</label>
+                  <input
+                    type="number"
+                    value={editVariantData.compareAtPrice || ""}
+                    onChange={(e) =>
+                      setEditVariantData((prev) => ({
+                        ...prev,
+                        compareAtPrice: e.target.value
+                          ? Number(e.target.value)
+                          : undefined,
+                      }))
+                    }
+                    placeholder="اختیاری"
+                    className="w-full h-9 px-3 bg-surface-subtle border border-border rounded text-foreground"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block font-semibold mb-1">موجودی</label>
+                  <input
+                    type="number"
+                    value={editVariantData.stock}
+                    onChange={(e) =>
+                      setEditVariantData((prev) => ({
+                        ...prev,
+                        stock: Number(e.target.value),
+                      }))
+                    }
+                    className="w-full h-9 px-3 bg-surface-subtle border border-border rounded text-foreground"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-semibold mb-1">وضعیت واریانت</label>
+                  <select
+                    value={editVariantData.status}
+                    onChange={(e) =>
+                      setEditVariantData((prev) => ({
+                        ...prev,
+                        status: e.target.value as "active" | "inactive",
+                      }))
+                    }
+                    className="w-full h-9 px-3 bg-surface-subtle border border-border rounded text-foreground"
+                  >
+                    <option value="active">فعال</option>
+                    <option value="inactive">غیرفعال</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 border-t border-border">
+              <button
+                onClick={() => setActiveModal(null)}
+                className="h-9 px-4 text-xs font-bold rounded bg-surface-subtle text-foreground"
+              >
+                انصراف
+              </button>
+              <button
+                onClick={handleSaveEditVariant}
+                className="h-9 px-4 text-xs font-bold rounded bg-primary text-primary-foreground"
+              >
+                ذخیره
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* D) CONFIRM DELETE PRODUCT MODAL */}
+      {activeModal?.type === "delete_product" && activeModal.product && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity"
+            onClick={() => setActiveModal(null)}
+          />
+          <div className="relative bg-background border border-border rounded-xl shadow-xl w-full max-w-sm p-6 space-y-4 z-10">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-error/10 text-error flex items-center justify-center shrink-0">
                 <AlertTriangle className="w-5 h-5" />
@@ -1569,7 +1748,7 @@ export default function AdminProductsPage() {
               <div>
                 <h3 className="text-sm font-bold text-foreground">تایید حذف محصول</h3>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  این عملیات غیرقابل بازگشت است.
+                  این عملیات تمام واریانت‌های مرتبط با این محصول را حذف می‌کند.
                 </p>
               </div>
             </div>
@@ -1588,7 +1767,7 @@ export default function AdminProductsPage() {
                 انصراف
               </button>
               <button
-                onClick={handleConfirmDelete}
+                onClick={handleConfirmDeleteProduct}
                 className="h-9 px-4 text-xs font-bold rounded-md bg-error text-error-foreground hover:opacity-90"
               >
                 بله، حذف شود
@@ -1598,139 +1777,35 @@ export default function AdminProductsPage() {
         </div>
       )}
 
-      {/* E) ADD NEW PRODUCT MODAL */}
-      {activeModal?.type === "add" && (
+      {/* E) CONFIRM DELETE VARIANT MODAL */}
+      {activeModal?.type === "delete_variant" && activeModal.variant && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
             className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity"
             onClick={() => setActiveModal(null)}
           />
-          <div className="relative bg-background border border-border rounded-xl shadow-xl w-full max-w-md p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150 z-10">
-            <div className="flex items-center justify-between pb-3 border-b border-border">
-              <div className="flex items-center gap-2">
-                <Plus className="w-4 h-4 text-primary" />
-                <h3 className="text-base font-bold text-foreground">افزودن محصول جدید</h3>
+          <div className="relative bg-background border border-border rounded-xl shadow-xl w-full max-w-sm p-6 space-y-4 z-10">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-error/10 text-error flex items-center justify-center shrink-0">
+                <AlertTriangle className="w-5 h-5" />
               </div>
-              <button
-                onClick={() => setActiveModal(null)}
-                className="p-1 text-muted-foreground hover:text-foreground rounded-md"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="space-y-3 text-xs">
               <div>
-                <label className="block text-foreground font-semibold mb-1">
-                  عنوان محصول *
-                </label>
-                <input
-                  type="text"
-                  placeholder="مثلاً: کیف چرمی کلاسیک زنانه"
-                  value={newProductData.title}
-                  onChange={(e) =>
-                    setNewProductData((prev) => ({ ...prev, title: e.target.value }))
-                  }
-                  className="w-full h-10 px-3 bg-surface-subtle border border-border rounded-md text-foreground focus:outline-none focus:border-primary"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-foreground font-semibold mb-1">
-                    دسته‌بندی
-                  </label>
-                  <select
-                    value={newProductData.categoryId}
-                    onChange={(e) =>
-                      setNewProductData((prev) => ({ ...prev, categoryId: e.target.value }))
-                    }
-                    className="w-full h-10 px-3 bg-surface-subtle border border-border rounded-md text-foreground focus:outline-none"
-                  >
-                    {categories.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-foreground font-semibold mb-1">برند</label>
-                  <select
-                    value={newProductData.brandId}
-                    onChange={(e) =>
-                      setNewProductData((prev) => ({ ...prev, brandId: e.target.value }))
-                    }
-                    className="w-full h-10 px-3 bg-surface-subtle border border-border rounded-md text-foreground focus:outline-none"
-                  >
-                    {brands.map((b) => (
-                      <option key={b.id} value={b.id}>
-                        {b.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-foreground font-semibold mb-1">
-                    قیمت (تومان)
-                  </label>
-                  <input
-                    type="number"
-                    value={newProductData.price}
-                    onChange={(e) =>
-                      setNewProductData((prev) => ({
-                        ...prev,
-                        price: Number(e.target.value),
-                      }))
-                    }
-                    className="w-full h-10 px-3 bg-surface-subtle border border-border rounded-md text-foreground focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-foreground font-semibold mb-1">
-                    موجودی اولیه
-                  </label>
-                  <input
-                    type="number"
-                    value={newProductData.stock}
-                    onChange={(e) =>
-                      setNewProductData((prev) => ({
-                        ...prev,
-                        stock: Number(e.target.value),
-                      }))
-                    }
-                    className="w-full h-10 px-3 bg-surface-subtle border border-border rounded-md text-foreground focus:outline-none"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-foreground font-semibold mb-1">
-                  وضعیت انتشار
-                </label>
-                <select
-                  value={newProductData.status}
-                  onChange={(e) =>
-                    setNewProductData((prev) => ({
-                      ...prev,
-                      status: e.target.value as ProductStatus,
-                    }))
-                  }
-                  className="w-full h-10 px-3 bg-surface-subtle border border-border rounded-md text-foreground focus:outline-none"
-                >
-                  <option value="active">منتشرشده</option>
-                  <option value="draft">پیش‌نویس</option>
-                  <option value="archived">آرشیو شده</option>
-                </select>
+                <h3 className="text-sm font-bold text-foreground">حذف واریانت</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  فقط این واریانت خاص حذف خواهد شد و خود محصول باقی می‌ماند.
+                </p>
               </div>
             </div>
 
-            <div className="pt-3 flex justify-end gap-2 border-t border-border">
+            <p className="text-xs text-foreground bg-surface-subtle p-3 rounded-md">
+              آیا از حذف واریانت «
+              <strong className="text-error">
+                {getVariantCombinationText(activeModal.product, activeModal.variant)}
+              </strong>
+              » اطمینان دارید؟
+            </p>
+
+            <div className="flex justify-end gap-2 pt-2">
               <button
                 onClick={() => setActiveModal(null)}
                 className="h-9 px-4 text-xs font-bold rounded-md bg-surface-subtle text-foreground"
@@ -1738,10 +1813,10 @@ export default function AdminProductsPage() {
                 انصراف
               </button>
               <button
-                onClick={handleCreateProduct}
-                className="h-9 px-4 text-xs font-bold rounded-md bg-primary text-primary-foreground"
+                onClick={handleConfirmDeleteVariant}
+                className="h-9 px-4 text-xs font-bold rounded-md bg-error text-error-foreground hover:opacity-90"
               >
-                ایجاد محصول
+                بله، حذف شود
               </button>
             </div>
           </div>
@@ -1755,12 +1830,12 @@ export default function AdminProductsPage() {
             className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity"
             onClick={() => setActiveModal(null)}
           />
-          <div className="relative bg-background border border-border rounded-xl shadow-xl w-full max-w-sm p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150 z-10">
+          <div className="relative bg-background border border-border rounded-xl shadow-xl w-full max-w-sm p-6 space-y-4 z-10">
             <h3 className="text-base font-bold text-foreground">
               تغییر وضعیت انتشار گروهی
             </h3>
             <p className="text-xs text-muted-foreground">
-              تغییر وضعیت برای {selectedProductIds.length} محصول انتخاب‌شده:
+              تغییر وضعیت برای {totalSelectedCount} آیتم انتخاب‌شده:
             </p>
 
             <select
@@ -1798,11 +1873,10 @@ export default function AdminProductsPage() {
             className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity"
             onClick={() => setActiveModal(null)}
           />
-          <div className="relative bg-background border border-border rounded-xl shadow-xl w-full max-w-sm p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150 z-10">
+          <div className="relative bg-background border border-border rounded-xl shadow-xl w-full max-w-sm p-6 space-y-4 z-10">
             <h3 className="text-base font-bold text-foreground">تغییر موجودی گروهی</h3>
             <p className="text-xs text-muted-foreground">
-              مقدار موجودی جدید را برای {selectedProductIds.length} محصول انتخاب‌شده وارد
-              کنید:
+              مقدار موجودی جدید را برای {totalSelectedCount} آیتم انتخاب‌شده وارد کنید:
             </p>
 
             <input
@@ -1838,13 +1912,13 @@ export default function AdminProductsPage() {
             className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity"
             onClick={() => setActiveModal(null)}
           />
-          <div className="relative bg-background border border-border rounded-xl shadow-xl w-full max-w-sm p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150 z-10">
+          <div className="relative bg-background border border-border rounded-xl shadow-xl w-full max-w-sm p-6 space-y-4 z-10">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-error/10 text-error flex items-center justify-center shrink-0">
                 <AlertTriangle className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-foreground">حذف گروهی محصولات</h3>
+                <h3 className="text-sm font-bold text-foreground">حذف گروهی</h3>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   این عملیات غیرقابل بازگشت است.
                 </p>
@@ -1852,8 +1926,8 @@ export default function AdminProductsPage() {
             </div>
 
             <p className="text-xs text-foreground bg-surface-subtle p-3 rounded-md">
-              آیا از حذف <strong className="text-error">{selectedProductIds.length}</strong>{" "}
-              محصول انتخاب‌شده اطمینان دارید؟
+              آیا از حذف <strong className="text-error">{totalSelectedCount}</strong>{" "}
+              آیتم انتخاب‌شده اطمینان دارید؟
             </p>
 
             <div className="flex justify-end gap-2 pt-2">
