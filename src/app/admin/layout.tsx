@@ -20,7 +20,8 @@ function AdminLayoutContent({
     if (
       item.href !== "/admin/dashboard" &&
       !item.href.startsWith("/admin/products") &&
-      !item.href.startsWith("/admin/inventory")
+      !item.href.startsWith("/admin/inventory") &&
+      !item.href.startsWith("/admin/returns")
     ) {
       showToast(`بخش «${item.title}» به زودی اضافه خواهد شد.`, "info");
     }

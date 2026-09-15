@@ -1,0 +1,94 @@
+import React from "react";
+import { ReturnRequest } from "@/types/return";
+import { RotateCcw, RefreshCw, Clock, CheckCircle2, AlertCircle } from "lucide-react";
+import { isActionRequiredByAdmin } from "@/lib/returns/stateMachine";
+
+interface ReturnsSummaryProps {
+  requests: ReturnRequest[];
+}
+
+export function ReturnsSummary({ requests }: ReturnsSummaryProps) {
+  const totalCount = requests.length;
+  const returnCount = requests.filter((r) => r.type === "return").length;
+  const exchangeCount = requests.filter((r) => r.type === "exchange").length;
+  const actionRequiredCount = requests.filter((r) => isActionRequiredByAdmin(r.status)).length;
+  const completedCount = requests.filter(
+    (r) => r.status === "completed" || r.status === "refunded" || r.status === "replacement_shipped"
+  ).length;
+
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
+      {/* Total Card */}
+      <div className="bg-background border border-border rounded-lg p-3.5 flex flex-col justify-between">
+        <div className="flex items-center justify-between text-muted-foreground text-xs font-medium">
+          <span>کل درخواست‌ها</span>
+          <RotateCcw className="w-4 h-4 text-primary" />
+        </div>
+        <div className="mt-2 flex items-baseline justify-between">
+          <span className="text-xl font-bold text-foreground">
+            {totalCount.toLocaleString("fa-IR")}
+          </span>
+          <span className="text-[11px] text-muted-foreground">
+            {returnCount} مرجوعی / {exchangeCount} تعویض
+          </span>
+        </div>
+      </div>
+
+      {/* Action Required Card */}
+      <div className="bg-amber-50/50 border border-amber-200/80 rounded-lg p-3.5 flex flex-col justify-between">
+        <div className="flex items-center justify-between text-amber-800 text-xs font-medium">
+          <span>نیازمند اقدام ادمین</span>
+          <AlertCircle className="w-4 h-4 text-amber-600" />
+        </div>
+        <div className="mt-2 flex items-baseline justify-between">
+          <span className="text-xl font-bold text-amber-900">
+            {actionRequiredCount.toLocaleString("fa-IR")}
+          </span>
+          <span className="text-[11px] text-amber-700">اقدام فوری</span>
+        </div>
+      </div>
+
+      {/* Returns Card */}
+      <div className="bg-background border border-border rounded-lg p-3.5 flex flex-col justify-between">
+        <div className="flex items-center justify-between text-muted-foreground text-xs font-medium">
+          <span>مرجوعی و بازپرداخت</span>
+          <RotateCcw className="w-4 h-4 text-blue-600" />
+        </div>
+        <div className="mt-2 flex items-baseline justify-between">
+          <span className="text-xl font-bold text-foreground">
+            {returnCount.toLocaleString("fa-IR")}
+          </span>
+          <span className="text-[11px] text-muted-foreground">درخواست</span>
+        </div>
+      </div>
+
+      {/* Exchange Card */}
+      <div className="bg-background border border-border rounded-lg p-3.5 flex flex-col justify-between">
+        <div className="flex items-center justify-between text-muted-foreground text-xs font-medium">
+          <span>تعویض کالا</span>
+          <RefreshCw className="w-4 h-4 text-indigo-600" />
+        </div>
+        <div className="mt-2 flex items-baseline justify-between">
+          <span className="text-xl font-bold text-foreground">
+            {exchangeCount.toLocaleString("fa-IR")}
+          </span>
+          <span className="text-[11px] text-muted-foreground">درخواست</span>
+        </div>
+      </div>
+
+      {/* Completed Card */}
+      <div className="bg-background border border-border rounded-lg p-3.5 flex flex-col justify-between col-span-2 sm:col-span-1">
+        <div className="flex items-center justify-between text-muted-foreground text-xs font-medium">
+          <span>تکمیل شده</span>
+          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+        </div>
+        <div className="mt-2 flex items-baseline justify-between">
+          <span className="text-xl font-bold text-foreground">
+            {completedCount.toLocaleString("fa-IR")}
+          </span>
+          <span className="text-[11px] text-emerald-600 font-medium">موفق</span>
+        </div>
+      </div>
+    </div>
+  );
+}

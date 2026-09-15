@@ -19,6 +19,14 @@ export function formatPrice(
 }
 
 /**
+ * Formats a raw number price into Persian formatted string with Toman label
+ */
+export function formatToman(amount: number): string {
+  if (isNaN(amount)) return "۰ تومان";
+  return `${amount.toLocaleString("fa-IR")} تومان`;
+}
+
+/**
  * Formats a percentage into Persian representation (e.g. 14 -> %۱۴ or ۱۴٪)
  */
 export function formatPercent(percent: number): string {
