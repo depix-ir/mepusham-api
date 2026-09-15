@@ -121,7 +121,7 @@ export default function AdminDashboardPage() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-foreground">خلاصه وضعیت فروشگاه</h2>
+          <h2 className="text-xl md:text-2xl font-black text-foreground tracking-tight">خلاصه وضعیت فروشگاه</h2>
           <p className="text-xs text-muted-foreground mt-1">
             نگاهی سریع به آخرین وضعیت سفارش‌ها، فروش و موجودی محصولات
           </p>
@@ -129,9 +129,9 @@ export default function AdminDashboardPage() {
         <div className="flex items-center gap-2">
           <Link
             href="/admin/products/new"
-            className="inline-flex items-center justify-center gap-2 h-9 px-4 text-xs font-semibold rounded-md bg-primary text-primary-foreground hover:bg-primary-hover transition-colors"
+            className="inline-flex items-center justify-center gap-2 h-10 px-4 text-xs sm:text-sm font-semibold rounded-md bg-primary text-primary-foreground hover:bg-primary-hover active:bg-primary-active transition-colors shadow-xs"
           >
-            <PlusCircle className="w-3 h-3" />
+            <PlusCircle className="w-4 h-4" />
             <span>افزودن محصول</span>
           </Link>
         </div>

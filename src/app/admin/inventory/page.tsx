@@ -497,7 +497,7 @@ export default function AdminInventoryPage() {
             className="inline-flex items-center justify-center gap-2 h-10 px-4 text-xs sm:text-sm font-semibold rounded-md bg-primary text-primary-foreground hover:bg-primary-hover active:bg-primary-active transition-colors shadow-xs"
           >
             <Plus className="w-4 h-4" />
-            <span>+ محصول جدید</span>
+            <span>محصول جدید</span>
           </Link>
         </div>
       </div>

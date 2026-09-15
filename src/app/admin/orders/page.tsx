@@ -253,7 +253,7 @@ export default function AdminOrdersPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-xl font-bold text-foreground">سفارش‌ها</h1>
+            <h1 className="text-xl md:text-2xl font-black text-foreground tracking-tight">سفارش‌ها</h1>
             <span className="px-2.5 py-0.5 text-xs font-bold bg-primary/10 text-primary rounded-full">
               {orders.length} سفارش
             </span>

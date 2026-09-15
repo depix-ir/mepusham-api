@@ -112,8 +112,7 @@ function AdminReturnsContent() {
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
         <div>
-          <h1 className="text-xl font-bold text-foreground flex items-center gap-2">
-            <RotateCcw className="w-5 h-5 text-primary shrink-0" />
+          <h1 className="text-xl md:text-2xl font-black text-foreground tracking-tight">
             <span>مرجوعی و تعویض کالا</span>
           </h1>
           <p className="text-xs text-muted-foreground mt-1">
