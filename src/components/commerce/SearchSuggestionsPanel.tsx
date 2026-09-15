@@ -3,6 +3,7 @@ import { SearchSuggestion } from "@/lib/search/suggestionService";
 import { SearchSuggestionItem } from "./SearchSuggestionItem";
 
 export interface SearchSuggestionsPanelProps {
+  id?: string;
   suggestions: SearchSuggestion[];
   query: string;
   isLoading?: boolean;
@@ -12,6 +13,7 @@ export interface SearchSuggestionsPanelProps {
 }
 
 export function SearchSuggestionsPanel({
+  id = "search-suggestions-dropdown",
   suggestions,
   query,
   isLoading = false,
@@ -23,6 +25,7 @@ export function SearchSuggestionsPanel({
 
   return (
     <div
+      id={id}
       role="listbox"
       aria-label="پیشنهادهای جستجو"
       className="w-full bg-background border border-border-product rounded-2xl shadow-lg p-2 flex flex-col gap-1 transition-all duration-150 ease-out animate-in fade-in slide-in-from-top-1"
@@ -41,6 +44,7 @@ export function SearchSuggestionsPanel({
           {suggestions.map((item, index) => (
             <SearchSuggestionItem
               key={item.id}
+              id={`${id}-item-${item.id}`}
               suggestion={item}
               isSelected={selectedIndex === index}
               onSelect={onSelectSuggestion}

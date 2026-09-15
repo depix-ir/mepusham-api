@@ -62,6 +62,7 @@ export function useSearchSuggestions({
   );
 
   const clearQuery = useCallback(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
     setQuery("");
     setDebouncedQuery("");
     setIsLoading(false);

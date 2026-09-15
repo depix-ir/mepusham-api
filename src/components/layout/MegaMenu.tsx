@@ -25,6 +25,8 @@ export function MegaMenu({
   onMouseLeave,
 }: MegaMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
   // Close on Escape key press
   useEffect(() => {
@@ -32,18 +34,19 @@ export function MegaMenu({
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        onClose();
+        onCloseRef.current();
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
   return (
     <div
+      id="mega-menu-products"
       ref={menuRef}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}

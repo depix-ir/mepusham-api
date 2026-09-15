@@ -3,6 +3,7 @@ import { SearchIcon } from "@/components/icons";
 import { SearchSuggestion } from "@/lib/search/suggestionService";
 
 export interface SearchSuggestionItemProps {
+  id?: string;
   suggestion: SearchSuggestion;
   isSelected?: boolean;
   onSelect: (text: string) => void;
@@ -10,6 +11,7 @@ export interface SearchSuggestionItemProps {
 }
 
 export function SearchSuggestionItem({
+  id,
   suggestion,
   isSelected = false,
   onSelect,
@@ -17,6 +19,7 @@ export function SearchSuggestionItem({
 }: SearchSuggestionItemProps) {
   return (
     <button
+      id={id || `suggestion-item-${suggestion.id}`}
       type="button"
       role="option"
       aria-selected={isSelected}

@@ -4,7 +4,6 @@ import React from "react";
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { SearchInput } from "@/components/ui/SearchInput";
-import { IconButton } from "@/components/ui/IconButton";
 import { HeartIcon, UserIcon } from "@/components/icons";
 import { CartButton } from "./CartButton";
 import { useWishlist } from "@/store/wishlist/wishlist.store";
@@ -45,22 +44,26 @@ export function MainHeader({ cartItemCount = 0 }: MainHeaderProps) {
         {/* Header Action Buttons */}
         <div className="flex items-center gap-2 md:gap-3 shrink-0">
           {/* Wishlist Button (Desktop) */}
-          <Link href="/wishlist" className="hidden md:block relative">
-            <IconButton ariaLabel="پسندیده‌ها" variant="ghost" size="md">
-              <HeartIcon size={22} />
-              {wishlistCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold rounded-full w-4 h-4 min-w-[16px] px-1 flex items-center justify-center border-2 border-background leading-none">
-                  {wishlistCount}
-                </span>
-              )}
-            </IconButton>
+          <Link
+            href="/wishlist"
+            className="hidden md:inline-flex relative items-center justify-center rounded-full w-10 h-10 text-sm text-foreground hover:bg-surface-subtle transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 shrink-0"
+            aria-label={wishlistCount > 0 ? `پسندیده‌ها (${wishlistCount})` : "پسندیده‌ها"}
+          >
+            <HeartIcon size={22} />
+            {wishlistCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold rounded-full w-4 h-4 min-w-[16px] px-1 flex items-center justify-center border-2 border-background leading-none">
+                {wishlistCount}
+              </span>
+            )}
           </Link>
 
           {/* Account Button (Desktop) */}
-          <Link href="/account" className="hidden md:block">
-            <IconButton ariaLabel="حساب کاربری" variant="ghost" size="md">
-              <UserIcon size={22} />
-            </IconButton>
+          <Link
+            href="/account"
+            className="hidden md:inline-flex items-center justify-center rounded-full w-10 h-10 text-sm text-foreground hover:bg-surface-subtle transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 shrink-0"
+            aria-label="حساب کاربری"
+          >
+            <UserIcon size={22} />
           </Link>
 
           {/* Cart Button (Handles Mobile & Desktop) */}

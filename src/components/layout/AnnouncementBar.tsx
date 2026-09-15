@@ -5,7 +5,7 @@ interface AnnouncementBarProps {
   text?: string;
 }
 
-export function AnnouncementBar({
+export const AnnouncementBar = React.memo(function AnnouncementBar({
   text = "ارسال رایگان برای سفارش‌های بالای ۲ میلیون تومان",
 }: AnnouncementBarProps) {
   return (
@@ -15,4 +15,4 @@ export function AnnouncementBar({
       </Container>
     </div>
   );
-}
+});
