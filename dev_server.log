@@ -2,16 +2,12 @@ $ next dev
 ▲ Next.js 16.3.4 (Turbopack)
 - Local:         http://localhost:3000
 - Network:       http://192.168.0.2:3000
-✓ Ready in 823ms
-✓ Running next.config.ts took 53ms
+✓ Ready in 553ms
+✓ Running next.config.ts took 43ms
 
-○ Compiling / ...
- HEAD / 200 in 5.7s (next.js: 4.8s, application-code: 931ms)
- GET /products 200 in 1142ms (next.js: 942ms, application-code: 200ms)
+○ Compiling /products ...
+ GET /products 200 in 5.2s (next.js: 4.6s, application-code: 647ms)
 [browser] Image with src "/images/banner-1.webp" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
 Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
 [browser] Image with src "/images/banner-2.webp" has "fill" prop and "sizes" prop of "100vw", but image is not rendered at full viewport width. Please adjust "sizes" to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
 [browser] Image with src "/images/banner-1.webp" has "fill" prop and "sizes" prop of "100vw", but image is not rendered at full viewport width. Please adjust "sizes" to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
- GET /products 200 in 166ms (next.js: 8ms, application-code: 157ms)
-[browser] Image with src "/images/banner-2.webp" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
-Read more: https://nextjs.org/docs/app/api-reference/components/image#loading

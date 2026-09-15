@@ -50,8 +50,6 @@ export function LoadMoreSentinel({
     };
   }, [disabled, rootMargin, threshold]);
 
-  if (disabled) return null;
-
   return (
     <div
       ref={sentinelRef}
