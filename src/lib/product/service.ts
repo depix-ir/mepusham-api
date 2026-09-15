@@ -1,4 +1,4 @@
-import { Product } from "@/types/product";
+import { Product, ProductQueryFilter, PaginatedProductsResponse } from "@/types/product";
 import { products } from "@/data/products";
 import {
   FOOTWEAR_SIZE_GUIDE,
@@ -87,4 +87,96 @@ export function getRelatedProducts(
     (p) => p.id !== product.id && p.category.id !== product.category.id
   );
   return [...sameCategory, ...others].slice(0, limit);
+}
+
+export const PRODUCT_PAGE_SIZE = 8;
+
+/**
+ * Filter, sort, and paginate product catalog asynchronously (designed to be replaceable by backend API)
+ */
+export async function getPaginatedProducts(
+  filters: ProductQueryFilter = {},
+  page: number = 1,
+  pageSize: number = PRODUCT_PAGE_SIZE,
+  delayMs: number = 80
+): Promise<PaginatedProductsResponse> {
+  let list = [...products];
+
+  // Filter by category
+  if (filters.category) {
+    list = list.filter((p) => p.category.slug === filters.category);
+  }
+
+  // Filter by brands
+  if (filters.brands && filters.brands.length > 0) {
+    list = list.filter((p) => p.brand?.slug && filters.brands!.includes(p.brand.slug));
+  }
+
+  // Filter by price range
+  if (filters.minPrice !== undefined && !isNaN(Number(filters.minPrice))) {
+    list = list.filter((p) => p.pricing.minPrice >= Number(filters.minPrice));
+  }
+  if (filters.maxPrice !== undefined && !isNaN(Number(filters.maxPrice))) {
+    list = list.filter((p) => p.pricing.minPrice <= Number(filters.maxPrice));
+  }
+
+  // Filter by stock
+  if (filters.inStock) {
+    list = list.filter((p) => p.inventory.totalStock > 0);
+  }
+
+  // Filter by discount
+  if (filters.hasDiscount) {
+    list = list.filter((p) => p.pricing.hasDiscount);
+  }
+
+  // Search query filter
+  if (filters.q && filters.q.trim() !== "") {
+    const q = filters.q.trim().toLowerCase();
+    list = list.filter(
+      (p) =>
+        p.title.toLowerCase().includes(q) ||
+        (p.description && p.description.toLowerCase().includes(q)) ||
+        p.category.name.toLowerCase().includes(q) ||
+        (p.brand?.name && p.brand.name.toLowerCase().includes(q)) ||
+        (p.tags && p.tags.some((tag) => tag.toLowerCase().includes(q)))
+    );
+  }
+
+  // Sort list
+  const sort = filters.sort || "newest";
+  if (sort === "price_asc") {
+    list.sort((a, b) => a.pricing.minPrice - b.pricing.minPrice);
+  } else if (sort === "price_desc") {
+    list.sort((a, b) => b.pricing.minPrice - a.pricing.minPrice);
+  } else if (sort === "discount") {
+    list.sort(
+      (a, b) =>
+        (b.variants[0]?.pricing?.discountPercent || 0) -
+        (a.variants[0]?.pricing?.discountPercent || 0)
+    );
+  } else {
+    // newest
+    list.sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+  }
+
+  const total = list.length;
+  const startIndex = (page - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const items = list.slice(startIndex, endIndex);
+  const hasNextPage = endIndex < total;
+
+  if (delayMs > 0) {
+    await new Promise((resolve) => setTimeout(resolve, delayMs));
+  }
+
+  return {
+    items,
+    page,
+    pageSize,
+    total,
+    hasNextPage,
+  };
 }
