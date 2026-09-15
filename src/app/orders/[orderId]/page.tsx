@@ -4,6 +4,8 @@ import React, { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { useAuth } from "@/store/auth/auth.store";
 import { accountService } from "@/lib/account/accountService";
+import { returnService } from "@/lib/returns/returnService";
+import { checkOrderEligibility } from "@/lib/returns/eligibility";
 import { Order, orderStatusLabels } from "@/types/account";
 import { OrderTimeline } from "@/components/account/orders/OrderTimeline";
 import { OrderItemRow } from "@/components/account/orders/OrderItemRow";
@@ -276,11 +278,59 @@ export default function OrderDetailPage({
             </div>
           </div>
 
-          {/* Return & Support Actions Bar */}
+          {/* Return / Exchange CTA Section */}
+          {(() => {
+            const existingRequests = returnService.getReturnRequests().items;
+            const eligibility = checkOrderEligibility(order, existingRequests);
+
+            if (eligibility.isEligible) {
+              return (
+                <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <RotateCcw className="w-4 h-4 text-primary" />
+                      <h3 className="text-xs sm:text-sm font-bold text-foreground">
+                        درخواست مرجوعی یا تعویض کالا
+                      </h3>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      این سفارش واجد شرایط مرجوعی یا تعویض است (مهلت مرجوعی ۲ روز از تحویل).
+                    </p>
+                  </div>
+                  <Link
+                    href={`/orders/${order.id}/return`}
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground font-bold text-xs rounded-xl hover:bg-primary-hover transition-colors shadow-xs shrink-0"
+                  >
+                    <span>ثبت درخواست مرجوعی / تعویض</span>
+                    <ChevronLeft className="w-4 h-4 rtl:rotate-180" />
+                  </Link>
+                </div>
+              );
+            }
+
+            return (
+              <div className="bg-surface-subtle/70 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-muted-foreground">
+                <div className="flex items-center gap-2">
+                  <RotateCcw className="w-4 h-4 text-muted-foreground/70 shrink-0" />
+                  <span>
+                    <strong>مرجوعی / تعویض:</strong> {eligibility.reason || "این سفارش در حال حاضر امکان مرجوعی یا تعویض ندارد."}
+                  </span>
+                </div>
+                <Link
+                  href="/returns"
+                  className="text-xs font-bold text-primary hover:underline shrink-0"
+                >
+                  مطالعه قوانین مرجوعی
+                </Link>
+              </div>
+            );
+          })()}
+
+          {/* Support Action Bar */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
             <Link
               href="/account"
-              className="p-3.5 bg-surface-subtle/60  rounded-xl flex items-center gap-3 hover:border-border transition-colors group"
+              className="p-3.5 bg-surface-subtle/60 rounded-xl flex items-center gap-3 hover:border-border transition-colors group"
             >
               <HelpCircle className="w-4 h-4 text-primary shrink-0" />
               <div className="space-y-0.5">
@@ -294,16 +344,16 @@ export default function OrderDetailPage({
             </Link>
 
             <Link
-              href="/returns"
-              className="p-3.5 bg-surface-subtle/60  rounded-xl flex items-center gap-3 hover:border-border transition-colors group"
+              href="/account/returns"
+              className="p-3.5 bg-surface-subtle/60 rounded-xl flex items-center gap-3 hover:border-border transition-colors group"
             >
               <RotateCcw className="w-4 h-4 text-muted-foreground shrink-0 group-hover:text-foreground transition-colors" />
               <div className="space-y-0.5">
                 <span className="text-xs font-bold text-foreground block group-hover:text-primary transition-colors">
-                  قوانین و رویه مرجوعی
+                  درخواست‌های مرجوعی من
                 </span>
                 <span className="text-[11px] text-muted-foreground block">
-                  راهنمای بازگرداندن کالا
+                  پیگیری وضعیت مرجوعی و تعویض
                 </span>
               </div>
             </Link>
