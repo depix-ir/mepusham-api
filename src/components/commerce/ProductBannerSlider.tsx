@@ -63,7 +63,7 @@ export function ProductBannerSlider({
                     alt={banner.title || `بنر ${index + 1}`}
                     fill
                     priority={index === 0}
-                    sizes="100vw"
+                    sizes="(max-width: 1440px) 100vw, 1440px"
                     className="hidden md:block object-cover object-center"
                     draggable={false}
                   />

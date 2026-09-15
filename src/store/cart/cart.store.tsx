@@ -31,23 +31,24 @@ export interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>(() => {
-    if (typeof window !== "undefined") {
-      return loadCartFromStorage();
-    }
-    return [];
-  });
+  const [items, setItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const isInitialMount = useRef(true);
+  const [isHydrated, setIsHydrated] = useState(false);
 
-  // 1. Persist to storage whenever items change after initial render
+  // 1. Safely load persisted cart from localStorage post-hydration
   useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      return;
+    const loadedItems = loadCartFromStorage();
+    if (loadedItems && loadedItems.length > 0) {
+      setItems(loadedItems);
     }
+    setIsHydrated(true);
+  }, []);
+
+  // 2. Persist to storage whenever items change after initial hydration
+  useEffect(() => {
+    if (!isHydrated) return;
     saveCartToStorage(items);
-  }, [items]);
+  }, [items, isHydrated]);
 
   const openCart = useCallback(() => setIsCartOpen(true), []);
   const closeCart = useCallback(() => setIsCartOpen(false), []);
