@@ -17,7 +17,7 @@ export function MainHeader({ cartItemCount = 0 }: MainHeaderProps) {
   const { count: wishlistCount } = useWishlist();
 
   return (
-    <div className="w-full bg-background border-b border-border py-2 md:py-4">
+    <div className="w-full bg-background border-b border-border py-2 md:py-4 relative z-40 shadow-xs">
       <Container className="flex items-center justify-between gap-3 md:gap-6">
         {/* Desktop Brand Logo */}
         <Link

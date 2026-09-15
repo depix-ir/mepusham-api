@@ -47,6 +47,16 @@ export function usePaginatedProducts(
   const requestedPagesRef = useRef<Set<number>>(new Set());
   const isFetchingRef = useRef<boolean>(false);
 
+  const statusRef = useRef<PaginationStatus>(status);
+  useEffect(() => {
+    statusRef.current = status;
+  }, [status]);
+
+  const hasNextPageRef = useRef<boolean>(hasNextPage);
+  useEffect(() => {
+    hasNextPageRef.current = hasNextPage;
+  }, [hasNextPage]);
+
   // Brands joined as a stable string for serialization
   const brandKey = filters.brands && filters.brands.length > 0 ? [...filters.brands].sort().join(",") : "";
 
@@ -125,9 +135,9 @@ export function usePaginatedProducts(
   const fetchNextPage = useCallback(async () => {
     if (
       isFetchingRef.current ||
-      !hasNextPage ||
-      status === "initial_loading" ||
-      status === "loading_more"
+      !hasNextPageRef.current ||
+      statusRef.current === "initial_loading" ||
+      statusRef.current === "loading_more"
     ) {
       return;
     }
