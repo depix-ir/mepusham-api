@@ -19,7 +19,8 @@ function AdminLayoutContent({
     // Exclude implemented pages from showing "coming soon" toast
     if (
       item.href !== "/admin/dashboard" &&
-      !item.href.startsWith("/admin/products")
+      !item.href.startsWith("/admin/products") &&
+      !item.href.startsWith("/admin/inventory")
     ) {
       showToast(`بخش «${item.title}» به زودی اضافه خواهد شد.`, "info");
     }

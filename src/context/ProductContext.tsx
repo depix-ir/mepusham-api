@@ -28,10 +28,16 @@ interface ProductContextType {
   deleteBulkProducts: (ids: string[]) => void;
   addCategory: (category: ProductCategory) => ProductCategory;
   addBrand: (brand: ProductBrand) => ProductBrand;
+  addVariant: (productId: string, variant: ProductVariant) => void;
   updateVariant: (
     productId: string,
     variantId: string,
     updatedData: Partial<ProductVariant>
+  ) => void;
+  addOptionValue: (
+    productId: string,
+    optionId: string,
+    value: { id: string; label: string; value: string }
   ) => void;
   deleteVariant: (productId: string, variantId: string) => void;
   bulkUpdateVariants: (
@@ -158,6 +164,66 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
     });
     return brand;
   }, []);
+
+  const addVariant = useCallback((productId: string, newVariant: ProductVariant) => {
+    setProducts((prev) =>
+      prev.map((p) => {
+        if (p.id !== productId) return p;
+        const updatedVariants = [...(p.variants || []), newVariant];
+        const totalStock = updatedVariants.reduce(
+          (sum, v) => sum + (v.inventory?.stock || 0),
+          0
+        );
+        return {
+          ...p,
+          variants: updatedVariants,
+          inventory: {
+            ...p.inventory,
+            totalStock,
+            hasAvailableVariants: totalStock > 0,
+          },
+          updatedAt: new Date().toISOString(),
+        };
+      })
+    );
+  }, []);
+
+  const addOptionValue = useCallback(
+    (
+      productId: string,
+      optionId: string,
+      newValue: { id: string; label: string; value: string }
+    ) => {
+      setProducts((prev) =>
+        prev.map((p) => {
+          if (p.id !== productId) return p;
+          const updatedOptions = p.options.map((opt) => {
+            if (opt.id !== optionId) return opt;
+            // check if value exists
+            if (opt.values.some((v) => v.id === newValue.id || v.label === newValue.label)) {
+              return opt;
+            }
+            return {
+              ...opt,
+              values: [
+                ...opt.values,
+                {
+                  ...newValue,
+                  sortOrder: opt.values.length + 1,
+                },
+              ],
+            };
+          });
+          return {
+            ...p,
+            options: updatedOptions,
+            updatedAt: new Date().toISOString(),
+          };
+        })
+      );
+    },
+    []
+  );
 
   const updateVariant = useCallback(
     (productId: string, variantId: string, updatedData: Partial<ProductVariant>) => {
@@ -323,6 +389,8 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
         deleteBulkProducts,
         addCategory,
         addBrand,
+        addVariant,
+        addOptionValue,
         updateVariant,
         deleteVariant,
         bulkUpdateVariants,

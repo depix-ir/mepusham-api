@@ -2,12 +2,10 @@ $ next dev
 ▲ Next.js 16.3.4 (Turbopack)
 - Local:         http://localhost:3000
 - Network:       http://192.168.0.2:3000
-✓ Ready in 553ms
-✓ Running next.config.ts took 43ms
+✓ Ready in 555ms
+✓ Running next.config.ts took 44ms
 
-○ Compiling /products ...
- GET /products 200 in 5.2s (next.js: 4.6s, application-code: 647ms)
-[browser] Image with src "/images/banner-1.webp" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
-Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
-[browser] Image with src "/images/banner-2.webp" has "fill" prop and "sizes" prop of "100vw", but image is not rendered at full viewport width. Please adjust "sizes" to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
-[browser] Image with src "/images/banner-1.webp" has "fill" prop and "sizes" prop of "100vw", but image is not rendered at full viewport width. Please adjust "sizes" to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+○ Compiling /admin/inventory ...
+ HEAD /admin/inventory 200 in 3.8s (next.js: 3.5s, application-code: 370ms)
+ GET /admin/inventory 200 in 123ms (next.js: 17ms, application-code: 106ms)
+ GET /admin/inventory 200 in 113ms (next.js: 4ms, application-code: 109ms)
