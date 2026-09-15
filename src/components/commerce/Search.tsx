@@ -126,7 +126,15 @@ export function Search({
           onClick={handleMobileInputClick}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
+          role="combobox"
           aria-autocomplete="list"
+          aria-expanded={isOpen && !isMobileActive}
+          aria-controls="search-suggestions-dropdown-desktop"
+          aria-activedescendant={
+            isOpen && !isMobileActive && selectedIndex >= 0 && suggestions[selectedIndex]
+              ? `search-suggestions-dropdown-desktop-item-${suggestions[selectedIndex].id}`
+              : undefined
+          }
           className="w-full bg-transparent pr-3 text-xs md:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
         />
 
@@ -152,6 +160,7 @@ export function Search({
       {isOpen && !isMobileActive && (
         <div className="hidden md:block absolute top-full right-0 left-0 mt-2 z-50">
           <SearchSuggestionsPanel
+            id="search-suggestions-dropdown-desktop"
             suggestions={suggestions}
             query={query}
             isLoading={isLoading}
@@ -187,6 +196,15 @@ export function Search({
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={placeholder}
+                role="combobox"
+                aria-autocomplete="list"
+                aria-expanded={isMobileActive}
+                aria-controls="search-suggestions-dropdown-mobile"
+                aria-activedescendant={
+                  isMobileActive && selectedIndex >= 0 && suggestions[selectedIndex]
+                    ? `search-suggestions-dropdown-mobile-item-${suggestions[selectedIndex].id}`
+                    : undefined
+                }
                 className="w-full bg-transparent pr-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
               />
 
@@ -208,6 +226,7 @@ export function Search({
           {/* Mobile Suggestions Area */}
           <div className="flex-1 overflow-y-auto pt-1">
             <SearchSuggestionsPanel
+              id="search-suggestions-dropdown-mobile"
               suggestions={suggestions}
               query={query}
               isLoading={isLoading}

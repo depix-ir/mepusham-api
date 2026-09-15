@@ -19,17 +19,26 @@ export function DesktopNavigation({
   const [isNavVisible, setIsNavVisible] = useState(true);
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
 
+  const isNavVisibleRef = useRef(true);
+  isNavVisibleRef.current = isNavVisible;
+
   const lastScrollYRef = useRef(0);
   const pivotScrollYRef = useRef(0);
   const scrollDirectionRef = useRef<"up" | "down" | null>(null);
   const openTimerRef = useRef<NodeJS.Timeout | null>(null);
   const closeTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const rafIdRef = useRef<number | null>(null);
 
-  // Clear timers on unmount
+  const handleCloseMegaMenu = React.useCallback(() => {
+    setIsMegaMenuOpen(false);
+  }, []);
+
+  // Clear timers and RAF on unmount
   useEffect(() => {
     return () => {
       if (openTimerRef.current) clearTimeout(openTimerRef.current);
       if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+      if (rafIdRef.current !== null) cancelAnimationFrame(rafIdRef.current);
     };
   }, []);
 
@@ -42,7 +51,7 @@ export function DesktopNavigation({
     }
   }, [pathname]);
 
-  // Smart Sticky Scroll Behavior with rAF Throttling
+  // Smart Sticky Scroll Behavior with rAF Throttling and State Setter Safety
   useEffect(() => {
     const HIDE_THRESHOLD = 100; // Scroll down 100px to hide
     const SHOW_THRESHOLD = 60; // Scroll up 60px to show
@@ -50,12 +59,19 @@ export function DesktopNavigation({
 
     let ticking = false;
 
+    const setNavVisibilitySafe = (visible: boolean) => {
+      if (isNavVisibleRef.current !== visible) {
+        setIsNavVisible(visible);
+      }
+    };
+
     const updateScroll = () => {
+      ticking = false;
       const currentScrollY = window.scrollY;
 
       // When near top of page, always keep navigation visible
       if (currentScrollY <= topBuffer) {
-        setIsNavVisible(true);
+        setNavVisibilitySafe(true);
         lastScrollYRef.current = currentScrollY;
         pivotScrollYRef.current = currentScrollY;
         scrollDirectionRef.current = null;
@@ -77,29 +93,31 @@ export function DesktopNavigation({
       if (currentDirection === "down") {
         const downDistance = currentScrollY - pivotScrollYRef.current;
         if (downDistance >= HIDE_THRESHOLD) {
-          setIsNavVisible(false);
+          setNavVisibilitySafe(false);
           setIsMegaMenuOpen(false); // Close mega menu on scroll down
         }
       } else if (currentDirection === "up") {
         const upDistance = pivotScrollYRef.current - currentScrollY;
         if (upDistance >= SHOW_THRESHOLD) {
-          setIsNavVisible(true);
+          setNavVisibilitySafe(true);
         }
       }
     };
 
     const handleScroll = () => {
       if (!ticking) {
-        window.requestAnimationFrame(() => {
-          updateScroll();
-          ticking = false;
-        });
         ticking = true;
+        rafIdRef.current = window.requestAnimationFrame(updateScroll);
       }
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (rafIdRef.current !== null) {
+        cancelAnimationFrame(rafIdRef.current);
+      }
+    };
   }, []);
 
   // Hover Handlers for Products Trigger
@@ -180,6 +198,7 @@ export function DesktopNavigation({
                   onKeyDown={isProducts ? handleProductsKeyDown : undefined}
                   aria-expanded={isProducts ? isMegaMenuOpen : undefined}
                   aria-haspopup={isProducts ? "true" : undefined}
+                  aria-controls={isProducts ? "mega-menu-products" : undefined}
                   className={`relative py-3 transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-xs inline-flex items-center gap-1.5 ${
                     isActive
                       ? "text-primary font-bold after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary after:rounded-full"
@@ -204,7 +223,7 @@ export function DesktopNavigation({
         {/* Mega Menu Component */}
         <MegaMenu
           isOpen={isMegaMenuOpen && isNavVisible}
-          onClose={() => setIsMegaMenuOpen(false)}
+          onClose={handleCloseMegaMenu}
           onMouseEnter={handleMouseEnterMegaMenu}
           onMouseLeave={handleMouseLeaveMegaMenu}
         />
