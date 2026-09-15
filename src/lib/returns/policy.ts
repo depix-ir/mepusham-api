@@ -1,0 +1,88 @@
+import { ReturnReason, ReturnReasonPolicy, RETURN_REASON_LABELS } from "@/types/return";
+
+export const RETURN_POLICIES: Record<ReturnReason, ReturnReasonPolicy> = {
+  damaged: {
+    reason: "damaged",
+    label: RETURN_REASON_LABELS.damaged,
+    customerPaysReturnShipping: false,
+    refundShippingCost: true,
+    requiresInspection: true,
+    requiresEvidence: true,
+    autoApprove: false,
+    description: "هزینه ارسال مرجوعی و مرسوله مجدد توسط فروشگاه پرداخت می‌شود.",
+  },
+  wrong_item: {
+    reason: "wrong_item",
+    label: RETURN_REASON_LABELS.wrong_item,
+    customerPaysReturnShipping: false,
+    refundShippingCost: true,
+    requiresInspection: true,
+    requiresEvidence: true,
+    autoApprove: false,
+    description: "هزینه ارسال مرجوعی توسط فروشگاه پرداخت می‌شود.",
+  },
+  not_as_described: {
+    reason: "not_as_described",
+    label: RETURN_REASON_LABELS.not_as_described,
+    customerPaysReturnShipping: false,
+    refundShippingCost: true,
+    requiresInspection: true,
+    requiresEvidence: true,
+    autoApprove: false,
+    description: "هزینه ارسال مرجوعی بر عهده فروشگاه است.",
+  },
+  size_issue: {
+    reason: "size_issue",
+    label: RETURN_REASON_LABELS.size_issue,
+    customerPaysReturnShipping: true,
+    refundShippingCost: false,
+    requiresInspection: true,
+    requiresEvidence: false,
+    autoApprove: false,
+    description: "هزینه ارسال مرجوعی/تعویض به عهده مشتری است.",
+  },
+  color_mismatch: {
+    reason: "color_mismatch",
+    label: RETURN_REASON_LABELS.color_mismatch,
+    customerPaysReturnShipping: true,
+    refundShippingCost: false,
+    requiresInspection: true,
+    requiresEvidence: false,
+    autoApprove: false,
+    description: "هزینه ارسال مرجوعی به عهده مشتری است.",
+  },
+  quality_issue: {
+    reason: "quality_issue",
+    label: RETURN_REASON_LABELS.quality_issue,
+    customerPaysReturnShipping: false,
+    refundShippingCost: false,
+    requiresInspection: true,
+    requiresEvidence: true,
+    autoApprove: false,
+    description: "پس از بررسی کارشناسی، مسئولیت هزینه مشخص می‌شود.",
+  },
+  changed_mind: {
+    reason: "changed_mind",
+    label: RETURN_REASON_LABELS.changed_mind,
+    customerPaysReturnShipping: true,
+    refundShippingCost: false,
+    requiresInspection: true,
+    requiresEvidence: false,
+    autoApprove: false,
+    description: "هزینه ارسال مرجوعی به عهده مشتری است.",
+  },
+  other: {
+    reason: "other",
+    label: RETURN_REASON_LABELS.other,
+    customerPaysReturnShipping: true,
+    refundShippingCost: false,
+    requiresInspection: true,
+    requiresEvidence: false,
+    autoApprove: false,
+    description: "بررسی بر اساس قوانین عمومی مرجوعی انجام خواهد شد.",
+  },
+};
+
+export function getReturnPolicy(reason: ReturnReason): ReturnReasonPolicy {
+  return RETURN_POLICIES[reason] || RETURN_POLICIES.other;
+}
