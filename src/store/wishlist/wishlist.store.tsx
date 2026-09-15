@@ -16,17 +16,16 @@ export interface WishlistContextType {
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
 
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
-  const [likedProductIds, setLikedProductIds] = useState<string[]>(() => {
-    if (typeof window !== "undefined") {
-      return loadWishlistFromStorage();
-    }
-    return [];
-  });
+  const [likedProductIds, setLikedProductIds] = useState<string[]>([]);
   const [isHydrated, setIsHydrated] = useState(false);
 
+  // Load wishlist from localStorage post-hydration
   useEffect(() => {
-    const timer = setTimeout(() => setIsHydrated(true), 0);
-    return () => clearTimeout(timer);
+    const loadedIds = loadWishlistFromStorage();
+    if (loadedIds && loadedIds.length > 0) {
+      setLikedProductIds(loadedIds);
+    }
+    setIsHydrated(true);
   }, []);
 
   // Save to storage on state change after initial hydration

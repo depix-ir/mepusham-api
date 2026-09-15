@@ -42,13 +42,15 @@ export function DesktopNavigation({
     }
   }, [pathname]);
 
-  // Smart Sticky Scroll Behavior
+  // Smart Sticky Scroll Behavior with rAF Throttling
   useEffect(() => {
     const HIDE_THRESHOLD = 100; // Scroll down 100px to hide
     const SHOW_THRESHOLD = 60; // Scroll up 60px to show
     const topBuffer = 80; // Always visible near top
 
-    const handleScroll = () => {
+    let ticking = false;
+
+    const updateScroll = () => {
       const currentScrollY = window.scrollY;
 
       // When near top of page, always keep navigation visible
@@ -83,6 +85,16 @@ export function DesktopNavigation({
         if (upDistance >= SHOW_THRESHOLD) {
           setIsNavVisible(true);
         }
+      }
+    };
+
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          updateScroll();
+          ticking = false;
+        });
+        ticking = true;
       }
     };
 
@@ -136,13 +148,12 @@ export function DesktopNavigation({
   return (
     <nav
       aria-label="منوی اصلی دسکتاپ"
-      className="hidden md:block w-full border-b border-border bg-background relative z-30 transition-all duration-300 ease-in-out motion-reduce:transition-none"
+      className="hidden md:block w-full border-b border-border bg-background relative z-30 transition-all duration-300 ease-in-out motion-reduce:transition-none overflow-hidden"
       style={{
         maxHeight: isNavVisible ? "52px" : "0px",
         opacity: isNavVisible ? 1 : 0,
-        transform: isNavVisible ? "translateY(0)" : "translateY(-100%)",
-        visibility: isNavVisible ? "visible" : "hidden",
-        overflow: isNavVisible ? "visible" : "hidden",
+        transform: isNavVisible ? "translateY(0)" : "translateY(-8px)",
+        pointerEvents: isNavVisible ? "auto" : "none",
       }}
     >
       <Container className="relative">
