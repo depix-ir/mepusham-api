@@ -8,13 +8,17 @@ import { ProductBannerSlider } from "@/components/commerce/ProductBannerSlider";
 import { ProductFilterPanel, FilterState } from "@/components/commerce/ProductFilterPanel";
 import { ProductFilterModal } from "@/components/commerce/ProductFilterModal";
 import { ProductGrid } from "@/components/commerce/ProductGrid";
+import { LoadMoreSentinel } from "@/components/commerce/LoadMoreSentinel";
 import { Container } from "@/components/ui/Container";
+import { Button } from "@/components/ui/Button";
 import { FilterIcon, SortIcon } from "@/components/icons";
+import { usePaginatedProducts } from "@/hooks/usePaginatedProducts";
+import { AlertCircle, RefreshCw } from "lucide-react";
 
 export function ProductsClientPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
   // Extract initial filters from URL search params
@@ -51,6 +55,27 @@ export function ProductsClientPage() {
       searchParam,
     ]
   );
+
+  // Paginated Product Hook & State Controller
+  const queryFilters = useMemo(
+    () => ({
+      ...filters,
+      minPrice: filters.minPrice ? Number(filters.minPrice) : undefined,
+      maxPrice: filters.maxPrice ? Number(filters.maxPrice) : undefined,
+      sort: sortParam,
+    }),
+    [filters, sortParam]
+  );
+
+  const {
+    products,
+    status,
+    hasNextPage,
+    total,
+    fetchNextPage,
+    retryNextPage,
+    retryInitial,
+  } = usePaginatedProducts(queryFilters);
 
   // Helper to update URL params cleanly
   const updateUrlFilters = (newFilters: FilterState, newSort?: string) => {
@@ -89,72 +114,6 @@ export function ProductsClientPage() {
     updateUrlFilters(filters, e.target.value);
   };
 
-  // Filter & Sort Logic
-  const filteredProducts = useMemo(() => {
-    let list = [...initialProducts];
-
-    // Filter by category
-    if (filters.category) {
-      list = list.filter((p) => p.category.slug === filters.category);
-    }
-
-    // Filter by brands
-    if (filters.brands.length > 0) {
-      list = list.filter((p) => p.brand?.slug && filters.brands.includes(p.brand.slug));
-    }
-
-    // Filter by price range
-    if (filters.minPrice !== undefined && !isNaN(Number(filters.minPrice))) {
-      list = list.filter((p) => p.pricing.minPrice >= Number(filters.minPrice));
-    }
-    if (filters.maxPrice !== undefined && !isNaN(Number(filters.maxPrice))) {
-      list = list.filter((p) => p.pricing.minPrice <= Number(filters.maxPrice));
-    }
-
-    // Filter by stock
-    if (filters.inStock) {
-      list = list.filter((p) => p.inventory.totalStock > 0);
-    }
-
-    // Filter by discount
-    if (filters.hasDiscount) {
-      list = list.filter((p) => p.pricing.hasDiscount);
-    }
-
-    // Search query filter
-    if (filters.q && filters.q.trim() !== "") {
-      const q = filters.q.trim().toLowerCase();
-      list = list.filter(
-        (p) =>
-          p.title.toLowerCase().includes(q) ||
-          (p.description && p.description.toLowerCase().includes(q)) ||
-          p.category.name.toLowerCase().includes(q) ||
-          (p.brand?.name && p.brand.name.toLowerCase().includes(q)) ||
-          (p.tags && p.tags.some((tag) => tag.toLowerCase().includes(q)))
-      );
-    }
-
-    // Sort list
-    if (sortParam === "price_asc") {
-      list.sort((a, b) => a.pricing.minPrice - b.pricing.minPrice);
-    } else if (sortParam === "price_desc") {
-      list.sort((a, b) => b.pricing.minPrice - a.pricing.minPrice);
-    } else if (sortParam === "discount") {
-      list.sort(
-        (a, b) =>
-          (b.variants[0]?.pricing?.discountPercent || 0) -
-          (a.variants[0]?.pricing?.discountPercent || 0)
-      );
-    } else {
-      // newest
-      list.sort(
-        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
-    }
-
-    return list;
-  }, [filters, sortParam]);
-
   // Active Category Name
   const activeCategoryObj = categories.find((c) => c.slug === filters.category);
   const activeCategoryName = activeCategoryObj ? activeCategoryObj.name : "همه محصولات";
@@ -168,6 +127,10 @@ export function ProductsClientPage() {
     (filters.hasDiscount ? 1 : 0) +
     (filters.q ? 1 : 0);
 
+  // Compute skeleton count for current page state
+  const skeletonCount =
+    status === "initial_loading" ? 8 : status === "loading_more" ? 8 : 0;
+
   return (
     <div className="flex flex-col gap-6 pb-12">
       {/* 1. Auto Slider Banner (Desktop 200px, Mobile 100px) */}
@@ -175,12 +138,11 @@ export function ProductsClientPage() {
 
       {/* Main Content Container */}
       <Container>
-        {/* Page Header Title & Breadcrumb/Count */}
+        {/* Page Header Title & Count */}
         <div className="flex flex-col gap-1 mb-4">
           <h1 className="text-xl md:text-2xl font-bold text-foreground">
             {activeCategoryName}
           </h1>
-
         </div>
 
         {/* Mobile Action Bar: Minimal Filter Button & Styled Sort Dropdown in 1 Row */}
@@ -226,11 +188,9 @@ export function ProductsClientPage() {
           </div>
         </div>
 
-
-
         {/* 2 & 3. Main Grid Layout (Desktop right side filter panel, left side product grid) */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-start">
-          {/* Desktop Right Filter Panel (Order 1 on RTL layout or order-first) */}
+          {/* Desktop Right Filter Panel */}
           <div className="hidden md:block md:col-span-1 sticky top-36">
             <ProductFilterPanel
               filters={filters}
@@ -273,14 +233,67 @@ export function ProductsClientPage() {
               </div>
 
               <span className="text-xs text-muted font-normal shrink-0">
-                {filteredProducts.length.toLocaleString("fa-IR")} کالا
+                {total.toLocaleString("fa-IR")} کالا
               </span>
             </div>
 
-            {/* Product Grid */}
-            <div className={isPending ? "opacity-60 transition-opacity" : ""}>
-              <ProductGrid products={filteredProducts} />
-            </div>
+            {/* Initial Error State */}
+            {status === "initial_error" ? (
+              <div className="w-full py-12 px-4 flex flex-col items-center justify-center text-center bg-surface-subtle rounded-xl border border-border-product gap-3">
+                <AlertCircle className="w-8 h-8 text-rose-500" />
+                <p className="text-sm font-medium text-foreground">
+                  خطایی در بارگذاری محصولات به وجود آمد.
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={retryInitial}
+                  className="gap-2 text-xs font-medium"
+                >
+                  <RefreshCw size={14} />
+                  <span>تلاش مجدد</span>
+                </Button>
+              </div>
+            ) : (
+              <>
+                {/* Product Grid */}
+                <ProductGrid
+                  products={products}
+                  skeletonCount={skeletonCount}
+                  emptyMessage="محصولی با این مشخصات یافت نشد."
+                />
+
+                {/* Load More Error UI (Preserves already loaded products) */}
+                {status === "load_more_error" && (
+                  <div className="w-full py-4 px-4 mt-2 flex flex-col sm:flex-row items-center justify-between gap-3 bg-rose-50/50 dark:bg-rose-950/20 rounded-xl border border-rose-200/60 dark:border-rose-900/40">
+                    <div className="flex items-center gap-2 text-rose-700 dark:text-rose-400 text-xs sm:text-sm">
+                      <AlertCircle size={16} className="shrink-0" />
+                      <span>بارگذاری محصولات با مشکل مواجه شد</span>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={retryNextPage}
+                      className="gap-1.5 text-xs font-medium shrink-0 border-rose-300 text-rose-700 hover:bg-rose-100"
+                    >
+                      <RefreshCw size={13} />
+                      <span>تلاش مجدد</span>
+                    </Button>
+                  </div>
+                )}
+
+                {/* Sentinel for Infinite Incremental Scroll */}
+                <LoadMoreSentinel
+                  onIntersect={fetchNextPage}
+                  disabled={
+                    status === "initial_loading" ||
+                    status === "loading_more" ||
+                    status === "load_more_error" ||
+                    !hasNextPage
+                  }
+                />
+              </>
+            )}
           </div>
         </div>
       </Container>
@@ -293,7 +306,7 @@ export function ProductsClientPage() {
         onFilterChange={updateUrlFilters}
         onClearFilters={handleClearFilters}
         allProducts={initialProducts}
-        matchingCount={filteredProducts.length}
+        matchingCount={total}
       />
     </div>
   );

@@ -173,3 +173,22 @@ export type Banner = {
   linkUrl: string;
   buttonText?: string;
 };
+
+export interface ProductQueryFilter {
+  category?: string;
+  brands?: string[];
+  minPrice?: number;
+  maxPrice?: number;
+  inStock?: boolean;
+  hasDiscount?: boolean;
+  q?: string;
+  sort?: "newest" | "price_asc" | "price_desc" | "discount" | string;
+}
+
+export interface PaginatedProductsResponse {
+  items: Product[];
+  page: number;
+  pageSize: number;
+  total: number;
+  hasNextPage: boolean;
+}
