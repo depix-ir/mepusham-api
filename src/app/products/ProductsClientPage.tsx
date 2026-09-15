@@ -13,6 +13,7 @@ import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { FilterIcon, SortIcon } from "@/components/icons";
 import { usePaginatedProducts } from "@/hooks/usePaginatedProducts";
+import { ProductQueryFilter } from "@/types/product";
 import { AlertCircle, RefreshCw } from "lucide-react";
 
 export function ProductsClientPage() {
@@ -23,11 +24,11 @@ export function ProductsClientPage() {
 
   // Extract initial filters from URL search params
   const categoryParam = searchParams.get("category") || undefined;
-  const brandParam = searchParams.get("brand")
-    ? searchParams.get("brand")!.split(",")
-    : searchParams.get("brands")
-    ? searchParams.get("brands")!.split(",")
-    : [];
+  const brandParam = useMemo(() => {
+    const rawBrand = searchParams.get("brand") || searchParams.get("brands");
+    return rawBrand ? rawBrand.split(",") : [];
+  }, [searchParams]);
+
   const minPriceParam = searchParams.get("minPrice") || searchParams.get("min_price") || undefined;
   const maxPriceParam = searchParams.get("maxPrice") || searchParams.get("max_price") || undefined;
   const inStockParam = searchParams.get("inStock") === "true" || searchParams.get("in_stock") === "true";
@@ -57,11 +58,11 @@ export function ProductsClientPage() {
   );
 
   // Paginated Product Hook & State Controller
-  const queryFilters = useMemo(
+  const queryFilters: ProductQueryFilter = useMemo(
     () => ({
       ...filters,
-      minPrice: filters.minPrice ? Number(filters.minPrice) : undefined,
-      maxPrice: filters.maxPrice ? Number(filters.maxPrice) : undefined,
+      minPrice: filters.minPrice !== undefined ? Number(filters.minPrice) : undefined,
+      maxPrice: filters.maxPrice !== undefined ? Number(filters.maxPrice) : undefined,
       sort: sortParam,
     }),
     [filters, sortParam]
@@ -268,7 +269,7 @@ export function ProductsClientPage() {
                   <div className="w-full py-4 px-4 mt-2 flex flex-col sm:flex-row items-center justify-between gap-3 bg-rose-50/50 dark:bg-rose-950/20 rounded-xl border border-rose-200/60 dark:border-rose-900/40">
                     <div className="flex items-center gap-2 text-rose-700 dark:text-rose-400 text-xs sm:text-sm">
                       <AlertCircle size={16} className="shrink-0" />
-                      <span>بارگذاری محصولات با مشکل مواجه شد</span>
+                      <span>بارگذاری محصولات بیشتر با مشکل مواجه شد</span>
                     </div>
                     <Button
                       variant="outline"

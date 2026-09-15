@@ -22,7 +22,7 @@ export interface UsePaginatedProductsResult {
   error: string | null;
   fetchNextPage: () => Promise<void>;
   retryNextPage: () => Promise<void>;
-  retryInitial: () => Promise<void>;
+  retryInitial: () => void;
   pageSize: number;
 }
 
@@ -35,18 +35,28 @@ export function usePaginatedProducts(
   const [total, setTotal] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [error, setError] = useState<string | null>(null);
+  const [retryCounter, setRetryCounter] = useState<number>(0);
+
+  // Keep latest filters in ref for async callbacks
+  const filtersRef = useRef<ProductQueryFilter>(filters);
+  useEffect(() => {
+    filtersRef.current = filters;
+  }, [filters]);
 
   // Safeguard refs against race conditions & duplicate fetches
   const requestedPagesRef = useRef<Set<number>>(new Set());
   const isFetchingRef = useRef<boolean>(false);
 
-  // Create a stable query key from the filter object
-  const queryKey = useMemo(() => {
+  // Brands joined as a stable string for serialization
+  const brandKey = filters.brands && filters.brands.length > 0 ? [...filters.brands].sort().join(",") : "";
+
+  // Create a deterministic serialized query key from filter values
+  const serializedQueryKey = useMemo(() => {
     return JSON.stringify({
       category: filters.category || null,
-      brands: filters.brands ? [...filters.brands].sort() : [],
-      minPrice: filters.minPrice || null,
-      maxPrice: filters.maxPrice || null,
+      brands: brandKey,
+      minPrice: filters.minPrice ? Number(filters.minPrice) : null,
+      maxPrice: filters.maxPrice ? Number(filters.maxPrice) : null,
       inStock: !!filters.inStock,
       hasDiscount: !!filters.hasDiscount,
       q: filters.q?.trim() || null,
@@ -54,7 +64,7 @@ export function usePaginatedProducts(
     });
   }, [
     filters.category,
-    filters.brands,
+    brandKey,
     filters.minPrice,
     filters.maxPrice,
     filters.inStock,
@@ -63,11 +73,16 @@ export function usePaginatedProducts(
     filters.sort,
   ]);
 
-  const activeQueryKeyRef = useRef<string>(queryKey);
+  const activeQueryKeyRef = useRef<string>(serializedQueryKey);
 
-  // Fetch page 1 when queryKey changes
-  const fetchInitialPage = useCallback(
-    async (key: string) => {
+  // Handle initial page fetch whenever query key or retry counter changes
+  useEffect(() => {
+    activeQueryKeyRef.current = serializedQueryKey;
+    const currentKey = serializedQueryKey;
+    const currentFilters = filtersRef.current;
+    let isCancelled = false;
+
+    async function loadInitial() {
       isFetchingRef.current = true;
       setStatus("initial_loading");
       setError(null);
@@ -75,39 +90,36 @@ export function usePaginatedProducts(
       requestedPagesRef.current.add(1);
 
       try {
-        const response: PaginatedProductsResponse = await getPaginatedProducts(filters, 1, PRODUCT_PAGE_SIZE);
+        const response: PaginatedProductsResponse = await getPaginatedProducts(
+          currentFilters,
+          1,
+          PRODUCT_PAGE_SIZE
+        );
 
-        // Check if query key changed while fetching
-        if (activeQueryKeyRef.current !== key) return;
+        if (isCancelled || activeQueryKeyRef.current !== currentKey) return;
 
         setProducts(response.items);
         setTotal(response.total);
         setCurrentPage(1);
         setHasNextPage(response.hasNextPage);
-
-        if (response.total === 0) {
-          setStatus("empty");
-        } else {
-          setStatus("ready");
-        }
+        setStatus(response.total === 0 ? "empty" : "ready");
       } catch (err) {
-        if (activeQueryKeyRef.current !== key) return;
+        if (isCancelled || activeQueryKeyRef.current !== currentKey) return;
         setError(err instanceof Error ? err.message : "خطایی در دریافت اطلاعات رخ داد.");
         setStatus("initial_error");
       } finally {
-        if (activeQueryKeyRef.current === key) {
+        if (!isCancelled && activeQueryKeyRef.current === currentKey) {
           isFetchingRef.current = false;
         }
       }
-    },
-    [filters, queryKey]
-  );
+    }
 
-  // Trigger initial fetch or reset on queryKey change
-  useEffect(() => {
-    activeQueryKeyRef.current = queryKey;
-    fetchInitialPage(queryKey);
-  }, [queryKey, fetchInitialPage]);
+    loadInitial();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [serializedQueryKey, retryCounter]);
 
   // Fetch Next Page
   const fetchNextPage = useCallback(async () => {
@@ -128,6 +140,8 @@ export function usePaginatedProducts(
     }
 
     const currentKey = activeQueryKeyRef.current;
+    const currentFilters = filtersRef.current;
+
     isFetchingRef.current = true;
     requestedPagesRef.current.add(nextPage);
     setStatus("loading_more");
@@ -135,16 +149,14 @@ export function usePaginatedProducts(
 
     try {
       const response: PaginatedProductsResponse = await getPaginatedProducts(
-        filters,
+        currentFilters,
         nextPage,
         PRODUCT_PAGE_SIZE
       );
 
-      // Verify queryKey hasn't changed during async request
       if (activeQueryKeyRef.current !== currentKey) return;
 
       setProducts((prev) => {
-        // Prevent duplicate products if response contains already existing IDs
         const existingIds = new Set(prev.map((p) => p.id));
         const newUniqueItems = response.items.filter((p) => !existingIds.has(p.id));
         return [...prev, ...newUniqueItems];
@@ -156,7 +168,6 @@ export function usePaginatedProducts(
       setStatus("ready");
     } catch (err) {
       if (activeQueryKeyRef.current !== currentKey) return;
-      // Allow re-requesting failed page
       requestedPagesRef.current.delete(nextPage);
       setError(err instanceof Error ? err.message : "بارگذاری محصولات بیشتر با مشکل مواجه شد.");
       setStatus("load_more_error");
@@ -165,7 +176,7 @@ export function usePaginatedProducts(
         isFetchingRef.current = false;
       }
     }
-  }, [currentPage, filters, hasNextPage, status]);
+  }, [currentPage, hasNextPage, status]);
 
   const retryNextPage = useCallback(async () => {
     if (status === "load_more_error") {
@@ -174,9 +185,9 @@ export function usePaginatedProducts(
     }
   }, [fetchNextPage, status]);
 
-  const retryInitial = useCallback(async () => {
-    await fetchInitialPage(activeQueryKeyRef.current);
-  }, [fetchInitialPage]);
+  const retryInitial = useCallback(() => {
+    setRetryCounter((prev) => prev + 1);
+  }, []);
 
   return {
     products,
