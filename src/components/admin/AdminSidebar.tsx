@@ -31,7 +31,6 @@ export interface NavItem {
 export const ADMIN_NAV_ITEMS: NavItem[] = [
   { id: "dashboard", title: "داشبورد", href: "/admin/dashboard", icon: LayoutDashboard },
   { id: "products", title: "محصولات", href: "/admin/products", icon: Package },
-  { id: "categories", title: "دسته‌بندی‌ها", href: "/admin/categories", icon: Layers },
   { id: "inventory", title: "موجودی", href: "/admin/inventory", icon: Boxes },
   { id: "orders", title: "سفارش‌ها", href: "/admin/orders", icon: ShoppingBag },
   { id: "returns", title: "مرجوعی‌ها", href: "/admin/returns", icon: RotateCcw },

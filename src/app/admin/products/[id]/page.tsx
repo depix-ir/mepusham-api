@@ -31,8 +31,10 @@ import {
   ProductVariant,
   ProductStatus,
   ProductSpecification,
+  ProductCategory,
 } from "@/types/product";
 import { useToast } from "@/components/ui/Toast";
+import { CreateCategoryModal } from "@/components/admin/CreateCategoryModal";
 
 const OPTION_TEMPLATES = [
   {
@@ -115,7 +117,6 @@ export default function EditProductPage() {
     null
   );
 
-  const [newCatName, setNewCatName] = useState("");
   const [newBrandName, setNewBrandName] = useState("");
   const [newOptionName, setNewOptionName] = useState("");
   const [newValueLabel, setNewValueLabel] = useState("");
@@ -196,21 +197,7 @@ export default function EditProductPage() {
     setImages((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // Quick Category & Brand
-  const handleCreateCategory = () => {
-    if (!newCatName.trim()) return;
-    const newCat = {
-      id: `cat-${Date.now()}`,
-      name: newCatName.trim(),
-      slug: newCatName.trim().toLowerCase().replace(/\s+/g, "-"),
-    };
-    addCategory(newCat);
-    setSelectedCategoryId(newCat.id);
-    setNewCatName("");
-    setModalType(null);
-    showToast(`دسته‌بندی «${newCat.name}» ایجاد شد.`, "success");
-  };
-
+  // Quick Brand
   const handleCreateBrand = () => {
     if (!newBrandName.trim()) return;
     const newBrand = {
@@ -1305,40 +1292,13 @@ export default function EditProductPage() {
       </div>
 
       {/* QUICK MODALS */}
-      {modalType === "category" && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-xs"
-            onClick={() => setModalType(null)}
-          />
-          <div className="relative bg-background border border-border rounded-xl p-5 w-full max-w-xs space-y-3 z-10 text-xs">
-            <h3 className="font-bold text-sm text-foreground">دسته‌بندی جدید</h3>
-            <input
-              type="text"
-              placeholder="نام دسته‌بندی..."
-              value={newCatName}
-              onChange={(e) => setNewCatName(e.target.value)}
-              className="w-full h-9 px-3 bg-surface-subtle border border-border rounded text-foreground"
-            />
-            <div className="flex justify-end gap-2 pt-2">
-              <button
-                type="button"
-                onClick={() => setModalType(null)}
-                className="h-8 px-3 rounded bg-surface-subtle font-bold"
-              >
-                انصراف
-              </button>
-              <button
-                type="button"
-                onClick={handleCreateCategory}
-                className="h-8 px-4 rounded bg-primary text-primary-foreground font-bold"
-              >
-                ایجاد
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <CreateCategoryModal
+        isOpen={modalType === "category"}
+        onClose={() => setModalType(null)}
+        onSuccess={(newCat: ProductCategory) => {
+          setSelectedCategoryId(newCat.id);
+        }}
+      />
 
       {modalType === "brand" && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">

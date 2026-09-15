@@ -12,6 +12,8 @@ export type ProductCategory = {
   name: string;
   slug: string;
   imageUrl?: string;
+  parentId?: string;
+  isActive?: boolean;
 };
 
 export type ProductImage = {

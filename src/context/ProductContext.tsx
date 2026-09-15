@@ -151,7 +151,15 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
 
   const addCategory = useCallback((category: ProductCategory) => {
     setCategories((prev) => {
-      if (prev.some((c) => c.id === category.id)) return prev;
+      if (
+        prev.some(
+          (c) =>
+            c.id === category.id ||
+            c.name.trim().toLowerCase() === category.name.trim().toLowerCase()
+        )
+      ) {
+        return prev;
+      }
       return [...prev, category];
     });
     return category;
