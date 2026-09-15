@@ -2,74 +2,35 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter, useParams } from "next/navigation";
 import {
   ArrowRight,
   Plus,
-  Trash2,
-  X,
-  Sparkles,
-  Layers,
   Image as ImageIcon,
   Tag,
-  CheckSquare,
-  Square,
-  Sliders,
   FileText,
-  Copy,
   ChevronDown,
   ChevronUp,
   AlertTriangle,
+  Sliders,
+  Trash2,
 } from "lucide-react";
 
 import { useProducts } from "@/context/ProductContext";
 import {
   Product,
   ProductOption,
-  ProductOptionValue,
   ProductVariant,
   ProductStatus,
   ProductSpecification,
   ProductCategory,
+  ProductBrand,
 } from "@/types/product";
 import { useToast } from "@/components/ui/Toast";
 import { CreateCategoryModal } from "@/components/admin/CreateCategoryModal";
-
-const OPTION_TEMPLATES = [
-  {
-    name: "رنگ",
-    type: "color" as const,
-    values: [
-      { label: "مشکی", value: "#000000" },
-      { label: "سفید", value: "#FFFFFF" },
-      { label: "قهوه‌ای", value: "#654321" },
-      { label: "کرم", value: "#FFFDD0" },
-      { label: "عسلی", value: "#D2B48C" },
-    ],
-  },
-  {
-    name: "سایز",
-    type: "size" as const,
-    values: [
-      { label: "36", value: "36" },
-      { label: "37", value: "37" },
-      { label: "38", value: "38" },
-      { label: "39", value: "39" },
-      { label: "40", value: "40" },
-    ],
-  },
-  {
-    name: "جنس",
-    type: "material" as const,
-    values: [
-      { label: "چرم طبیعی", value: "natural_leather" },
-      { label: "چرم مصنوعی", value: "synthetic_leather" },
-      { label: "جیر", value: "suede" },
-      { label: "برزنت", value: "canvas" },
-    ],
-  },
-];
+import { CreateBrandModal } from "@/components/admin/CreateBrandModal";
+import { ImagePicker } from "@/components/admin/ImagePicker";
+import { ProductVariantBuilder } from "@/components/admin/ProductVariantBuilder";
 
 export default function EditProductPage() {
   const router = useRouter();
@@ -77,8 +38,7 @@ export default function EditProductPage() {
   const productId = params.id as string;
 
   const { showToast } = useToast();
-  const { products, categories, brands, isLoaded, updateProduct, addCategory, addBrand } =
-    useProducts();
+  const { products, categories, brands, isLoaded, updateProduct } = useProducts();
 
   // Target product
   const targetProduct = products.find((p) => p.id === productId);
@@ -99,36 +59,21 @@ export default function EditProductPage() {
   const [skuPrefix, setSkuPrefix] = useState<string>("PROD");
 
   const [images, setImages] = useState<string[]>([]);
-  const [newImageUrl, setNewImageUrl] = useState("");
-
   const [options, setOptions] = useState<ProductOption[]>([]);
   const [variants, setVariants] = useState<ProductVariant[]>([]);
-  const [selectedVariantIds, setSelectedVariantIds] = useState<string[]>([]);
 
   const [specifications, setSpecifications] = useState<ProductSpecification[]>([]);
   const [newSpecLabel, setNewSpecLabel] = useState("");
   const [newSpecValue, setNewSpecValue] = useState("");
 
-  // Modals
-  const [modalType, setModalType] = useState<
-    "category" | "brand" | "option" | "value" | null
-  >(null);
-  const [activeOptionIdForValue, setActiveOptionIdForValue] = useState<string | null>(
-    null
-  );
+  // Modals state
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [isBrandModalOpen, setIsBrandModalOpen] = useState(false);
 
-  const [newBrandName, setNewBrandName] = useState("");
-  const [newOptionName, setNewOptionName] = useState("");
-  const [newValueLabel, setNewValueLabel] = useState("");
-  const [newValueColor, setNewValueColor] = useState("#000000");
-
-  const [bulkPriceInput, setBulkPriceInput] = useState<number>(0);
-  const [bulkStockInput, setBulkStockInput] = useState<number>(0);
-
+  // Accordion Toggles
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     basic: true,
     images: true,
-    options: true,
     variants: true,
     specs: true,
   });
@@ -169,7 +114,7 @@ export default function EditProductPage() {
 
   if (!targetProduct) {
     return (
-      <div className="bg-background border border-border rounded-md p-12 text-center flex flex-col items-center justify-center space-y-4 max-w-lg mx-auto mt-8">
+      <div className="bg-background border border-border rounded-xl p-12 text-center flex flex-col items-center justify-center space-y-4 max-w-lg mx-auto mt-8 shadow-xs">
         <AlertTriangle className="w-10 h-10 text-amber-500" />
         <h2 className="text-base font-bold text-foreground">محصول یافت نشد!</h2>
         <p className="text-xs text-muted-foreground">
@@ -177,7 +122,7 @@ export default function EditProductPage() {
         </p>
         <Link
           href="/admin/products"
-          className="h-9 px-4 inline-flex items-center gap-1.5 bg-primary text-primary-foreground text-xs font-bold rounded-md hover:bg-primary-hover"
+          className="h-9 px-4 inline-flex items-center gap-1.5 bg-primary text-primary-foreground text-xs font-bold rounded-lg hover:bg-primary-hover"
         >
           <ArrowRight className="w-4 h-4" />
           <span>بازگشت به فهرست محصولات</span>
@@ -185,273 +130,6 @@ export default function EditProductPage() {
       </div>
     );
   }
-
-  // Image Handlers
-  const handleAddImage = () => {
-    if (!newImageUrl.trim()) return;
-    setImages((prev) => [...prev, newImageUrl.trim()]);
-    setNewImageUrl("");
-  };
-
-  const handleRemoveImage = (index: number) => {
-    setImages((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  // Quick Brand
-  const handleCreateBrand = () => {
-    if (!newBrandName.trim()) return;
-    const newBrand = {
-      id: `brand-${Date.now()}`,
-      name: newBrandName.trim(),
-      slug: newBrandName.trim().toLowerCase().replace(/\s+/g, "-"),
-    };
-    addBrand(newBrand);
-    setSelectedBrandId(newBrand.id);
-    setNewBrandName("");
-    setModalType(null);
-    showToast(`برند «${newBrand.name}» ایجاد شد.`, "success");
-  };
-
-  // Option & Value Handlers
-  const handleAddOptionFromTemplate = (templateIndex: number) => {
-    const tmpl = OPTION_TEMPLATES[templateIndex];
-    if (options.some((o) => o.name === tmpl.name)) {
-      showToast(`آپشن «${tmpl.name}» قبلاً اضافه شده است.`, "warning");
-      return;
-    }
-    const optId = `opt-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
-    const newOpt: ProductOption = {
-      id: optId,
-      name: tmpl.name,
-      type: tmpl.type,
-      required: true,
-      sortOrder: options.length,
-      values: tmpl.values.map((v, idx) => ({
-        id: `val-${optId}-${idx}`,
-        label: v.label,
-        value: v.value,
-        sortOrder: idx,
-      })),
-    };
-    setOptions((prev) => [...prev, newOpt]);
-    showToast(`آپشن «${tmpl.name}» اضافه شد.`, "success");
-  };
-
-  const handleCreateCustomOption = () => {
-    if (!newOptionName.trim()) return;
-    const optId = `opt-${Date.now()}`;
-    const newOpt: ProductOption = {
-      id: optId,
-      name: newOptionName.trim(),
-      type: "custom",
-      required: true,
-      sortOrder: options.length,
-      values: [],
-    };
-    setOptions((prev) => [...prev, newOpt]);
-    setNewOptionName("");
-    setModalType(null);
-    showToast(`آپشن «${newOpt.name}» ایجاد شد.`, "success");
-  };
-
-  const handleRemoveOption = (optionId: string) => {
-    setOptions((prev) => prev.filter((o) => o.id !== optionId));
-  };
-
-  const handleAddValueToOption = (optionId: string) => {
-    if (!newValueLabel.trim()) return;
-    const valId = `val-${optionId}-${Date.now()}`;
-    const newVal: ProductOptionValue = {
-      id: valId,
-      label: newValueLabel.trim(),
-      value: newValueColor || newValueLabel.trim(),
-      sortOrder: 0,
-    };
-    setOptions((prev) =>
-      prev.map((o) => (o.id === optionId ? { ...o, values: [...o.values, newVal] } : o))
-    );
-    setNewValueLabel("");
-    setModalType(null);
-    setActiveOptionIdForValue(null);
-  };
-
-  const handleRemoveValueFromOption = (optionId: string, valueId: string) => {
-    setOptions((prev) =>
-      prev.map((o) =>
-        o.id === optionId
-          ? { ...o, values: o.values.filter((v) => v.id !== valueId) }
-          : o
-      )
-    );
-  };
-
-  // Cartesian Combination Generator
-  const handleGenerateCombinations = () => {
-    if (options.length === 0 || options.some((o) => o.values.length === 0)) {
-      showToast("لطفاً ابتدا حداقل یک آپشن با مقادیر تعریف کنید.", "warning");
-      return;
-    }
-
-    const cartesian = (
-      args: ProductOptionValue[][]
-    ): ProductOptionValue[][] => {
-      let r: ProductOptionValue[][] = [[]];
-      for (const optValues of args) {
-        const next: ProductOptionValue[][] = [];
-        for (const existingComb of r) {
-          for (const val of optValues) {
-            next.push([...existingComb, val]);
-          }
-        }
-        r = next;
-      }
-      return r;
-    };
-
-    const optionValuesArray = options.map((o) => o.values);
-    const combinations = cartesian(optionValuesArray);
-
-    const newGeneratedVariants: ProductVariant[] = combinations.map(
-      (comb, idx) => {
-        const optValues = comb.map((v, optIdx) => ({
-          optionId: options[optIdx].id,
-          valueId: v.id,
-        }));
-
-        const skuCodes = comb.map((v) => v.label.toUpperCase().replace(/\s+/g, ""));
-        const sku = `${skuPrefix}-${skuCodes.join("-")}-${idx + 1}`;
-
-        return {
-          id: `var-${Date.now()}-${idx}`,
-          sku,
-          optionValues: optValues,
-          pricing: {
-            price: defaultPrice,
-            compareAtPrice: defaultCompareAtPrice,
-          },
-          inventory: {
-            stock: defaultStock,
-            trackStock: true,
-          },
-          status: "active",
-        };
-      }
-    );
-
-    setVariants(newGeneratedVariants);
-    setSelectedVariantIds([]);
-    showToast(
-      `${newGeneratedVariants.length} واریانت با موفقیت تولید شد.`,
-      "success"
-    );
-  };
-
-  // Variant Table Actions
-  const handleUpdateVariantInTable = (
-    variantId: string,
-    field: string,
-    value: any
-  ) => {
-    setVariants((prev) =>
-      prev.map((v) => {
-        if (v.id !== variantId) return v;
-        if (field === "price") {
-          return { ...v, pricing: { ...v.pricing, price: Number(value) } };
-        }
-        if (field === "compareAtPrice") {
-          return {
-            ...v,
-            pricing: {
-              ...v.pricing,
-              compareAtPrice: value ? Number(value) : undefined,
-            },
-          };
-        }
-        if (field === "stock") {
-          return {
-            ...v,
-            inventory: { ...v.inventory, stock: Number(value) },
-          };
-        }
-        if (field === "sku") {
-          return { ...v, sku: value };
-        }
-        if (field === "status") {
-          return { ...v, status: value };
-        }
-        return v;
-      })
-    );
-  };
-
-  const handleDeleteVariantInTable = (variantId: string) => {
-    setVariants((prev) => prev.filter((v) => v.id !== variantId));
-    setSelectedVariantIds((prev) => prev.filter((id) => id !== variantId));
-  };
-
-  const handleDuplicateVariantInTable = (variant: ProductVariant) => {
-    const dup: ProductVariant = {
-      ...variant,
-      id: `var-${Date.now()}-${Math.random().toString(36).slice(2, 5)}`,
-      sku: `${variant.sku}-COPY`,
-    };
-    setVariants((prev) => [...prev, dup]);
-    showToast("واریانت تکثیر شد.", "info");
-  };
-
-  // Bulk Variant Handlers
-  const handleToggleSelectAllVariants = () => {
-    if (selectedVariantIds.length === variants.length) {
-      setSelectedVariantIds([]);
-    } else {
-      setSelectedVariantIds(variants.map((v) => v.id));
-    }
-  };
-
-  const handleToggleSelectVariant = (id: string) => {
-    setSelectedVariantIds((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    );
-  };
-
-  const handleApplyBulkVariantPrice = () => {
-    if (selectedVariantIds.length === 0 || !bulkPriceInput) return;
-    setVariants((prev) =>
-      prev.map((v) =>
-        selectedVariantIds.includes(v.id)
-          ? { ...v, pricing: { ...v.pricing, price: bulkPriceInput } }
-          : v
-      )
-    );
-    showToast(
-      `قیمت ${selectedVariantIds.length} واریانت تغییر یافت.`,
-      "success"
-    );
-  };
-
-  const handleApplyBulkVariantStock = () => {
-    if (selectedVariantIds.length === 0) return;
-    setVariants((prev) =>
-      prev.map((v) =>
-        selectedVariantIds.includes(v.id)
-          ? { ...v, inventory: { ...v.inventory, stock: bulkStockInput } }
-          : v
-      )
-    );
-    showToast(
-      `موجودی ${selectedVariantIds.length} واریانت تغییر یافت.`,
-      "success"
-    );
-  };
-
-  const handleApplyBulkDeleteVariants = () => {
-    if (selectedVariantIds.length === 0) return;
-    setVariants((prev) =>
-      prev.filter((v) => !selectedVariantIds.includes(v.id))
-    );
-    setSelectedVariantIds([]);
-    showToast("واریانت‌های انتخاب‌شده حذف شدند.", "success");
-  };
 
   // Specification Handlers
   const handleAddSpecification = () => {
@@ -468,7 +146,7 @@ export default function EditProductPage() {
     setSpecifications((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // Save Updates
+  // Save Updates Handler
   const handleSaveProduct = (targetStatus?: ProductStatus) => {
     if (!title.trim()) {
       showToast("لطفاً عنوان محصول را وارد کنید.", "warning");
@@ -537,24 +215,8 @@ export default function EditProductPage() {
     router.push("/admin/products");
   };
 
-  const getOptionValueLabel = (optionId: string, valueId: string) => {
-    const option = options.find((o) => o.id === optionId);
-    if (!option) return valueId;
-    const valObj = option.values.find((v) => v.id === valueId);
-    return valObj ? valObj.label : valueId;
-  };
-
-  const getVariantCombinationText = (variant: ProductVariant) => {
-    if (!variant.optionValues || variant.optionValues.length === 0) {
-      return "پیش‌فرض";
-    }
-    return variant.optionValues
-      .map((ov) => getOptionValueLabel(ov.optionId, ov.valueId))
-      .join(" / ");
-  };
-
   return (
-    <div className="space-y-6 pb-24 max-w-5xl mx-auto">
+    <div className="space-y-6 pb-24 max-w-5xl mx-auto text-xs">
       {/* Top Header & Breadcrumb */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border/60">
         <div>
@@ -577,13 +239,13 @@ export default function EditProductPage() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => handleSaveProduct("draft")}
-            className="h-9 px-3.5 text-xs font-semibold rounded-md bg-surface-subtle border border-border hover:bg-surface-muted text-foreground transition-colors"
+            className="h-9 px-3.5 text-xs font-semibold rounded-lg bg-surface-subtle border border-border hover:bg-surface-muted text-foreground transition-colors"
           >
             ذخیره پیش‌نویس
           </button>
           <button
             onClick={() => handleSaveProduct(status)}
-            className="h-9 px-4 text-xs font-bold rounded-md bg-primary text-primary-foreground hover:bg-primary-hover transition-colors shadow-xs"
+            className="h-9 px-4 text-xs font-bold rounded-lg bg-primary text-primary-foreground hover:bg-primary-hover transition-colors shadow-xs"
           >
             ذخیره تغییرات
           </button>
@@ -591,7 +253,7 @@ export default function EditProductPage() {
       </div>
 
       {/* SECTION 1: BASIC INFORMATION */}
-      <div className="bg-background border border-border rounded-md overflow-hidden">
+      <div className="bg-background border border-border rounded-xl overflow-hidden shadow-xs">
         <button
           onClick={() => toggleSection("basic")}
           className="w-full flex items-center justify-between p-4 bg-surface-subtle border-b border-border text-right"
@@ -608,7 +270,7 @@ export default function EditProductPage() {
         </button>
 
         {openSections.basic && (
-          <div className="p-4 space-y-4 text-xs">
+          <div className="p-4 space-y-4">
             <div>
               <label className="block font-bold text-foreground mb-1">
                 عنوان محصول *
@@ -617,17 +279,18 @@ export default function EditProductPage() {
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full h-10 px-3 bg-surface-subtle border border-border/80 rounded-md text-foreground focus:outline-none focus:border-primary text-xs"
+                className="w-full h-10 px-3.5 bg-surface-subtle border border-border/80 rounded-lg text-foreground focus:outline-none focus:border-primary text-xs font-medium"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Category Select + Quick Create Modal */}
               <div>
                 <div className="flex items-center justify-between mb-1">
                   <label className="font-bold text-foreground">دسته‌بندی *</label>
                   <button
                     type="button"
-                    onClick={() => setModalType("category")}
+                    onClick={() => setIsCategoryModalOpen(true)}
                     className="text-[11px] text-primary font-bold hover:underline flex items-center gap-1"
                   >
                     <Plus className="w-3 h-3" />
@@ -637,7 +300,7 @@ export default function EditProductPage() {
                 <select
                   value={selectedCategoryId}
                   onChange={(e) => setSelectedCategoryId(e.target.value)}
-                  className="w-full h-10 px-3 bg-surface-subtle border border-border/80 rounded-md text-foreground focus:outline-none focus:border-primary font-medium"
+                  className="w-full h-10 px-3 bg-surface-subtle border border-border/80 rounded-lg text-foreground focus:outline-none focus:border-primary font-medium"
                 >
                   {categories.map((cat) => (
                     <option key={cat.id} value={cat.id}>
@@ -647,12 +310,13 @@ export default function EditProductPage() {
                 </select>
               </div>
 
+              {/* Brand Select + Quick Create Modal */}
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="font-bold text-foreground">برند</label>
+                  <label className="font-bold text-foreground">برند *</label>
                   <button
                     type="button"
-                    onClick={() => setModalType("brand")}
+                    onClick={() => setIsBrandModalOpen(true)}
                     className="text-[11px] text-primary font-bold hover:underline flex items-center gap-1"
                   >
                     <Plus className="w-3 h-3" />
@@ -662,7 +326,7 @@ export default function EditProductPage() {
                 <select
                   value={selectedBrandId}
                   onChange={(e) => setSelectedBrandId(e.target.value)}
-                  className="w-full h-10 px-3 bg-surface-subtle border border-border/80 rounded-md text-foreground focus:outline-none focus:border-primary font-medium"
+                  className="w-full h-10 px-3 bg-surface-subtle border border-border/80 rounded-lg text-foreground focus:outline-none focus:border-primary font-medium"
                 >
                   {brands.map((b) => (
                     <option key={b.id} value={b.id}>
@@ -679,7 +343,7 @@ export default function EditProductPage() {
                 rows={3}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full p-3 bg-surface-subtle border border-border/80 rounded-md text-foreground focus:outline-none focus:border-primary text-xs"
+                className="w-full p-3 bg-surface-subtle border border-border/80 rounded-lg text-foreground focus:outline-none focus:border-primary text-xs font-medium"
               />
             </div>
 
@@ -691,15 +355,15 @@ export default function EditProductPage() {
                 type="text"
                 value={tagsInput}
                 onChange={(e) => setTagsInput(e.target.value)}
-                className="w-full h-10 px-3 bg-surface-subtle border border-border/80 rounded-md text-foreground focus:outline-none focus:border-primary"
+                className="w-full h-10 px-3 bg-surface-subtle border border-border/80 rounded-lg text-foreground focus:outline-none focus:border-primary"
               />
             </div>
           </div>
         )}
       </div>
 
-      {/* SECTION 2: IMAGES */}
-      <div className="bg-background border border-border rounded-md overflow-hidden">
+      {/* SECTION 2: IMAGES WITH SHARED IMAGEPICKER */}
+      <div className="bg-background border border-border rounded-xl overflow-hidden shadow-xs">
         <button
           onClick={() => toggleSection("images")}
           className="w-full flex items-center justify-between p-4 bg-surface-subtle border-b border-border text-right"
@@ -716,184 +380,27 @@ export default function EditProductPage() {
         </button>
 
         {openSections.images && (
-          <div className="p-4 space-y-3 text-xs">
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder="آدرس تصویر (URL) را وارد کنید"
-                value={newImageUrl}
-                onChange={(e) => setNewImageUrl(e.target.value)}
-                className="flex-1 h-10 px-3 bg-surface-subtle border border-border/80 rounded-md text-foreground focus:outline-none focus:border-primary"
-              />
-              <button
-                type="button"
-                onClick={handleAddImage}
-                className="h-10 px-4 font-bold bg-primary text-primary-foreground rounded-md hover:bg-primary-hover shrink-0"
-              >
-                افزودن تصویر
-              </button>
-            </div>
-
-            <div className="flex flex-wrap gap-3 pt-2">
-              {images.map((url, idx) => (
-                <div
-                  key={idx}
-                  className="w-20 h-20 rounded-md border border-border bg-surface-subtle relative group overflow-hidden"
-                >
-                  <Image
-                    src={url}
-                    alt={`Product Image ${idx}`}
-                    fill
-                    className="object-cover"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveImage(idx)}
-                    className="absolute top-1 left-1 bg-black/60 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                  {idx === 0 && (
-                    <span className="absolute bottom-0 inset-x-0 bg-primary/90 text-primary-foreground text-[9px] font-bold text-center py-0.5">
-                      تصویر اصلی
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
+          <div className="p-4">
+            <ImagePicker
+              multiple={true}
+              value={images}
+              onChange={setImages}
+              label="آپلود یا انتخاب تصاویر محصول"
+              required
+            />
           </div>
         )}
       </div>
 
-      {/* SECTION 3: OPTIONS & VALUES */}
-      <div className="bg-background border border-border rounded-md overflow-hidden">
-        <button
-          onClick={() => toggleSection("options")}
-          className="w-full flex items-center justify-between p-4 bg-surface-subtle border-b border-border text-right"
-        >
-          <div className="flex items-center gap-2 font-bold text-sm text-foreground">
-            <Sliders className="w-4 h-4 text-primary" />
-            <span>تعریف Optionها و المقادیر (Values)</span>
-          </div>
-          {openSections.options ? (
-            <ChevronUp className="w-4 h-4 text-muted-foreground" />
-          ) : (
-            <ChevronDown className="w-4 h-4 text-muted-foreground" />
-          )}
-        </button>
-
-        {openSections.options && (
-          <div className="p-4 space-y-4 text-xs">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="font-bold text-foreground">افزودن سریع آپشن:</span>
-              {OPTION_TEMPLATES.map((tmpl, idx) => (
-                <button
-                  key={tmpl.name}
-                  type="button"
-                  onClick={() => handleAddOptionFromTemplate(idx)}
-                  className="h-8 px-3 rounded-full bg-surface-subtle border border-border hover:border-primary text-foreground font-semibold flex items-center gap-1 transition-colors"
-                >
-                  <Plus className="w-3 h-3 text-primary" />
-                  <span>{tmpl.name}</span>
-                </button>
-              ))}
-              <button
-                type="button"
-                onClick={() => setModalType("option")}
-                className="h-8 px-3 rounded-full bg-primary/10 text-primary font-bold hover:bg-primary/20 flex items-center gap-1"
-              >
-                <Plus className="w-3 h-3" />
-                <span>آپشن سفارشی جدید</span>
-              </button>
-            </div>
-
-            {options.length === 0 ? (
-              <p className="text-muted-foreground italic py-2">
-                هنوز هیچ آپشنی تعریف نشده است.
-              </p>
-            ) : (
-              <div className="space-y-3 pt-2">
-                {options.map((opt) => (
-                  <div
-                    key={opt.id}
-                    className="p-3 bg-surface-subtle border border-border rounded-md space-y-2"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-foreground text-sm">
-                          {opt.name}
-                        </span>
-                        <span className="text-[10px] text-muted-foreground bg-background px-2 py-0.5 rounded border border-border">
-                          {opt.type === "color"
-                            ? "رنگ"
-                            : opt.type === "size"
-                            ? "سایز"
-                            : "سفارشی"}
-                        </span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveOption(opt.id)}
-                        className="text-error hover:text-red-700 p-1"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                      {opt.values.map((v) => (
-                        <span
-                          key={v.id}
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-background border border-border text-foreground font-semibold text-xs"
-                        >
-                          {opt.type === "color" && (
-                            <span
-                              className="w-3 h-3 rounded-full border border-black/20"
-                              style={{ backgroundColor: v.value }}
-                            />
-                          )}
-                          <span>{v.label}</span>
-                          <button
-                            type="button"
-                            onClick={() =>
-                              handleRemoveValueFromOption(opt.id, v.id)
-                            }
-                            className="text-muted-foreground hover:text-error"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        </span>
-                      ))}
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setActiveOptionIdForValue(opt.id);
-                          setModalType("value");
-                        }}
-                        className="h-7 px-2.5 rounded bg-primary/10 text-primary font-bold hover:bg-primary/20 text-[11px] flex items-center gap-1"
-                      >
-                        <Plus className="w-3 h-3" />
-                        <span>افزودن مقدار</span>
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* SECTION 4: VARIANTS */}
-      <div className="bg-background border border-border rounded-md overflow-hidden">
+      {/* SECTION 3: REUSABLE VARIANT BUILDER */}
+      <div className="bg-background border border-border rounded-xl overflow-hidden shadow-xs">
         <button
           onClick={() => toggleSection("variants")}
           className="w-full flex items-center justify-between p-4 bg-surface-subtle border-b border-border text-right"
         >
           <div className="flex items-center gap-2 font-bold text-sm text-foreground">
-            <Layers className="w-4 h-4 text-primary" />
-            <span>مدیریت Variantها ({variants.length})</span>
+            <Sliders className="w-4 h-4 text-primary" />
+            <span>مدیریت واریانت‌ها (Variant Builder)</span>
           </div>
           {openSections.variants ? (
             <ChevronUp className="w-4 h-4 text-muted-foreground" />
@@ -903,25 +410,26 @@ export default function EditProductPage() {
         </button>
 
         {openSections.variants && (
-          <div className="p-4 space-y-4 text-xs">
-            <div className="bg-surface-subtle p-3.5 rounded-md border border-border space-y-3">
-              <span className="font-bold text-foreground block">
-                بازتولید تمام واریانت‌ها بر اساس Optionهای فعلی:
+          <div className="p-4 space-y-4">
+            {/* Defaults config */}
+            <div className="p-3 bg-surface-subtle border border-border rounded-xl space-y-2">
+              <span className="font-bold text-foreground text-[11px] block">
+                تنظیمات پیش‌فرض واریانت‌های جدید:
               </span>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div>
-                  <label className="block text-muted-foreground mb-1 font-medium">
-                    قیمت پیش‌فرض
+                  <label className="block text-muted-foreground mb-1 font-medium text-[11px]">
+                    قیمت پیش‌فرض (تومان)
                   </label>
                   <input
                     type="number"
                     value={defaultPrice}
                     onChange={(e) => setDefaultPrice(Number(e.target.value))}
-                    className="w-full h-9 px-2.5 bg-background border border-border rounded font-bold text-foreground"
+                    className="w-full h-9 px-2.5 bg-background border border-border rounded-lg font-bold text-foreground text-xs"
                   />
                 </div>
                 <div>
-                  <label className="block text-muted-foreground mb-1 font-medium">
+                  <label className="block text-muted-foreground mb-1 font-medium text-[11px]">
                     قیمت قبل تخفیف
                   </label>
                   <input
@@ -933,267 +441,50 @@ export default function EditProductPage() {
                       )
                     }
                     placeholder="اختیاری"
-                    className="w-full h-9 px-2.5 bg-background border border-border rounded font-bold text-foreground"
+                    className="w-full h-9 px-2.5 bg-background border border-border rounded-lg font-bold text-foreground text-xs"
                   />
                 </div>
                 <div>
-                  <label className="block text-muted-foreground mb-1 font-medium">
+                  <label className="block text-muted-foreground mb-1 font-medium text-[11px]">
                     موجودی پیش‌فرض
                   </label>
                   <input
                     type="number"
                     value={defaultStock}
                     onChange={(e) => setDefaultStock(Number(e.target.value))}
-                    className="w-full h-9 px-2.5 bg-background border border-border rounded font-bold text-foreground"
+                    className="w-full h-9 px-2.5 bg-background border border-border rounded-lg font-bold text-foreground text-xs"
                   />
                 </div>
                 <div>
-                  <label className="block text-muted-foreground mb-1 font-medium">
+                  <label className="block text-muted-foreground mb-1 font-medium text-[11px]">
                     پیشوند SKU
                   </label>
                   <input
                     type="text"
                     value={skuPrefix}
                     onChange={(e) => setSkuPrefix(e.target.value.toUpperCase())}
-                    className="w-full h-9 px-2.5 bg-background border border-border rounded font-mono font-bold text-foreground"
+                    className="w-full h-9 px-2.5 bg-background border border-border rounded-lg font-mono font-bold text-foreground text-xs"
                   />
                 </div>
               </div>
-
-              <div className="pt-1 flex justify-end">
-                <button
-                  type="button"
-                  onClick={handleGenerateCombinations}
-                  className="inline-flex items-center justify-center gap-2 h-10 px-5 text-xs font-bold rounded-md bg-primary text-primary-foreground hover:bg-primary-hover shadow-xs transition-colors"
-                >
-                  <Sparkles className="w-4 h-4" />
-                  <span>تولید مجدد واریانت‌ها (Combination Generator)</span>
-                </button>
-              </div>
             </div>
 
-            {/* Variant Table */}
-            {variants.length > 0 && (
-              <div className="space-y-3 pt-2">
-                <div className="p-2.5 bg-surface-subtle border border-border rounded-md flex flex-wrap items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={handleToggleSelectAllVariants}
-                      className="flex items-center gap-1 font-bold text-foreground"
-                    >
-                      {selectedVariantIds.length === variants.length ? (
-                        <CheckSquare className="w-4 h-4 text-primary" />
-                      ) : (
-                        <Square className="w-4 h-4 text-muted-foreground" />
-                      )}
-                      <span>
-                        انتخاب همه ({selectedVariantIds.length} از {variants.length})
-                      </span>
-                    </button>
-                  </div>
-
-                  {selectedVariantIds.length > 0 && (
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <div className="flex items-center gap-1">
-                        <input
-                          type="number"
-                          placeholder="قیمت"
-                          value={bulkPriceInput || ""}
-                          onChange={(e) => setBulkPriceInput(Number(e.target.value))}
-                          className="w-24 h-8 px-2 bg-background border border-border rounded text-[11px]"
-                        />
-                        <button
-                          type="button"
-                          onClick={handleApplyBulkVariantPrice}
-                          className="h-8 px-2.5 bg-primary text-primary-foreground font-bold rounded text-[11px]"
-                        >
-                          اعمال قیمت
-                        </button>
-                      </div>
-
-                      <div className="flex items-center gap-1">
-                        <input
-                          type="number"
-                          placeholder="موجودی"
-                          value={bulkStockInput || ""}
-                          onChange={(e) => setBulkStockInput(Number(e.target.value))}
-                          className="w-20 h-8 px-2 bg-background border border-border rounded text-[11px]"
-                        />
-                        <button
-                          type="button"
-                          onClick={handleApplyBulkVariantStock}
-                          className="h-8 px-2.5 bg-primary text-primary-foreground font-bold rounded text-[11px]"
-                        >
-                          اعمال موجودی
-                        </button>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={handleApplyBulkDeleteVariants}
-                        className="h-8 px-2.5 bg-error text-error-foreground font-bold rounded text-[11px]"
-                      >
-                        حذف انتخاب‌شده‌ها
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                <div className="border border-border rounded-md overflow-x-auto">
-                  <table className="w-full text-right text-xs">
-                    <thead>
-                      <tr className="bg-surface-subtle border-b border-border text-muted-foreground font-semibold">
-                        <th className="py-2.5 px-3 w-8 text-center"></th>
-                        <th className="py-2.5 px-3">ترکیب Options</th>
-                        <th className="py-2.5 px-3">SKU</th>
-                        <th className="py-2.5 px-3">قیمت (تومان)</th>
-                        <th className="py-2.5 px-3">قیمت قبل تخفیف</th>
-                        <th className="py-2.5 px-3">موجودی</th>
-                        <th className="py-2.5 px-3">وضعیت</th>
-                        <th className="py-2.5 px-3 text-left">عملیات</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border/60">
-                      {variants.map((v) => {
-                        const isSelected = selectedVariantIds.includes(v.id);
-                        return (
-                          <tr
-                            key={v.id}
-                            className={`hover:bg-surface-subtle/50 transition-colors ${
-                              isSelected ? "bg-primary/5" : ""
-                            }`}
-                          >
-                            <td className="py-2 px-3 text-center">
-                              <button
-                                type="button"
-                                onClick={() => handleToggleSelectVariant(v.id)}
-                                className="text-muted-foreground hover:text-foreground"
-                              >
-                                {isSelected ? (
-                                  <CheckSquare className="w-4 h-4 text-primary" />
-                                ) : (
-                                  <Square className="w-4 h-4" />
-                                )}
-                              </button>
-                            </td>
-
-                            <td className="py-2 px-3 font-bold text-foreground">
-                              {getVariantCombinationText(v)}
-                            </td>
-
-                            <td className="py-2 px-3">
-                              <input
-                                type="text"
-                                value={v.sku || ""}
-                                onChange={(e) =>
-                                  handleUpdateVariantInTable(
-                                    v.id,
-                                    "sku",
-                                    e.target.value
-                                  )
-                                }
-                                className="w-28 h-8 px-2 bg-surface-subtle border border-border rounded font-mono text-[11px] dir-ltr text-right"
-                              />
-                            </td>
-
-                            <td className="py-2 px-3">
-                              <input
-                                type="number"
-                                value={v.pricing?.price ?? defaultPrice}
-                                onChange={(e) =>
-                                  handleUpdateVariantInTable(
-                                    v.id,
-                                    "price",
-                                    e.target.value
-                                  )
-                                }
-                                className="w-24 h-8 px-2 bg-surface-subtle border border-border rounded font-bold text-foreground"
-                              />
-                            </td>
-
-                            <td className="py-2 px-3">
-                              <input
-                                type="number"
-                                value={v.pricing?.compareAtPrice || ""}
-                                onChange={(e) =>
-                                  handleUpdateVariantInTable(
-                                    v.id,
-                                    "compareAtPrice",
-                                    e.target.value
-                                  )
-                                }
-                                placeholder="اختیاری"
-                                className="w-24 h-8 px-2 bg-surface-subtle border border-border rounded text-muted-foreground"
-                              />
-                            </td>
-
-                            <td className="py-2 px-3">
-                              <input
-                                type="number"
-                                value={v.inventory?.stock ?? defaultStock}
-                                onChange={(e) =>
-                                  handleUpdateVariantInTable(
-                                    v.id,
-                                    "stock",
-                                    e.target.value
-                                  )
-                                }
-                                className="w-16 h-8 px-2 bg-surface-subtle border border-border rounded font-bold text-foreground"
-                              />
-                            </td>
-
-                            <td className="py-2 px-3">
-                              <select
-                                value={v.status || "active"}
-                                onChange={(e) =>
-                                  handleUpdateVariantInTable(
-                                    v.id,
-                                    "status",
-                                    e.target.value
-                                  )
-                                }
-                                className="h-8 px-2 bg-surface-subtle border border-border rounded font-medium text-[11px]"
-                              >
-                                <option value="active">فعال</option>
-                                <option value="inactive">غیرفعال</option>
-                              </select>
-                            </td>
-
-                            <td className="py-2 px-3 text-left">
-                              <div className="flex items-center justify-end gap-1">
-                                <button
-                                  type="button"
-                                  onClick={() => handleDuplicateVariantInTable(v)}
-                                  className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-surface-subtle"
-                                  title="تکثیر"
-                                >
-                                  <Copy className="w-3.5 h-3.5" />
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => handleDeleteVariantInTable(v.id)}
-                                  className="p-1 rounded text-muted-foreground hover:text-error hover:bg-error/10"
-                                  title="حذف"
-                                >
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
+            <ProductVariantBuilder
+              options={options}
+              setOptions={setOptions}
+              variants={variants}
+              setVariants={setVariants}
+              defaultPrice={defaultPrice}
+              defaultCompareAtPrice={defaultCompareAtPrice}
+              defaultStock={defaultStock}
+              skuPrefix={skuPrefix}
+            />
           </div>
         )}
       </div>
 
-      {/* SECTION 5: SPECIFICATIONS */}
-      <div className="bg-background border border-border rounded-md overflow-hidden">
+      {/* SECTION 4: SPECIFICATIONS */}
+      <div className="bg-background border border-border rounded-xl overflow-hidden shadow-xs">
         <button
           onClick={() => toggleSection("specs")}
           className="w-full flex items-center justify-between p-4 bg-surface-subtle border-b border-border text-right"
@@ -1210,26 +501,26 @@ export default function EditProductPage() {
         </button>
 
         {openSections.specs && (
-          <div className="p-4 space-y-3 text-xs">
+          <div className="p-4 space-y-3">
             <div className="flex gap-2">
               <input
                 type="text"
                 placeholder="عنوان ویژگی"
                 value={newSpecLabel}
                 onChange={(e) => setNewSpecLabel(e.target.value)}
-                className="flex-1 h-9 px-3 bg-surface-subtle border border-border rounded-md text-foreground"
+                className="flex-1 h-9 px-3 bg-surface-subtle border border-border rounded-lg text-foreground text-xs"
               />
               <input
                 type="text"
                 placeholder="مقدار"
                 value={newSpecValue}
                 onChange={(e) => setNewSpecValue(e.target.value)}
-                className="flex-1 h-9 px-3 bg-surface-subtle border border-border rounded-md text-foreground"
+                className="flex-1 h-9 px-3 bg-surface-subtle border border-border rounded-lg text-foreground text-xs"
               />
               <button
                 type="button"
                 onClick={handleAddSpecification}
-                className="h-9 px-4 bg-primary text-primary-foreground font-bold rounded-md hover:bg-primary-hover shrink-0"
+                className="h-9 px-4 bg-primary text-primary-foreground font-bold rounded-lg hover:bg-primary-hover shrink-0 text-xs"
               >
                 افزودن ویژگی
               </button>
@@ -1239,7 +530,7 @@ export default function EditProductPage() {
               {specifications.map((spec, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center justify-between p-2.5 bg-surface-subtle border border-border rounded-md"
+                  className="flex items-center justify-between p-2.5 bg-surface-subtle border border-border rounded-lg"
                 >
                   <div>
                     <span className="font-bold text-foreground">{spec.label}: </span>
@@ -1259,14 +550,14 @@ export default function EditProductPage() {
         )}
       </div>
 
-      {/* SECTION 6: PUBLICATION STATUS & STICKY FOOTER */}
-      <div className="bg-background border border-border rounded-md p-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+      {/* SECTION 5: PUBLICATION STATUS & FOOTER */}
+      <div className="bg-background border border-border rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xs">
         <div className="flex items-center gap-3">
           <span className="font-bold text-foreground">وضعیت انتشار:</span>
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value as ProductStatus)}
-            className="h-9 px-3 bg-surface-subtle border border-border rounded-md font-bold text-foreground"
+            className="h-9 px-3 bg-surface-subtle border border-border rounded-lg font-bold text-foreground text-xs"
           >
             <option value="active">منتشرشده</option>
             <option value="draft">پیش‌نویس</option>
@@ -1284,143 +575,29 @@ export default function EditProductPage() {
           <button
             type="button"
             onClick={() => handleSaveProduct(status)}
-            className="h-10 px-6 font-bold bg-primary text-primary-foreground hover:bg-primary-hover rounded-md shadow-xs transition-colors"
+            className="h-10 px-6 font-bold bg-primary text-primary-foreground hover:bg-primary-hover rounded-lg shadow-xs transition-colors"
           >
             ذخیره تغییرات
           </button>
         </div>
       </div>
 
-      {/* QUICK MODALS */}
+      {/* QUICK CREATION MODALS */}
       <CreateCategoryModal
-        isOpen={modalType === "category"}
-        onClose={() => setModalType(null)}
+        isOpen={isCategoryModalOpen}
+        onClose={() => setIsCategoryModalOpen(false)}
         onSuccess={(newCat: ProductCategory) => {
           setSelectedCategoryId(newCat.id);
         }}
       />
 
-      {modalType === "brand" && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-xs"
-            onClick={() => setModalType(null)}
-          />
-          <div className="relative bg-background border border-border rounded-xl p-5 w-full max-w-xs space-y-3 z-10 text-xs">
-            <h3 className="font-bold text-sm text-foreground">برند جدید</h3>
-            <input
-              type="text"
-              placeholder="نام برند..."
-              value={newBrandName}
-              onChange={(e) => setNewBrandName(e.target.value)}
-              className="w-full h-9 px-3 bg-surface-subtle border border-border rounded text-foreground"
-            />
-            <div className="flex justify-end gap-2 pt-2">
-              <button
-                type="button"
-                onClick={() => setModalType(null)}
-                className="h-8 px-3 rounded bg-surface-subtle font-bold"
-              >
-                انصراف
-              </button>
-              <button
-                type="button"
-                onClick={handleCreateBrand}
-                className="h-8 px-4 rounded bg-primary text-primary-foreground font-bold"
-              >
-                ایجاد
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {modalType === "option" && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-xs"
-            onClick={() => setModalType(null)}
-          />
-          <div className="relative bg-background border border-border rounded-xl p-5 w-full max-w-xs space-y-3 z-10 text-xs">
-            <h3 className="font-bold text-sm text-foreground">آپشن جدید</h3>
-            <input
-              type="text"
-              placeholder="نام آپشن..."
-              value={newOptionName}
-              onChange={(e) => setNewOptionName(e.target.value)}
-              className="w-full h-9 px-3 bg-surface-subtle border border-border rounded text-foreground"
-            />
-            <div className="flex justify-end gap-2 pt-2">
-              <button
-                type="button"
-                onClick={() => setModalType(null)}
-                className="h-8 px-3 rounded bg-surface-subtle font-bold"
-              >
-                انصراف
-              </button>
-              <button
-                type="button"
-                onClick={handleCreateCustomOption}
-                className="h-8 px-4 rounded bg-primary text-primary-foreground font-bold"
-              >
-                ایجاد
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {modalType === "value" && activeOptionIdForValue && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-xs"
-            onClick={() => {
-              setModalType(null);
-              setActiveOptionIdForValue(null);
-            }}
-          />
-          <div className="relative bg-background border border-border rounded-xl p-5 w-full max-w-xs space-y-3 z-10 text-xs">
-            <h3 className="font-bold text-sm text-foreground">افزودن مقدار جدید</h3>
-            <input
-              type="text"
-              placeholder="عنوان مقدار"
-              value={newValueLabel}
-              onChange={(e) => setNewValueLabel(e.target.value)}
-              className="w-full h-9 px-3 bg-surface-subtle border border-border rounded text-foreground"
-            />
-            {options.find((o) => o.id === activeOptionIdForValue)?.type === "color" && (
-              <div className="flex items-center gap-2">
-                <label className="font-bold text-foreground">کد رنگ:</label>
-                <input
-                  type="color"
-                  value={newValueColor}
-                  onChange={(e) => setNewValueColor(e.target.value)}
-                  className="w-8 h-8 rounded border border-border cursor-pointer"
-                />
-              </div>
-            )}
-            <div className="flex justify-end gap-2 pt-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setModalType(null);
-                  setActiveOptionIdForValue(null);
-                }}
-                className="h-8 px-3 rounded bg-surface-subtle font-bold"
-              >
-                انصراف
-              </button>
-              <button
-                type="button"
-                onClick={() => handleAddValueToOption(activeOptionIdForValue)}
-                className="h-8 px-4 rounded bg-primary text-primary-foreground font-bold"
-              >
-                افزودن
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <CreateBrandModal
+        isOpen={isBrandModalOpen}
+        onClose={() => setIsBrandModalOpen(false)}
+        onSuccess={(newBrand: ProductBrand) => {
+          setSelectedBrandId(newBrand.id);
+        }}
+      />
     </div>
   );
 }
