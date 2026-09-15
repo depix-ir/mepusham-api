@@ -23,6 +23,7 @@ import {
   PackageX,
   ChevronLeft,
   RotateCcw,
+  ChevronRight,
 } from "lucide-react";
 
 export default function OrderDetailPage({
@@ -302,7 +303,7 @@ export default function OrderDetailPage({
                     className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground font-bold text-xs rounded-xl hover:bg-primary-hover transition-colors shadow-xs shrink-0"
                   >
                     <span>ثبت درخواست مرجوعی / تعویض</span>
-                    <ChevronLeft className="w-4 h-4 rtl:rotate-180" />
+                    <ChevronRight className="w-4 h-4 rtl:rotate-180" />
                   </Link>
                 </div>
               );

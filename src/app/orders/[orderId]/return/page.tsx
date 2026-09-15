@@ -9,7 +9,7 @@ import { accountService } from "@/lib/account/accountService";
 import { returnService } from "@/lib/returns/returnService";
 import { checkOrderEligibility, checkItemEligibility } from "@/lib/returns/eligibility";
 import { getReturnPolicy } from "@/lib/returns/policy";
-import { mockProducts } from "@/data/products";
+import { products } from "@/data/products";
 import { Order, OrderItem } from "@/types/account";
 import { ReturnReason, RequestType, RETURN_REASON_LABELS, ReturnRequest } from "@/types/return";
 import { Product, ProductVariant } from "@/types/product";
@@ -29,6 +29,7 @@ import {
   X,
   Info,
   ShieldCheck,
+  ChevronRight,
 } from "lucide-react";
 
 const RETURN_REASONS: Array<{ value: ReturnReason; label: string }> = [
@@ -160,7 +161,7 @@ export default function OrderReturnPage({
 
   // Find product and replacement variants in catalog if Exchange
   const currentProduct: Product | undefined = selectedOrderItem
-    ? mockProducts.find((p) => p.id === selectedOrderItem.productId)
+    ? products.find((p) => p.id === selectedOrderItem.productId)
     : undefined;
 
   const handleAddEvidenceMock = () => {
@@ -221,7 +222,7 @@ export default function OrderReturnPage({
           reason: selectedReason,
           customerNote: selectedReason === "other" ? `${otherReasonText} ${customerNote}`.trim() : customerNote,
           evidence: evidenceImages,
-          productsCatalog: mockProducts,
+          productsCatalog: products,
         });
         setSubmittedRequest(req);
         setStep(5);
@@ -271,15 +272,15 @@ export default function OrderReturnPage({
         {step < 5 && (
           <div className="bg-surface-subtle/60 rounded-xl p-3 flex items-center justify-between text-xs font-bold text-muted-foreground">
             <span className={step >= 1 ? "text-primary font-black" : ""}>۱. انتخاب کالا</span>
-            <ChevronLeft className="w-3.5 h-3.5 rtl:rotate-180 text-muted-foreground/50" />
+            <ChevronRight className="w-3.5 h-3.5 rtl:rotate-180 text-muted-foreground/50" />
             <span className={step >= 2 ? "text-primary font-black" : ""}>۲. دلیل & تعداد</span>
             {requestType === "exchange" && (
               <>
-                <ChevronLeft className="w-3.5 h-3.5 rtl:rotate-180 text-muted-foreground/50" />
+                <ChevronRight className="w-3.5 h-3.5 rtl:rotate-180 text-muted-foreground/50" />
                 <span className={step >= 3 ? "text-primary font-black" : ""}>۳. انتخاب جایگزین</span>
               </>
             )}
-            <ChevronLeft className="w-3.5 h-3.5 rtl:rotate-180 text-muted-foreground/50" />
+            <ChevronRight className="w-3.5 h-3.5 rtl:rotate-180 text-muted-foreground/50" />
             <span className={step >= 4 ? "text-primary font-black" : ""}>بررسی و ثبت</span>
           </div>
         )}
@@ -410,7 +411,7 @@ export default function OrderReturnPage({
               className="w-full py-3 bg-primary text-primary-foreground font-bold text-xs rounded-xl hover:bg-primary-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               <span>ادامه (انتخاب دلیل و تعداد)</span>
-              <ChevronLeft className="w-4 h-4 rtl:rotate-180" />
+              <ChevronRight  className="w-4 h-4 rtl:rotate-180" />
             </button>
           </div>
         )}
@@ -555,7 +556,7 @@ export default function OrderReturnPage({
                 className="px-6 py-2.5 bg-primary text-primary-foreground font-bold text-xs rounded-xl hover:bg-primary-hover transition-colors flex items-center gap-2"
               >
                 <span>{requestType === "exchange" ? "مرحله بعد (انتخاب جایگزین)" : "بررسی و ادامه"}</span>
-                <ChevronLeft className="w-4 h-4 rtl:rotate-180" />
+                <ChevronRight className="w-4 h-4 rtl:rotate-180" />
               </button>
             </div>
           </div>
