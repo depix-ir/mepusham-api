@@ -17,22 +17,25 @@ export function LoadMoreSentinel({
 }: LoadMoreSentinelProps) {
   const sentinelRef = useRef<HTMLDivElement>(null);
   const onIntersectRef = useRef(onIntersect);
+  const disabledRef = useRef(disabled);
 
-  // Always keep callback ref current without re-subscribing observer
+  // Always keep callback and disabled refs current without re-subscribing observer
   useEffect(() => {
     onIntersectRef.current = onIntersect;
   }, [onIntersect]);
 
   useEffect(() => {
-    if (disabled) return;
+    disabledRef.current = disabled;
+  }, [disabled]);
 
+  useEffect(() => {
     const targetNode = sentinelRef.current;
     if (!targetNode) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
         const [entry] = entries;
-        if (entry.isIntersecting) {
+        if (entry.isIntersecting && !disabledRef.current) {
           onIntersectRef.current();
         }
       },
@@ -48,7 +51,7 @@ export function LoadMoreSentinel({
     return () => {
       observer.disconnect();
     };
-  }, [disabled, rootMargin, threshold]);
+  }, [rootMargin, threshold]);
 
   return (
     <div

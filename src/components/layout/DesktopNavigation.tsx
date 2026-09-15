@@ -148,11 +148,11 @@ export function DesktopNavigation({
   return (
     <nav
       aria-label="منوی اصلی دسکتاپ"
-      className="hidden md:block w-full border-b border-border bg-background relative z-30 transition-all duration-300 ease-in-out motion-reduce:transition-none overflow-hidden"
+      className="hidden md:block w-full h-[52px] border-b border-border bg-background relative z-30 transition-all duration-300 ease-in-out motion-reduce:transition-none"
       style={{
-        maxHeight: isNavVisible ? "52px" : "0px",
         opacity: isNavVisible ? 1 : 0,
-        transform: isNavVisible ? "translateY(0)" : "translateY(-8px)",
+        transform: isNavVisible ? "translateY(0)" : "translateY(-100%)",
+        visibility: isNavVisible ? "visible" : "hidden",
         pointerEvents: isNavVisible ? "auto" : "none",
       }}
     >

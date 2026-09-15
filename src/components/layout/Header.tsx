@@ -20,7 +20,7 @@ export function Header({ announcementText, cartItemCount }: HeaderProps) {
   }
 
   return (
-    <header className="w-full sticky top-0 z-40 bg-background shadow-xs">
+    <header className="w-full sticky top-0 z-40">
       <AnnouncementBar text={announcementText} />
       <MainHeader cartItemCount={cartItemCount} />
       <DesktopNavigation />
