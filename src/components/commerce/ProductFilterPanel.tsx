@@ -255,7 +255,7 @@ export function ProductFilterPanel({
             >
               <div
                 className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
-                  filters.inStock ? "-translate-x-5" : "translate-x-0"
+                  filters.inStock ? "-translate-x-3" : "translate-x-1"
                 }`}
               />
             </div>
@@ -274,7 +274,7 @@ export function ProductFilterPanel({
             >
               <div
                 className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
-                  filters.hasDiscount ? "-translate-x-5" : "translate-x-0"
+                  filters.hasDiscount ? "-translate-x-3" : "translate-x-1"
                 }`}
               />
             </div>
