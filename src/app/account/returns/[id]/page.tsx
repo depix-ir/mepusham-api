@@ -164,15 +164,24 @@ export default function ReturnDetailPage({
           <span className="text-foreground font-bold" dir="ltr">#{request.requestNumber}</span>
         </nav>
 
-        {/* Back Link & Badge Header */}
+          {/* Back Link, Support & Badge Header */}
         <div className="flex items-center justify-between gap-3">
-          <Link
-            href="/account/returns"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowRight className="w-4 h-4" />
-            <span>بازگشت به درخواست‌ها</span>
-          </Link>
+            <div className="flex items-center gap-3">
+              <Link
+                href="/account/returns"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <ArrowRight className="w-4 h-4" />
+                <span>بازگشت به درخواست‌ها</span>
+              </Link>
+              <span className="text-muted-foreground text-xs">•</span>
+              <Link
+                href="/support"
+                className="text-xs font-medium text-primary hover:underline transition-colors"
+              >
+                پشتیبانی مرجوعی
+              </Link>
+            </div>
 
           <span className={`text-xs font-bold px-3 py-1 rounded-full border ${getStatusBadgeClass(request.status)}`}>
             {RETURN_STATUS_LABELS[request.status] || request.status}

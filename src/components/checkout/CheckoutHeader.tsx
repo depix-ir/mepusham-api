@@ -13,16 +13,25 @@ export function CheckoutHeader() {
 
 
 
-        {/* Back to Cart Link */}
-        <Link
-          href="/cart"
-          className="flex items-center gap-1 text-xs font-medium text-muted hover:text-foreground transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4 rtl:rotate-180" />
-          <span>بازگشت به سبد خرید</span>
-        </Link>
+        {/* Support Link & Back to Cart Link */}
+        <div className="flex items-center gap-4">
+          <Link
+            href="/cart"
+            className="flex items-center gap-1 text-xs font-medium text-muted hover:text-foreground transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4 rtl:rotate-180" />
+            <span>بازگشت به سبد خرید</span>
+          </Link>
 
-                {/* Page Title */}
+          <Link
+            href="/support"
+            className="hidden sm:inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline transition-colors"
+          >
+            <span>پشتیبانی آنلاین</span>
+          </Link>
+        </div>
+
+        {/* Page Title */}
         <h1 className="text-sm sm:text-base font-bold text-foreground">
           تکمیل خرید
         </h1>

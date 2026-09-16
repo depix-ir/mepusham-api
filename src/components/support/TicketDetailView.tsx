@@ -80,102 +80,109 @@ export function TicketDetailView({ ticket, onBack, onSendMessage }: TicketDetail
   };
 
   return (
-    <div className="bg-surface border border-border rounded-2xl flex flex-col h-[650px] max-h-[80vh] overflow-hidden animate-in fade-in duration-200">
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-border bg-surface-subtle/50 shrink-0">
-        <div className="flex items-center gap-3">
+    <div className="bg-surface border border-border rounded-2xl flex flex-col h-[520px] sm:h-[600px] max-h-[82vh] overflow-hidden shadow-sm animate-in fade-in duration-200">
+      {/* Top Header Bar */}
+      <div className="flex items-center justify-between p-3.5 sm:p-4 border-b border-border bg-surface-subtle/60 shrink-0">
+        <div className="flex items-center gap-2.5 min-w-0">
           <button
             type="button"
             onClick={onBack}
-            className="w-8 h-8 rounded-lg bg-surface flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            className="w-8 h-8 rounded-xl bg-surface border border-border flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
+            title="بازگشت به فهرست"
           >
             <ArrowRight className="w-4 h-4" />
           </button>
-          <div className="space-y-0.5">
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground font-mono" dir="ltr">
+
+          <div className="min-w-0 space-y-0.5">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-[11px] text-muted-foreground font-mono font-bold" dir="ltr">
                 #{ticket.ticketNumber}
               </span>
-              <h3 className="text-sm sm:text-base font-bold text-foreground">
+              <h3 className="text-xs sm:text-sm font-bold text-foreground truncate max-w-[180px] sm:max-w-md">
                 {ticket.subject}
               </h3>
             </div>
             {ticket.orderNumber && (
-              <span className="text-[11px] text-muted-foreground block">
-                مربوط به سفارش <strong className="text-foreground" dir="ltr">#{ticket.orderNumber}</strong>
+              <span className="text-[10px] text-muted-foreground block truncate">
+                سفارش <strong className="text-foreground font-mono" dir="ltr">#{ticket.orderNumber}</strong>
               </span>
             )}
           </div>
         </div>
 
         <span
-          className={`text-[11px] font-bold px-2.5 py-1 rounded-full border ${getStatusBadgeClass()}`}
+          className={`text-[10px] sm:text-[11px] font-bold px-2.5 py-0.5 rounded-full border shrink-0 ${getStatusBadgeClass()}`}
         >
           {ticketStatusLabels[ticket.status]}
         </span>
       </div>
 
       {/* Messages Thread Container */}
-      <div className="flex-1 p-4 sm:p-6 overflow-y-auto space-y-4 bg-surface-subtle/20">
+      <div className="flex-1 p-3 sm:p-5 overflow-y-auto space-y-3.5 bg-surface-subtle/30">
         {ticket.messages.map((msg) => {
           const isUser = msg.sender === "user";
 
           return (
             <div
               key={msg.id}
-              className={`flex gap-2.5 ${isUser ? "flex-row-reverse" : "flex-row"}`}
+              className={`flex gap-2 items-end ${isUser ? "flex-row-reverse" : "flex-row"}`}
             >
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-xs font-bold ${
+                className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-xs font-bold mb-1 ${
                   isUser
                     ? "bg-primary text-primary-foreground"
                     : "bg-surface border border-border text-foreground"
                 }`}
               >
-                {isUser ? <User className="w-4 h-4" /> : <Headset className="w-4 h-4" />}
+                {isUser ? <User className="w-3.5 h-3.5" /> : <Headset className="w-3.5 h-3.5 text-primary" />}
               </div>
 
               <div
-                className={`max-w-[85%] sm:max-w-[75%] rounded-2xl p-4 text-xs sm:text-sm space-y-2 ${
+                className={`max-w-[88%] sm:max-w-[78%] rounded-2xl p-3 sm:p-4 text-xs sm:text-sm space-y-1.5 ${
                   isUser
-                    ? "bg-primary text-primary-foreground rounded-tl-none shadow-2xs"
-                    : "bg-surface border border-border text-foreground rounded-tr-none shadow-2xs"
+                    ? "bg-primary text-primary-foreground rounded-bl-xs shadow-2xs"
+                    : "bg-surface border border-border text-foreground rounded-br-xs shadow-2xs"
                 }`}
               >
-                <div className="flex items-center justify-between gap-4 text-[10px] opacity-80 pb-1 border-b border-white/10">
+                <div className={`flex items-center justify-between gap-3 text-[10px] pb-1 border-b ${
+                  isUser ? "border-white/15 text-primary-foreground/80" : "border-border-subtle text-muted-foreground"
+                }`}>
                   <span className="font-bold">{isUser ? "شما" : "پشتیبانی مپوشام"}</span>
-                  <span>{msg.createdAt}</span>
+                  <span dir="ltr">{msg.createdAt}</span>
                 </div>
-                <p className="leading-relaxed whitespace-pre-wrap">{msg.text}</p>
+
+                <p className="leading-relaxed whitespace-pre-wrap text-xs sm:text-sm pt-0.5">{msg.text}</p>
 
                 {/* Message Attachments */}
                 {msg.attachments && msg.attachments.length > 0 && (
-                  <div className="pt-2 border-t border-white/10 space-y-1.5">
+                  <div className={`pt-2 border-t space-y-1 ${
+                    isUser ? "border-white/15" : "border-border-subtle"
+                  }`}>
                     <span className="text-[10px] font-bold opacity-80 block">
-                      فایل‌های پیوست:
+                      پیوست‌ها:
                     </span>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-1.5">
                       {msg.attachments.map((att) => (
                         <a
                           key={att.id}
                           href={att.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className={`px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 text-[11px] font-medium transition-opacity ${
+                          className={`px-2 py-1 rounded-lg flex items-center gap-1 text-[10px] sm:text-[11px] font-medium transition-opacity ${
                             isUser
                               ? "bg-white/20 text-white hover:bg-white/30"
                               : "bg-surface-subtle text-foreground hover:bg-surface-muted"
                           }`}
                         >
                           {att.type.startsWith("image/") ? (
-                            <ImageIcon className="w-3.5 h-3.5" />
+                            <ImageIcon className="w-3 h-3" />
                           ) : (
-                            <FileText className="w-3.5 h-3.5" />
+                            <FileText className="w-3 h-3" />
                           )}
-                          <span className="truncate max-w-[120px] font-mono">
+                          <span className="truncate max-w-[100px] font-mono">
                             {att.name}
                           </span>
-                          <ExternalLink className="w-3 h-3 opacity-60" />
+                          <ExternalLink className="w-3 h-3 opacity-70" />
                         </a>
                       ))}
                     </div>
@@ -187,18 +194,18 @@ export function TicketDetailView({ ticket, onBack, onSendMessage }: TicketDetail
         })}
       </div>
 
-      {/* Reply Input Box */}
-      <div className="p-3 sm:p-4 border-t border-border bg-surface shrink-0 space-y-3">
+      {/* Reply Bar */}
+      <div className="p-2.5 sm:p-3 border-t border-border bg-surface shrink-0 space-y-2">
         {/* Attachments Preview */}
         {attachments.length > 0 && (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5 px-1">
             {attachments.map((att) => (
               <div
                 key={att.id}
-                className="px-2.5 py-1 bg-surface-subtle border border-border rounded-lg flex items-center gap-1.5 text-[11px] text-foreground"
+                className="px-2 py-1 bg-surface-subtle border border-border rounded-lg flex items-center gap-1.5 text-[10px] sm:text-[11px] text-foreground"
               >
-                <Paperclip className="w-3 h-3 text-primary" />
-                <span className="truncate max-w-[100px] font-mono">{att.name}</span>
+                <Paperclip className="w-3 h-3 text-primary shrink-0" />
+                <span className="truncate max-w-[90px] font-mono">{att.name}</span>
                 <button
                   type="button"
                   onClick={() => handleRemoveAttachment(att.id)}
@@ -211,8 +218,8 @@ export function TicketDetailView({ ticket, onBack, onSendMessage }: TicketDetail
           </div>
         )}
 
-        <form onSubmit={handleSend} className="space-y-2">
-          <div className="flex items-center gap-2">
+        <form onSubmit={handleSend} className="space-y-1.5">
+          <div className="flex items-center gap-1.5">
             <input
               type="file"
               ref={fileInputRef}
@@ -224,8 +231,8 @@ export function TicketDetailView({ ticket, onBack, onSendMessage }: TicketDetail
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="w-11 h-11 rounded-xl bg-surface-subtle border border-border hover:border-primary flex items-center justify-center text-muted-foreground hover:text-primary transition-colors cursor-pointer shrink-0"
-              title="افزودن فایل پیوست"
+              className="w-10 h-10 rounded-xl bg-surface-subtle border border-border hover:border-primary flex items-center justify-center text-muted-foreground hover:text-primary transition-colors cursor-pointer shrink-0"
+              title="پیوست عکس یا فایل"
             >
               <Paperclip className="w-4 h-4" />
             </button>
@@ -238,15 +245,18 @@ export function TicketDetailView({ ticket, onBack, onSendMessage }: TicketDetail
                 if (error) setError(null);
               }}
               placeholder="پاسخ خود را بنویسید..."
-              className="flex-1 h-11 bg-surface-subtle border border-border rounded-xl px-3.5 text-xs sm:text-sm text-foreground focus:outline-none focus:border-primary focus:bg-background transition-colors"
+              className="flex-1 h-10 bg-surface-subtle border border-border rounded-xl px-3 text-xs sm:text-sm text-foreground focus:outline-none focus:border-primary focus:bg-background transition-colors"
             />
 
-            <Button type="submit" size="md" className="font-bold px-4 shrink-0 cursor-pointer">
-              <Send className="w-4 h-4 ml-1" />
-              ارسال
-            </Button>
+            <button
+              type="submit"
+              className="h-10 px-3.5 sm:px-4 bg-primary text-primary-foreground font-bold text-xs rounded-xl flex items-center gap-1 hover:bg-primary-hover transition-colors shrink-0 cursor-pointer shadow-2xs"
+            >
+              <Send className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">ارسال</span>
+            </button>
           </div>
-          {error && <p className="text-xs text-error">{error}</p>}
+          {error && <p className="text-[11px] text-error pr-1">{error}</p>}
         </form>
       </div>
     </div>

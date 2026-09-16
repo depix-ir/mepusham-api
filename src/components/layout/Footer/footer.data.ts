@@ -26,6 +26,7 @@ export const quickLinks: FooterLinkGroup = {
   links: [
     { id: "products", label: "محصولات", href: "/products" },
     { id: "discounts", label: "تخفیف‌ها", href: "/products?discount=true" },
+    { id: "order-tracking", label: "پیگیری سفارش", href: "/orders" },
     { id: "blog", label: "وبلاگ", href: "/blog" },
     { id: "contact", label: "تماس با ما", href: "/contact" },
   ],
@@ -33,11 +34,14 @@ export const quickLinks: FooterLinkGroup = {
 
 export const legalLinks: FooterLinkGroup = {
   id: "legal",
-  title: "قوانین و حریم خصوصی",
+  title: "پشتیبانی و قوانین",
   links: [
+    { id: "support", label: "پشتیبانی", href: "/support" },
+    { id: "guides", label: "راهنمای خرید", href: "/support?tab=guides" },
+    { id: "faqs", label: "سوالات متداول", href: "/support?tab=faqs" },
+    { id: "terms", label: "قوانین", href: "/terms" },
+    { id: "returns", label: "بازگشت وجه مرجوعی", href: "/returns" },
     { id: "privacy", label: "حریم خصوصی", href: "/privacy" },
-    { id: "terms", label: "قوانین و مقررات", href: "/terms" },
-    { id: "returns", label: "شرایط بازگشت کالا", href: "/returns" },
   ],
 };
 
