@@ -330,7 +330,7 @@ export default function OrderDetailPage({
           {/* Support Action Bar */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
             <Link
-              href="/account"
+              href="/support"
               className="p-3.5 bg-surface-subtle/60 rounded-xl flex items-center gap-3 hover:border-border transition-colors group"
             >
               <HelpCircle className="w-4 h-4 text-primary shrink-0" />

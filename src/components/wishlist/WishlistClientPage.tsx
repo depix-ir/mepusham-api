@@ -82,6 +82,12 @@ export function WishlistClientPage() {
   const unavailableCount = unavailableProducts.length;
   const isAllOutOfStock = totalLikedCount > 0 && availableCount === 0;
 
+  // Benefits logic
+  const hasFreeShipping = totalLikedCount > 2 || totalAvailablePrice > 10_000_000;
+  const hasSpecialDiscount = totalAvailablePrice > 10_000_000;
+  const specialDiscountAmount = hasSpecialDiscount ? Math.round(totalAvailablePrice * 0.1) : 0;
+  const finalPayableTotal = Math.max(0, totalAvailablePrice - specialDiscountAmount);
+
   // Bulk add all available products to Cart
   const handleAddAllToCart = () => {
     if (availableCount === 0) return;
@@ -214,11 +220,30 @@ export function WishlistClientPage() {
                 </div>
               )}
 
+              <div className="flex items-center justify-between text-muted font-medium">
+                <span>هزینه ارسال:</span>
+                {hasFreeShipping ? (
+                  <span className="text-emerald-600 font-bold">رایگان</span>
+                ) : (
+                  <span className="text-foreground font-medium">طبق تعرفه پست</span>
+                )}
+              </div>
+
               {totalAvailableDiscount > 0 && (
                 <div className="flex items-center justify-between text-emerald-700 font-medium">
-                  <span>مجموع تخفیف:</span>
+                  <span>تخفیف محصولات:</span>
                   <div className="flex items-center gap-1 font-bold">
                     <span>{formatPrice(totalAvailableDiscount)}</span>
+                    <TomanIcon size={13} className="text-emerald-700 shrink-0" />
+                  </div>
+                </div>
+              )}
+
+              {specialDiscountAmount > 0 && (
+                <div className="flex items-center justify-between text-emerald-700 font-medium">
+                  <span>تخفیف ۱۰٪ ویژه:</span>
+                  <div className="flex items-center gap-1 font-bold">
+                    <span>{formatPrice(specialDiscountAmount)}</span>
                     <TomanIcon size={13} className="text-emerald-700 shrink-0" />
                   </div>
                 </div>
@@ -229,7 +254,7 @@ export function WishlistClientPage() {
             <div className="flex flex-col gap-1 pt-3 border-t border-border-product">
               <div className="flex items-baseline justify-between">
                 <span className="text-xs sm:text-sm font-bold text-foreground">
-                  {unavailableCount > 0 ? "مجموع مبلغ محصولات موجود:" : "مجموع مبلغ:"}
+                  مبلغ قابل پرداخت:
                 </span>
                 {isAllOutOfStock ? (
                   <div className="flex items-center gap-1 text-base sm:text-xl font-black text-primary">
@@ -238,17 +263,15 @@ export function WishlistClientPage() {
                   </div>
                 ) : (
                   <div className="flex items-center gap-1 text-base sm:text-xl font-black text-primary">
-                    <span>{formatPrice(totalAvailablePrice)}</span>
+                    <span>{formatPrice(finalPayableTotal)}</span>
                     <TomanIcon size={16} className="text-primary/70 shrink-0" />
                   </div>
                 )}
               </div>
 
-              {/* Explicit Out-of-Stock Explanation Notice */}
-              {unavailableCount > 0 && (
+              {unavailableCount > 0 && !isAllOutOfStock && (
                 <p className="text-[11px] text-amber-700 bg-amber-50 p-2 rounded-lg border border-amber-200/60 leading-relaxed mt-1">
-                  مبلغ نهایی بر اساس {availableCount} محصول موجود محاسبه شده است ({unavailableCount} محصول
-                  ناموجود در مجموع مبلغ محاسبه نشده‌اند).
+                  مبلغ بر اساس {availableCount} محصول موجود در انبار محاسبه شده است.
                 </p>
               )}
 
@@ -260,7 +283,7 @@ export function WishlistClientPage() {
             </div>
 
             {/* Promotional Bulk Purchase Offer */}
-            <WishlistOfferCard />
+            <WishlistOfferCard productCount={totalLikedCount} totalPrice={totalAvailablePrice} />
 
             {/* Trust Signals Block */}
             <WishlistTrustSection />
