@@ -96,18 +96,18 @@ export function AccountDashboard({
       <div className="max-w-[800px] px-5  mx-auto">
         <div className="space-y-4 sm:space-y-6">
           {/* Top User Info Card (SnappFood Style Header) */}
-          <div className="bg-primary border border-border/0 rounded-2xl p-5 shadow-2xs">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-full bg-primary-foreground text-primary  flex items-center justify-center font-bold text-xl shrink-0">
-                  {user.firstName ? user.firstName.charAt(0) : <UserIcon className="w-7 h-7 text-primary" />}
+          <div className="bg-primary border border-border/0 rounded-2xl p-4 sm:p-5 shadow-2xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+              <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-primary-foreground text-primary flex items-center justify-center font-bold text-lg sm:text-xl shrink-0">
+                  {user.firstName ? user.firstName.charAt(0) : <UserIcon className="w-6 h-6 sm:w-7 sm:h-7 text-primary" />}
                 </div>
-                <div className="space-y-1">
-                  <h1 className="text-lg sm:text-xl font-bold text-primary-foreground flex items-center gap-2">
-                    <span>{user.firstName ? `${user.firstName} ${user.lastName || ""}` : "کاربر گرامی"}</span>
+                <div className="space-y-0.5 sm:space-y-1 min-w-0">
+                  <h1 className="text-base sm:text-xl font-bold text-primary-foreground flex items-center gap-2 truncate">
+                    <span className="truncate">{user.firstName ? `${user.firstName} ${user.lastName || ""}` : "کاربر گرامی"}</span>
                   </h1>
-                  <div className="flex items-center gap-2 text-xs text-primary-foreground font-mono" dir="ltr">
-                    <Phone className="w-3.5 h-3.5 text-primary-foreground" />
+                  <div className="flex items-center gap-2 text-xs text-primary-foreground/90 font-mono" dir="ltr">
+                    <Phone className="w-3.5 h-3.5 text-primary-foreground shrink-0" />
                     <span>{toPersianDigits(user.phone || "")}</span>
                   </div>
                 </div>
@@ -117,11 +117,11 @@ export function AccountDashboard({
               <button
                 type="button"
                 onClick={() => setIsEditProfileOpen(true)}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border  text-primary-foreground text-xs font-bold hover:bg-primary/5 transition-colors cursor-pointer shrink-0"
+                className="self-end sm:self-auto inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl border border-primary-foreground/30 text-primary-foreground text-xs font-bold hover:bg-primary-foreground/10 transition-colors cursor-pointer shrink-0"
               >
                 <Edit2 className="w-3.5 h-3.5" />
                 <span>اطلاعات کاربری</span>
-                <ChevronLeft className="w-4 h-4 mr-0.5" />
+                <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-0.5" />
               </button>
             </div>
           </div>

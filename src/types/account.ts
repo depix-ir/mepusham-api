@@ -139,6 +139,10 @@ export function canAdminCancelOrder(status: OrderStatus): boolean {
   return ["pending", "confirmed", "processing", "handed_to_carrier"].includes(status);
 }
 
+export function canCustomerCancelOrder(status: OrderStatus): boolean {
+  return ["pending", "confirmed", "processing"].includes(status);
+}
+
 export const ticketStatusLabels: Record<TicketStatus, string> = {
   open: "در حال بررسی",
   "waiting-user": "پاسخ داده شد",
