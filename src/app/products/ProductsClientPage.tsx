@@ -12,6 +12,7 @@ import { LoadMoreSentinel } from "@/components/commerce/LoadMoreSentinel";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { FilterIcon, SortIcon } from "@/components/icons";
+import { SortDropdown } from "@/components/commerce/SortDropdown";
 import { usePaginatedProducts } from "@/hooks/usePaginatedProducts";
 import { ProductQueryFilter } from "@/types/product";
 import { AlertCircle, RefreshCw } from "lucide-react";
@@ -146,7 +147,7 @@ export function ProductsClientPage() {
           </h1>
         </div>
 
-        {/* Mobile Action Bar: Minimal Filter Button & Styled Sort Dropdown in 1 Row */}
+        {/* Mobile Action Bar: Minimal Filter Button & Custom Sort Dropdown in 1 Row */}
         <div className="grid grid-cols-2 gap-2.5 md:hidden mb-4">
           {/* Filter Modal Trigger */}
           <button
@@ -163,30 +164,12 @@ export function ProductsClientPage() {
             )}
           </button>
 
-          {/* Styled Minimal Sort Dropdown */}
-          <div className="relative h-11">
-            <div className="absolute inset-0 bg-surface-subtle border border-border-product rounded-xl flex items-center justify-between px-3 pointer-events-none">
-              <div className="flex items-center gap-1.5 text-xs font-medium text-foreground truncate">
-                <SortIcon size={16} className="text-primary shrink-0" />
-                <span className="truncate">
-                  {sortOptions.find((o) => o.id === sortParam)?.label || "جدیدترین"}
-                </span>
-              </div>
-              <span className="text-muted text-[10px]">▼</span>
-            </div>
-            <select
-              value={sortParam}
-              aria-label="مرتب‌سازی محصولات"
-              onChange={handleSortChange}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer text-xs"
-            >
-              {sortOptions.map((option) => (
-                <option key={option.id} value={option.id}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
+          {/* Custom Standalone Sort Dropdown */}
+          <SortDropdown
+            options={sortOptions}
+            value={sortParam}
+            onChange={(newSort) => updateUrlFilters(filters, newSort)}
+          />
         </div>
 
         {/* 2 & 3. Main Grid Layout (Desktop right side filter panel, left side product grid) */}

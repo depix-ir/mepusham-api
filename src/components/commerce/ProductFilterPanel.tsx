@@ -154,36 +154,53 @@ export function ProductFilterPanel({
       {/* Filter Section: Brands */}
       <div className="flex flex-col gap-2.5">
         <h3 className="font-semibold text-sm text-foreground">برندها</h3>
-        <div className="flex flex-col gap-2 text-sm">
+        <div className="flex flex-col gap-1 text-sm">
           {brands.map((brand) => {
             const isChecked = filters.brands.includes(brand.slug);
             const count = getBrandCount(brand.slug);
             return (
               <label
                 key={brand.id}
-                className="flex items-center justify-between cursor-pointer group px-1 py-0.5 rounded hover:bg-surface-subtle transition-colors"
+                className={`relative flex items-center justify-between cursor-pointer group px-2.5 py-2 rounded-xl border transition-all duration-200 select-none ${
+                  isChecked
+                    ? "bg-primary/[0.04] border-primary/30"
+                    : "bg-transparent border-transparent hover:bg-surface-subtle hover:border-border-product/60"
+                }`}
               >
-                <div className="flex items-center gap-2.5">
-                  <div
-                    className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
-                      isChecked
-                        ? "bg-primary border-primary text-white"
-                        : "border-border group-hover:border-primary/60 bg-background"
-                    }`}
-                  >
-                    {isChecked && <CheckIcon size={12} strokeWidth={3} />}
-                  </div>
-                  <span className="text-foreground text-sm font-medium">
-                    {brand.name}
-                  </span>
-                </div>
-                <span className="text-xs text-muted">({count})</span>
                 <input
                   type="checkbox"
                   checked={isChecked}
                   onChange={() => handleBrandToggle(brand.slug)}
-                  className="sr-only"
+                  className="peer sr-only"
                 />
+                <div className="flex items-center gap-2.5">
+                  {/* Custom Professional Checkbox Box */}
+                  <div
+                    className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all duration-200 shrink-0 peer-focus-visible:ring-2 peer-focus-visible:ring-primary/30 ${
+                      isChecked
+                        ? "bg-primary border-primary text-white shadow-xs scale-100"
+                        : "border-border-product bg-background group-hover:border-primary/60 group-hover:scale-105"
+                    }`}
+                  >
+                    <CheckIcon
+                      size={13}
+                      strokeWidth={3}
+                      className={`transition-all duration-200 ${
+                        isChecked ? "opacity-100 scale-100" : "opacity-0 scale-50"
+                      }`}
+                    />
+                  </div>
+                  <span
+                    className={`text-sm transition-colors ${
+                      isChecked ? "font-semibold text-primary" : "font-medium text-foreground group-hover:text-foreground"
+                    }`}
+                  >
+                    {brand.name}
+                  </span>
+                </div>
+                <span className="text-xs text-muted font-normal bg-surface-subtle/80 px-2 py-0.5 rounded-full">
+                  {count}
+                </span>
               </label>
             );
           })}
