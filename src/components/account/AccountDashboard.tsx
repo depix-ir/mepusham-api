@@ -1,16 +1,14 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { User } from "@/types/auth";
 import { Order, UserAddress, SupportTicket } from "@/types/account";
 import { accountService } from "@/lib/account/accountService";
 import { returnService } from "@/lib/returns/returnService";
 import { useWishlist } from "@/store/wishlist/wishlist.store";
-import { Container } from "@/components/ui/Container";
 import { toPersianDigits } from "@/lib/formatting/currency";
 import { EditProfileModal } from "./info/EditProfileModal";
-import { AddressesManageModal } from "./addresses/AddressesManageModal";
 import { LogoutDialog } from "./logout/LogoutDialog";
 import {
   ShoppingBag,
@@ -42,7 +40,6 @@ export function AccountDashboard({
   const [returnCount, setReturnCount] = useState<number>(0);
 
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
-  const [isAddressesModalOpen, setIsAddressesModalOpen] = useState(false);
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
 
   const { count: wishlistCount } = useWishlist();
@@ -60,27 +57,7 @@ export function AccountDashboard({
     }
   }, []);
 
-  // Handlers for Addresses
-  const handleSaveAddress = useCallback(
-    (addrData: Omit<UserAddress, "id"> & { id?: string }) => {
-      const updated = accountService.saveAddress(addrData);
-      setAddresses(updated);
-    },
-    []
-  );
-
-  const handleDeleteAddress = useCallback((id: string) => {
-    const updated = accountService.deleteAddress(id);
-    setAddresses(updated);
-  }, []);
-
-  const handleSetDefaultAddress = useCallback((id: string) => {
-    const updated = accountService.setDefaultAddress(id);
-    setAddresses(updated);
-  }, []);
-
   // Stats calculations
-  const totalOrdersCount = orders.length;
   const activeOrdersCount = orders.filter(
     (o) => o.status === "pending" || o.status === "confirmed" || o.status === "processing" || o.status === "shipped"
   ).length;
@@ -89,11 +66,9 @@ export function AccountDashboard({
     (t) => t.status === "open" || t.status === "waiting-support"
   ).length;
 
-  const defaultAddress = addresses.find((a) => a.isDefault) || addresses[0];
-
   return (
     <div className="py-6 sm:py-10 bg-surface-subtle/40 min-h-screen pb-24 md:pb-12">
-      <div className="max-w-[800px] px-3  mx-auto">
+      <div className="max-w-[800px] px-3 mx-auto">
         <div className="space-y-4 sm:space-y-6">
           {/* Top User Info Card */}
           <div className="bg-primary border border-border/0 rounded-2xl p-3.5 sm:p-5 shadow-2xs">
@@ -216,11 +191,10 @@ export function AccountDashboard({
               </div>
             </Link>
 
-            {/* 4. Addresses Management Card */}
-            <button
-              type="button"
-              onClick={() => setIsAddressesModalOpen(true)}
-              className="w-full group flex items-center justify-between py-2.5 px-3 sm:p-3.5 hover:bg-surface-subtle/50 transition-colors text-right cursor-pointer"
+            {/* 4. Addresses Management Card - Link to /account/addresses */}
+            <Link
+              href="/account/addresses"
+              className="group flex items-center justify-between py-2.5 px-3 sm:p-3.5 hover:bg-surface-subtle/50 transition-colors"
             >
               <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
                 <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
@@ -241,10 +215,10 @@ export function AccountDashboard({
               </div>
 
               <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-                <span className="text-xs font-bold text-primary hidden sm:inline-block">مدیریت</span>
+                <span className="text-xs font-bold text-primary hidden sm:inline-block">مشاهده</span>
                 <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground/60 group-hover:text-primary transition-colors" />
               </div>
-            </button>
+            </Link>
 
             {/* 5. Wishlist Card */}
             <Link
@@ -296,16 +270,6 @@ export function AccountDashboard({
         isOpen={isEditProfileOpen}
         onClose={() => setIsEditProfileOpen(false)}
         onSave={onUpdateProfile}
-      />
-
-      {/* Addresses Manage Modal */}
-      <AddressesManageModal
-        isOpen={isAddressesModalOpen}
-        onClose={() => setIsAddressesModalOpen(false)}
-        addresses={addresses}
-        onSaveAddress={handleSaveAddress}
-        onDeleteAddress={handleDeleteAddress}
-        onSetDefault={handleSetDefaultAddress}
       />
 
       {/* Logout Confirmation Dialog */}
