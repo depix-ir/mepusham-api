@@ -93,7 +93,7 @@ export function AccountDashboard({
 
   return (
     <div className="py-6 sm:py-10 bg-surface-subtle/40 min-h-screen pb-24 md:pb-12">
-      <div className="w-[800px] px-5  mx-auto">
+      <div className="max-w-[800px] px-5  mx-auto">
         <div className="space-y-4 sm:space-y-6">
           {/* Top User Info Card (SnappFood Style Header) */}
           <div className="bg-primary border border-border/0 rounded-2xl p-5 shadow-2xs">
