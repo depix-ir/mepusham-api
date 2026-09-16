@@ -104,7 +104,7 @@ export interface SupportTicket {
 }
 
 export const orderStatusLabels: Record<OrderStatus, string> = {
-  pending: "در حال بررسی",
+  pending: "منتظر تایید ادمین",
   confirmed: "تأیید شده",
   processing: "درحال آماده سازی",
   handed_to_carrier: "تحویل به پست",
@@ -117,7 +117,7 @@ export const orderStatusLabels: Record<OrderStatus, string> = {
 /**
  * Checks if admin is allowed to manually transition an order to a new status.
  * Admin-controlled status flow:
- * pending / confirmed -> processing -> handed_to_carrier
+ * pending -> confirmed -> processing -> handed_to_carrier
  * Also cancellation is allowed for pending, confirmed, processing, handed_to_carrier.
  * Shipping provider-controlled:
  * shipped, delivered
@@ -125,6 +125,7 @@ export const orderStatusLabels: Record<OrderStatus, string> = {
 export function getNextAdminStatus(currentStatus: OrderStatus): OrderStatus | null {
   switch (currentStatus) {
     case "pending":
+      return "confirmed";
     case "confirmed":
       return "processing";
     case "processing":
