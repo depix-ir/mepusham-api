@@ -93,21 +93,21 @@ export function AccountDashboard({
 
   return (
     <div className="py-6 sm:py-10 bg-surface-subtle/40 min-h-screen pb-24 md:pb-12">
-      <Container className="max-w-3xl mx-auto">
+      <div className="w-[800px] px-5  mx-auto">
         <div className="space-y-4 sm:space-y-6">
           {/* Top User Info Card (SnappFood Style Header) */}
-          <div className="bg-background border border-border/80 rounded-2xl p-5 shadow-2xs">
+          <div className="bg-primary border border-border/0 rounded-2xl p-5 shadow-2xs">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-full bg-primary/10 text-primary border border-primary/20 flex items-center justify-center font-bold text-xl shrink-0">
+                <div className="w-14 h-14 rounded-full bg-primary-foreground text-primary  flex items-center justify-center font-bold text-xl shrink-0">
                   {user.firstName ? user.firstName.charAt(0) : <UserIcon className="w-7 h-7 text-primary" />}
                 </div>
                 <div className="space-y-1">
-                  <h1 className="text-lg sm:text-xl font-bold text-foreground flex items-center gap-2">
+                  <h1 className="text-lg sm:text-xl font-bold text-primary-foreground flex items-center gap-2">
                     <span>{user.firstName ? `${user.firstName} ${user.lastName || ""}` : "کاربر گرامی"}</span>
                   </h1>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground font-mono" dir="ltr">
-                    <Phone className="w-3.5 h-3.5 text-muted-foreground/70" />
+                  <div className="flex items-center gap-2 text-xs text-primary-foreground font-mono" dir="ltr">
+                    <Phone className="w-3.5 h-3.5 text-primary-foreground" />
                     <span>{toPersianDigits(user.phone || "")}</span>
                   </div>
                 </div>
@@ -117,7 +117,7 @@ export function AccountDashboard({
               <button
                 type="button"
                 onClick={() => setIsEditProfileOpen(true)}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-primary/30 text-primary text-xs font-bold hover:bg-primary/5 transition-colors cursor-pointer shrink-0"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border  text-primary-foreground text-xs font-bold hover:bg-primary/5 transition-colors cursor-pointer shrink-0"
               >
                 <Edit2 className="w-3.5 h-3.5" />
                 <span>اطلاعات کاربری</span>
@@ -148,17 +148,13 @@ export function AccountDashboard({
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {totalOrdersCount > 0
-                      ? `${toPersianDigits(totalOrdersCount)} سفارش ثبت شده • پیگیری و تاریخچه خریدها`
-                      : "هنوز سفارشی ثبت نکرده‌اید"}
-                  </p>
+
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold text-primary hidden sm:inline-block">مشاهده</span>
-                <ChevronLeft className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:-translate-x-1 transition-all" />
+                <ChevronLeft className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:-translate-x-1 transition-all" />
               </div>
             </Link>
 
@@ -182,15 +178,12 @@ export function AccountDashboard({
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    پیگیری مرجوعی، وضعیت کارشناسی و استرداد وجه
-                  </p>
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold text-primary hidden sm:inline-block">مشاهده</span>
-                <ChevronLeft className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:-translate-x-1 transition-all" />
+                <ChevronLeft className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:-translate-x-1 transition-all" />
               </div>
             </Link>
 
@@ -215,15 +208,13 @@ export function AccountDashboard({
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    ارسال تیکت پشتیبانی، سوالات متداول و راهنمای سفارش
-                  </p>
+
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold text-primary hidden sm:inline-block">مشاهده</span>
-                <ChevronLeft className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:-translate-x-1 transition-all" />
+                <ChevronLeft className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:-translate-x-1 transition-all" />
               </div>
             </Link>
 
@@ -248,17 +239,13 @@ export function AccountDashboard({
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-0.5 truncate max-w-xs sm:max-w-md">
-                    {defaultAddress
-                      ? `پیش‌فرض: ${defaultAddress.city}، ${defaultAddress.title}`
-                      : "مدیریت و افزودن آدرس‌های تحویل سفارش"}
-                  </p>
+
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold text-primary hidden sm:inline-block">مدیریت</span>
-                <ChevronLeft className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:-translate-x-1 transition-all" />
+                <ChevronLeft className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:-translate-x-1 transition-all" />
               </div>
             </button>
 
@@ -282,15 +269,12 @@ export function AccountDashboard({
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    لیست کالاهای ذخیره‌شده و محبوب شما
-                  </p>
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold text-primary hidden sm:inline-block">مشاهده</span>
-                <ChevronLeft className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:-translate-x-1 transition-all" />
+                <ChevronLeft className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:-translate-x-1 transition-all" />
               </div>
             </Link>
           </div>
@@ -307,7 +291,7 @@ export function AccountDashboard({
             </button>
           </div>
         </div>
-      </Container>
+      </div>
 
       {/* Edit Profile Modal */}
       <EditProfileModal
