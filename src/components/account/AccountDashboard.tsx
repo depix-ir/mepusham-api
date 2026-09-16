@@ -135,7 +135,7 @@ export function AccountDashboard({
             >
               <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
                 <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center shrink-0">
-                  <ShoppingBag className="w-4 h-4 sm:w-5.5 sm:h-5.5" />
+                  <ShoppingBag className="w-3 h-3 sm:w-5.5 sm:h-5.5" />
                 </div>
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5 sm:gap-2">
@@ -164,7 +164,7 @@ export function AccountDashboard({
             >
               <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
                 <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center shrink-0">
-                  <RotateCcw className="w-4 h-4 sm:w-5.5 sm:h-5.5" />
+                  <RotateCcw className="w-3 h-3 sm:w-5.5 sm:h-5.5" />
                 </div>
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5 sm:gap-2">
@@ -193,7 +193,7 @@ export function AccountDashboard({
             >
               <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
                 <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center shrink-0">
-                  <Headphones className="w-4 h-4 sm:w-5.5 sm:h-5.5" />
+                  <Headphones className="w-3 h-3 sm:w-5.5 sm:h-5.5" />
                 </div>
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5 sm:gap-2">
@@ -224,7 +224,7 @@ export function AccountDashboard({
             >
               <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
                 <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
-                  <MapPin className="w-4 h-4 sm:w-5.5 sm:h-5.5" />
+                  <MapPin className="w-3 h-3 sm:w-5.5 sm:h-5.5" />
                 </div>
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5 sm:gap-2">
@@ -253,7 +253,7 @@ export function AccountDashboard({
             >
               <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
                 <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-rose-500/10 text-rose-600 flex items-center justify-center shrink-0">
-                  <Heart className="w-4 h-4 sm:w-5.5 sm:h-5.5" />
+                  <Heart className="w-3 h-3 sm:w-5.5 sm:h-5.5" />
                 </div>
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5 sm:gap-2">
