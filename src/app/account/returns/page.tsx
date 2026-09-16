@@ -106,10 +106,18 @@ export default function CustomerReturnsListPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border-subtle">
           <div>
-            <h1 className="text-base sm:text-lg font-bold text-foreground flex items-center gap-2">
-              <RotateCcw className="w-5 h-5 text-primary" />
-              <span>درخواست‌های مرجوعی و تعویض</span>
-            </h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-base sm:text-lg font-bold text-foreground flex items-center gap-2">
+                <RotateCcw className="w-5 h-5 text-primary" />
+                <span>درخواست‌های مرجوعی و تعویض</span>
+              </h1>
+              <Link
+                href="/support"
+                className="text-xs font-medium text-primary hover:underline transition-colors"
+              >
+                ارتباط با پشتیبانی
+              </Link>
+            </div>
             <p className="text-xs text-muted-foreground mt-0.5">
               مدیریت و پیگیری وضعیت درخواست‌های ثبت شده
             </p>

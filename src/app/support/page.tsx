@@ -34,6 +34,17 @@ export default function SupportPage() {
   const [viewMode, setViewMode] = useState<"list" | "create" | "detail">("list");
   const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
 
+  // Parse tab param from URL on initial load if present
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tabParam = urlParams.get("tab");
+      if (tabParam === "faqs" || tabParam === "guides" || tabParam === "tickets") {
+        setActiveTab(tabParam);
+      }
+    }
+  }, []);
+
   // Load account tickets & orders when authenticated
   useEffect(() => {
     if (isAuthenticated) {
@@ -90,7 +101,7 @@ export default function SupportPage() {
         <div className="space-y-6 sm:space-y-8">
           {/* Top Header & Breadcrumb */}
           <div className="bg-primary/100 rounded-2xl p-5 sm:p-8 text-primary-foreground space-y-4 shadow-sm">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col-reverse sm:flex-row items-start sm:items-center justify-between gap-2.5">
               <Link
                 href="/account"
                 className="inline-flex items-center gap-1.5 text-xs text-primary-foreground/80 hover:text-white transition-colors"
@@ -98,7 +109,7 @@ export default function SupportPage() {
                 <ArrowRight className="w-4 h-4" />
                 <span>بازگشت به حساب کاربری</span>
               </Link>
-              <div className="flex items-center gap-1.5 text-xs bg-white/10 px-3 py-1 rounded-full">
+              <div className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs bg-white/10 px-3 py-1 rounded-full shrink-0">
                 <Sparkles className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
                 <span>پشتیبانی آنلاین مپوشام</span>
               </div>
@@ -234,7 +245,7 @@ export default function SupportPage() {
                         </div>
 
                         {tickets.length > 0 ? (
-                          <div className="grid grid-cols-1 gap-3">
+                          <div className="grid grid-cols-1 gap-2.5">
                             {tickets.map((t) => (
                               <div
                                 key={t.id}
@@ -242,32 +253,32 @@ export default function SupportPage() {
                                   setSelectedTicket(t);
                                   setViewMode("detail");
                                 }}
-                                className="p-4 bg-surface border border-border rounded-2xl flex items-center justify-between gap-4 hover:border-primary/50 transition-all cursor-pointer group shadow-2xs"
+                                className="p-3.5 sm:p-4 bg-surface border border-border rounded-2xl flex items-center justify-between gap-3 hover:border-primary/50 transition-all cursor-pointer group shadow-2xs"
                               >
-                                <div className="space-y-1.5 min-w-0 flex-1">
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-xs text-muted-foreground font-mono" dir="ltr">
+                                <div className="space-y-1 min-w-0 flex-1">
+                                  <div className="flex items-center gap-1.5 flex-wrap">
+                                    <span className="text-[11px] text-muted-foreground font-mono font-bold" dir="ltr">
                                       #{t.ticketNumber}
                                     </span>
-                                    <h3 className="text-sm font-bold text-foreground truncate group-hover:text-primary transition-colors">
+                                    <h3 className="text-xs sm:text-sm font-bold text-foreground truncate group-hover:text-primary transition-colors">
                                       {t.subject}
                                     </h3>
                                   </div>
 
-                                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                                  <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11px] text-muted-foreground">
                                     {t.orderNumber && (
                                       <span>
-                                        سفارش <strong className="text-foreground font-mono">#{t.orderNumber}</strong>
+                                        سفارش <strong className="text-foreground font-mono" dir="ltr">#{t.orderNumber}</strong>
                                       </span>
                                     )}
-                                    <span>آخرین بروزرسانی: {t.updatedAt}</span>
+                                    <span>بروزرسانی: {t.updatedAt}</span>
                                     <span>{t.messages.length} پیام</span>
                                   </div>
                                 </div>
 
-                                <div className="flex items-center gap-3 shrink-0">
+                                <div className="flex items-center gap-2 shrink-0">
                                   <span
-                                    className={`text-[11px] font-bold px-3 py-1 rounded-full border ${getStatusBadgeClass(
+                                    className={`text-[10px] sm:text-[11px] font-bold px-2.5 py-0.5 sm:py-1 rounded-full border ${getStatusBadgeClass(
                                       t.status
                                     )}`}
                                   >

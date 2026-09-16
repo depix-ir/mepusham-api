@@ -140,9 +140,12 @@ export function OrderCard({ order }: OrderCardProps) {
 
       {/* Bottom CTA Action Bar */}
       <div className="flex items-center justify-between gap-2 pt-2 ">
-        <span className="text-xs text-muted-foreground hidden sm:inline">
-          روش ارسال: {order.shippingMethod.title}
-        </span>
+        <Link
+          href="/support"
+          className="text-xs text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1"
+        >
+          <span>پشتیبانی سفارش</span>
+        </Link>
 
         <Link
           href={`/orders/${order.id}`}
