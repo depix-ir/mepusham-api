@@ -93,7 +93,7 @@ export function AccountDashboard({
 
   return (
     <div className="py-6 sm:py-10 bg-surface-subtle/40 min-h-screen pb-24 md:pb-12">
-      <div className="max-w-[800px] px-5  mx-auto">
+      <div className="max-w-[800px] px-3  mx-auto">
         <div className="space-y-4 sm:space-y-6">
           {/* Top User Info Card (SnappFood Style Header) */}
           <div className="bg-primary border border-border/0 rounded-2xl p-4 sm:p-5 shadow-2xs">
@@ -131,7 +131,7 @@ export function AccountDashboard({
             {/* 1. Orders Card */}
             <Link
               href="/orders"
-              className="group flex items-center justify-between p-4 sm:p-5 hover:bg-surface-subtle/50 transition-colors"
+              className="group flex items-center justify-between p-2 sm:p-3 hover:bg-surface-subtle/50 transition-colors"
             >
               <div className="flex items-center gap-3.5">
                 <div className="w-11 h-11 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center shrink-0">
@@ -154,14 +154,13 @@ export function AccountDashboard({
 
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold text-primary hidden sm:inline-block">مشاهده</span>
-                <ChevronLeft className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:-translate-x-1 transition-all" />
               </div>
             </Link>
 
             {/* 2. Returns & Exchanges Card */}
             <Link
               href="/account/returns"
-              className="group flex items-center justify-between p-4 sm:p-5 hover:bg-surface-subtle/50 transition-colors"
+              className="group flex items-center justify-between p-2 sm:p-3 hover:bg-surface-subtle/50 transition-colors"
             >
               <div className="flex items-center gap-3.5">
                 <div className="w-11 h-11 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center shrink-0">
@@ -183,14 +182,13 @@ export function AccountDashboard({
 
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold text-primary hidden sm:inline-block">مشاهده</span>
-                <ChevronLeft className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:-translate-x-1 transition-all" />
               </div>
             </Link>
 
             {/* 3. Support & Tickets Card */}
             <Link
               href="/support"
-              className="group flex items-center justify-between p-4 sm:p-5 hover:bg-surface-subtle/50 transition-colors"
+              className="group flex items-center justify-between p-2 sm:p-3 hover:bg-surface-subtle/50 transition-colors"
             >
               <div className="flex items-center gap-3.5">
                 <div className="w-11 h-11 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center shrink-0">
@@ -214,7 +212,6 @@ export function AccountDashboard({
 
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold text-primary hidden sm:inline-block">مشاهده</span>
-                <ChevronLeft className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:-translate-x-1 transition-all" />
               </div>
             </Link>
 
@@ -222,7 +219,7 @@ export function AccountDashboard({
             <button
               type="button"
               onClick={() => setIsAddressesModalOpen(true)}
-              className="w-full group flex items-center justify-between p-4 sm:p-5 hover:bg-surface-subtle/50 transition-colors text-right cursor-pointer"
+              className="w-full group flex items-center justify-between p-2 sm:p-3 hover:bg-surface-subtle/50 transition-colors text-right cursor-pointer"
             >
               <div className="flex items-center gap-3.5">
                 <div className="w-11 h-11 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
@@ -245,14 +242,13 @@ export function AccountDashboard({
 
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold text-primary hidden sm:inline-block">مدیریت</span>
-                <ChevronLeft className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:-translate-x-1 transition-all" />
               </div>
             </button>
 
             {/* 5. Wishlist Card */}
             <Link
               href="/wishlist"
-              className="group flex items-center justify-between p-4 sm:p-5 hover:bg-surface-subtle/50 transition-colors"
+              className="group flex items-center justify-between p-2 sm:p-3 hover:bg-surface-subtle/50 transition-colors"
             >
               <div className="flex items-center gap-3.5">
                 <div className="w-11 h-11 rounded-xl bg-rose-500/10 text-rose-600 flex items-center justify-center shrink-0">
@@ -274,7 +270,6 @@ export function AccountDashboard({
 
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold text-primary hidden sm:inline-block">مشاهده</span>
-                <ChevronLeft className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:-translate-x-1 transition-all" />
               </div>
             </Link>
           </div>

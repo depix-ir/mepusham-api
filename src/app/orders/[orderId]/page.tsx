@@ -202,28 +202,7 @@ export default function OrderDetailPage({
             <OrderTimeline timeline={order.timeline} />
           </div>
 
-          {/* Customer Order Cancellation CTA */}
-          {canCustomerCancelOrder(order.status) && (
-            <div className="bg-rose-50 border border-rose-200 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
-              <div className="space-y-0.5">
-                <div className="flex items-center gap-1.5 font-bold text-rose-800">
-                  <XCircle className="w-4 h-4 text-rose-600 shrink-0" />
-                  <span>امکان لغو سفارش</span>
-                </div>
-                <p className="text-rose-700 text-[11px]">
-                  سفارش شما در مرحله آماده‌سازی قرار دارد و در صورت تمایل می‌توانید آن را لغو کنید.
-                </p>
-              </div>
 
-              <button
-                type="button"
-                onClick={() => setIsCancelModalOpen(true)}
-                className="w-full sm:w-auto px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl transition-colors cursor-pointer shrink-0"
-              >
-                لغو این سفارش
-              </button>
-            </div>
-          )}
 
           {/* Shipping Tracking Bar */}
           {order.shippingMethod.trackingCode ? (
@@ -322,6 +301,28 @@ export default function OrderDetailPage({
               </div>
             </div>
           </div>
+                    {/* Customer Order Cancellation CTA */}
+          {canCustomerCancelOrder(order.status) && (
+            <div className="bg-rose-50 border border-rose-200 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-1.5 font-bold text-rose-800">
+                  <XCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                  <span>امکان لغو سفارش</span>
+                </div>
+                <p className="text-rose-700 text-[11px]">
+                  سفارش شما در مرحله آماده‌سازی قرار دارد و در صورت تمایل می‌توانید آن را لغو کنید.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsCancelModalOpen(true)}
+                className="w-full sm:w-auto px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl transition-colors cursor-pointer shrink-0"
+              >
+                لغو این سفارش
+              </button>
+            </div>
+          )}
 
           {/* Return / Exchange CTA Section */}
           {(() => {
