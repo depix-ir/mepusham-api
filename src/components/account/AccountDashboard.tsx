@@ -95,19 +95,19 @@ export function AccountDashboard({
     <div className="py-6 sm:py-10 bg-surface-subtle/40 min-h-screen pb-24 md:pb-12">
       <div className="max-w-[800px] px-3  mx-auto">
         <div className="space-y-4 sm:space-y-6">
-          {/* Top User Info Card (SnappFood Style Header) */}
-          <div className="bg-primary border border-border/0 rounded-2xl p-4 sm:p-5 shadow-2xs">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-              <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-primary-foreground text-primary flex items-center justify-center font-bold text-lg sm:text-xl shrink-0">
-                  {user.firstName ? user.firstName.charAt(0) : <UserIcon className="w-6 h-6 sm:w-7 sm:h-7 text-primary" />}
+          {/* Top User Info Card */}
+          <div className="bg-primary border border-border/0 rounded-2xl p-3.5 sm:p-5 shadow-2xs">
+            <div className="flex flex-row items-center justify-between gap-3 sm:gap-4">
+              <div className="flex items-center gap-2.5 sm:gap-4 min-w-0">
+                <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-primary-foreground text-primary flex items-center justify-center font-bold text-sm sm:text-xl shrink-0">
+                  {user.firstName ? user.firstName.charAt(0) : <UserIcon className="w-5 h-5 sm:w-7 sm:h-7 text-primary" />}
                 </div>
                 <div className="space-y-0.5 sm:space-y-1 min-w-0">
-                  <h1 className="text-base sm:text-xl font-bold text-primary-foreground flex items-center gap-2 truncate">
+                  <h1 className="text-xs sm:text-xl font-bold text-primary-foreground flex items-center gap-2 truncate">
                     <span className="truncate">{user.firstName ? `${user.firstName} ${user.lastName || ""}` : "کاربر گرامی"}</span>
                   </h1>
-                  <div className="flex items-center gap-2 text-xs text-primary-foreground/90 font-mono" dir="ltr">
-                    <Phone className="w-3.5 h-3.5 text-primary-foreground shrink-0" />
+                  <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-primary-foreground/90 font-mono" dir="ltr">
+                    <Phone className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary-foreground shrink-0" />
                     <span>{toPersianDigits(user.phone || "")}</span>
                   </div>
                 </div>
@@ -117,62 +117,62 @@ export function AccountDashboard({
               <button
                 type="button"
                 onClick={() => setIsEditProfileOpen(true)}
-                className="self-end sm:self-auto inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl border border-primary-foreground/30 text-primary-foreground text-xs font-bold hover:bg-primary-foreground/10 transition-colors cursor-pointer shrink-0"
+                className="inline-flex items-center gap-1 px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-xl border border-primary-foreground/30 text-primary-foreground text-[11px] sm:text-xs font-bold hover:bg-primary-foreground/10 transition-colors cursor-pointer shrink-0"
               >
-                <Edit2 className="w-3.5 h-3.5" />
-                <span>اطلاعات کاربری</span>
-                <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-0.5" />
+                <Edit2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                <span>اطلاعات</span>
+                <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-0.5" />
               </button>
             </div>
           </div>
 
-          {/* Quick Menu List Cards (SnappFood Style Rows) */}
+          {/* Minimal Quick Menu List Cards */}
           <div className="bg-background border border-border/80 rounded-2xl divide-y divide-border/60 shadow-2xs overflow-hidden">
             {/* 1. Orders Card */}
             <Link
               href="/orders"
-              className="group flex items-center justify-between p-2 sm:p-3 hover:bg-surface-subtle/50 transition-colors"
+              className="group flex items-center justify-between py-2.5 px-3 sm:p-3.5 hover:bg-surface-subtle/50 transition-colors"
             >
-              <div className="flex items-center gap-3.5">
-                <div className="w-11 h-11 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center shrink-0">
-                  <ShoppingBag className="w-5.5 h-5.5" />
+              <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
+                <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center shrink-0">
+                  <ShoppingBag className="w-4 h-4 sm:w-5.5 sm:h-5.5" />
                 </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-base font-bold text-foreground group-hover:text-primary transition-colors">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <h2 className="text-xs sm:text-base font-bold text-foreground group-hover:text-primary transition-colors truncate">
                       سفارش‌ها
                     </h2>
                     {activeOrdersCount > 0 && (
-                      <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 text-[11px] font-bold">
+                      <span className="px-1.5 sm:px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 text-[10px] sm:text-[11px] font-bold shrink-0">
                         {toPersianDigits(activeOrdersCount)} جاری
                       </span>
                     )}
                   </div>
-
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 sm:gap-2 shrink-0">
                 <span className="text-xs font-bold text-primary hidden sm:inline-block">مشاهده</span>
+                <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground/60 group-hover:text-primary transition-colors" />
               </div>
             </Link>
 
             {/* 2. Returns & Exchanges Card */}
             <Link
               href="/account/returns"
-              className="group flex items-center justify-between p-2 sm:p-3 hover:bg-surface-subtle/50 transition-colors"
+              className="group flex items-center justify-between py-2.5 px-3 sm:p-3.5 hover:bg-surface-subtle/50 transition-colors"
             >
-              <div className="flex items-center gap-3.5">
-                <div className="w-11 h-11 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center shrink-0">
-                  <RotateCcw className="w-5.5 h-5.5" />
+              <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
+                <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center shrink-0">
+                  <RotateCcw className="w-4 h-4 sm:w-5.5 sm:h-5.5" />
                 </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-base font-bold text-foreground group-hover:text-primary transition-colors">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <h2 className="text-xs sm:text-base font-bold text-foreground group-hover:text-primary transition-colors truncate">
                       مرجوعی‌ها و تعویض
                     </h2>
                     {returnCount > 0 && (
-                      <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[11px] font-bold">
+                      <span className="px-1.5 sm:px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] sm:text-[11px] font-bold shrink-0">
                         {toPersianDigits(returnCount)} درخواست
                       </span>
                     )}
@@ -180,87 +180,88 @@ export function AccountDashboard({
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 sm:gap-2 shrink-0">
                 <span className="text-xs font-bold text-primary hidden sm:inline-block">مشاهده</span>
+                <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground/60 group-hover:text-primary transition-colors" />
               </div>
             </Link>
 
             {/* 3. Support & Tickets Card */}
             <Link
               href="/support"
-              className="group flex items-center justify-between p-2 sm:p-3 hover:bg-surface-subtle/50 transition-colors"
+              className="group flex items-center justify-between py-2.5 px-3 sm:p-3.5 hover:bg-surface-subtle/50 transition-colors"
             >
-              <div className="flex items-center gap-3.5">
-                <div className="w-11 h-11 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center shrink-0">
-                  <Headphones className="w-5.5 h-5.5" />
+              <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
+                <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center shrink-0">
+                  <Headphones className="w-4 h-4 sm:w-5.5 sm:h-5.5" />
                 </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-base font-bold text-foreground group-hover:text-primary transition-colors">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <h2 className="text-xs sm:text-base font-bold text-foreground group-hover:text-primary transition-colors truncate">
                       پشتیبانی و تیکت‌ها
                     </h2>
                     {tickets.length > 0 && (
-                      <span className="px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 text-[11px] font-bold">
+                      <span className="px-1.5 sm:px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 text-[10px] sm:text-[11px] font-bold shrink-0">
                         {toPersianDigits(tickets.length)} پیام
-                        {activeTicketsCount > 0 ? ` (${toPersianDigits(activeTicketsCount)} در حال بررسی)` : ""}
+                        {activeTicketsCount > 0 ? ` (${toPersianDigits(activeTicketsCount)} جاری)` : ""}
                       </span>
                     )}
                   </div>
-
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 sm:gap-2 shrink-0">
                 <span className="text-xs font-bold text-primary hidden sm:inline-block">مشاهده</span>
+                <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground/60 group-hover:text-primary transition-colors" />
               </div>
             </Link>
 
-            {/* 4. Addresses Management Card (Modal Trigger) */}
+            {/* 4. Addresses Management Card */}
             <button
               type="button"
               onClick={() => setIsAddressesModalOpen(true)}
-              className="w-full group flex items-center justify-between p-2 sm:p-3 hover:bg-surface-subtle/50 transition-colors text-right cursor-pointer"
+              className="w-full group flex items-center justify-between py-2.5 px-3 sm:p-3.5 hover:bg-surface-subtle/50 transition-colors text-right cursor-pointer"
             >
-              <div className="flex items-center gap-3.5">
-                <div className="w-11 h-11 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
-                  <MapPin className="w-5.5 h-5.5" />
+              <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
+                <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
+                  <MapPin className="w-4 h-4 sm:w-5.5 sm:h-5.5" />
                 </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-base font-bold text-foreground group-hover:text-primary transition-colors">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <h2 className="text-xs sm:text-base font-bold text-foreground group-hover:text-primary transition-colors truncate">
                       آدرس‌های من
                     </h2>
                     {addresses.length > 0 && (
-                      <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[11px] font-bold">
+                      <span className="px-1.5 sm:px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] sm:text-[11px] font-bold shrink-0">
                         {toPersianDigits(addresses.length)} آدرس
                       </span>
                     )}
                   </div>
-
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 sm:gap-2 shrink-0">
                 <span className="text-xs font-bold text-primary hidden sm:inline-block">مدیریت</span>
+                <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground/60 group-hover:text-primary transition-colors" />
               </div>
             </button>
 
             {/* 5. Wishlist Card */}
             <Link
               href="/wishlist"
-              className="group flex items-center justify-between p-2 sm:p-3 hover:bg-surface-subtle/50 transition-colors"
+              className="group flex items-center justify-between py-2.5 px-3 sm:p-3.5 hover:bg-surface-subtle/50 transition-colors"
             >
-              <div className="flex items-center gap-3.5">
-                <div className="w-11 h-11 rounded-xl bg-rose-500/10 text-rose-600 flex items-center justify-center shrink-0">
-                  <Heart className="w-5.5 h-5.5" />
+              <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
+                <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-rose-500/10 text-rose-600 flex items-center justify-center shrink-0">
+                  <Heart className="w-4 h-4 sm:w-5.5 sm:h-5.5" />
                 </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-base font-bold text-foreground group-hover:text-primary transition-colors">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <h2 className="text-xs sm:text-base font-bold text-foreground group-hover:text-primary transition-colors truncate">
                       علاقه‌مندی‌ها
                     </h2>
                     {wishlistCount > 0 && (
-                      <span className="px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[11px] font-bold">
+                      <span className="px-1.5 sm:px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[10px] sm:text-[11px] font-bold shrink-0">
                         {toPersianDigits(wishlistCount)} کالا
                       </span>
                     )}
@@ -268,8 +269,9 @@ export function AccountDashboard({
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 sm:gap-2 shrink-0">
                 <span className="text-xs font-bold text-primary hidden sm:inline-block">مشاهده</span>
+                <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground/60 group-hover:text-primary transition-colors" />
               </div>
             </Link>
           </div>
@@ -279,9 +281,9 @@ export function AccountDashboard({
             <button
               type="button"
               onClick={() => setIsLogoutOpen(true)}
-              className="w-full py-3.5 px-4 rounded-2xl border border-rose-200 bg-rose-50/60 hover:bg-rose-100/70 text-rose-700 text-xs sm:text-sm font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
+              className="w-full py-2.5 sm:py-3.5 px-4 rounded-2xl border border-rose-200 bg-rose-50/60 hover:bg-rose-100/70 text-rose-700 text-[11px] sm:text-sm font-bold transition-colors flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer shadow-2xs"
             >
-              <LogOut className="w-4 h-4" />
+              <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               <span>خروج از حساب کاربری</span>
             </button>
           </div>

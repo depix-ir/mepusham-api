@@ -9,6 +9,7 @@ import { FAQSection } from "@/components/support/FAQSection";
 import { PurchaseGuidesSection } from "@/components/support/PurchaseGuidesSection";
 import { TicketForm } from "@/components/support/TicketForm";
 import { TicketDetailView } from "@/components/support/TicketDetailView";
+import { AccountPageHeader } from "@/components/account/AccountPageHeader";
 import Link from "next/link";
 import {
   Headset,
@@ -18,8 +19,6 @@ import {
   LogIn,
   HelpCircle,
   BookOpen,
-  Sparkles,
-  ArrowRight,
 } from "lucide-react";
 
 type ActiveTab = "faqs" | "guides" | "tickets";
@@ -99,32 +98,14 @@ export default function SupportPage() {
     <div className="py-6 sm:py-10 bg-background min-h-screen pb-24 md:pb-12">
       <Container>
         <div className="space-y-6 sm:space-y-8">
-          {/* Top Header & Breadcrumb */}
-          <div className="bg-primary/100 rounded-2xl p-5 sm:p-8 text-primary-foreground space-y-4 shadow-sm">
-            <div className="flex flex-col-reverse sm:flex-row items-start sm:items-center justify-between gap-2.5">
-              <Link
-                href="/account"
-                className="inline-flex items-center gap-1.5 text-xs text-primary-foreground/80 hover:text-white transition-colors"
-              >
-                <ArrowRight className="w-4 h-4" />
-                <span>بازگشت به حساب کاربری</span>
-              </Link>
-              <div className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs bg-white/10 px-3 py-1 rounded-full shrink-0">
-                <Sparkles className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-                <span>پشتیبانی آنلاین مپوشام</span>
-              </div>
-            </div>
-
-            <div className="space-y-1">
-              <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
-                <Headset className="w-6 h-6" />
-                <span>مرکز پشتیبانی و تیکت‌ها</span>
-              </h1>
-              <p className="text-xs sm:text-sm opacity-90 leading-relaxed max-w-xl">
-                پاسخ به سوالات متداول، راهنماهای خرید و ارسال تیکت به کارشناسان پشتیبانی
-              </p>
-            </div>
-          </div>
+          {/* Top Header */}
+          <AccountPageHeader
+            title="مرکز پشتیبانی و تیکت‌ها"
+            description="راهنمای مشتریان و ثبت تیکت پشتیبانی"
+            icon={Headset}
+            backUrl="/account"
+            backLabel="بازگشت به حساب کاربری"
+          />
 
           {/* Navigation Tabs Bar */}
           <div className="flex items-center gap-2 border-b border-border pb-3 overflow-x-auto no-scrollbar">
