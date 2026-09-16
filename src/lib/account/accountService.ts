@@ -138,6 +138,49 @@ class AccountService {
     return this.updateOrderStatus(orderId, "cancelled");
   }
 
+  cancelOrderByCustomer(orderId: string): Order {
+    const order = this.getOrderById(orderId);
+    if (!order) {
+      throw new Error("سفارش مورد نظر یافت نشد.");
+    }
+    const { canCustomerCancelOrder } = require("@/types/account");
+    if (!canCustomerCancelOrder(order.status)) {
+      throw new Error("امکان لغو این سفارش در وضعیت فعلی وجود ندارد.");
+    }
+
+    const orders = this.getOrders();
+    let updatedOrder: Order | undefined;
+
+    const updated = orders.map((o) => {
+      if (o.id === order.id || o.orderNumber === order.orderNumber) {
+        const nowFa = new Date().toLocaleDateString("fa-IR") + " - " + new Date().toLocaleTimeString("fa-IR", { hour: "2-digit", minute: "2-digit" });
+        const updatedTimeline = o.timeline ? [...o.timeline] : [];
+        updatedTimeline.push({
+          id: `tl-cancel-${Date.now()}`,
+          status: "cancelled" as const,
+          title: "لغو سفارش توسط مشتری",
+          date: nowFa,
+          completed: true,
+        });
+
+        updatedOrder = {
+          ...o,
+          status: "cancelled" as const,
+          timeline: updatedTimeline,
+        };
+        return updatedOrder;
+      }
+      return o;
+    });
+
+    if (!updatedOrder) {
+      throw new Error("سفارش مورد نظر یافت نشد.");
+    }
+
+    this.persistOrders(updated);
+    return updatedOrder;
+  }
+
   bulkCancelOrders(orderIds: string[]): { cancelledCount: number; updatedOrders: Order[] } {
     const orders = this.getOrders();
     const { canAdminCancelOrder } = require("@/types/account");

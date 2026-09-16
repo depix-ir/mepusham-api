@@ -272,13 +272,15 @@ export function AddressModal({
 
           {/* Modal Footer */}
           <div className="pt-4 border-t border-border-subtle flex items-center justify-end gap-2">
-            <button
+            <Button
               type="button"
+              variant="secondary"
+              size="md"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl bg-surface-subtle text-foreground text-xs font-bold hover:bg-surface-muted transition-colors cursor-pointer"
+              className="font-bold cursor-pointer"
             >
               انصراف
-            </button>
+            </Button>
             <Button type="submit" size="md" className="font-bold cursor-pointer">
               <Check className="w-4 h-4 ml-1" />
               ذخیره آدرس

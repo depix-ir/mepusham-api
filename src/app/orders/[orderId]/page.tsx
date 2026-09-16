@@ -6,7 +6,9 @@ import { useAuth } from "@/store/auth/auth.store";
 import { accountService } from "@/lib/account/accountService";
 import { returnService } from "@/lib/returns/returnService";
 import { checkOrderEligibility } from "@/lib/returns/eligibility";
-import { Order, orderStatusLabels } from "@/types/account";
+import { Order, orderStatusLabels, canCustomerCancelOrder } from "@/types/account";
+import { useToast } from "@/components/ui/Toast";
+import { AlertTriangle, XCircle } from "lucide-react";
 import { OrderTimeline } from "@/components/account/orders/OrderTimeline";
 import { OrderItemRow } from "@/components/account/orders/OrderItemRow";
 import { Container } from "@/components/ui/Container";
@@ -34,8 +36,11 @@ export default function OrderDetailPage({
   const resolvedParams = use(params);
   const { isAuthLoading, isAuthenticated } = useAuth();
 
+  const { showToast } = useToast();
   const [order, setOrder] = useState<Order | null>(null);
   const [copied, setCopied] = useState(false);
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
 
   useEffect(() => {
     if (resolvedParams.orderId) {
@@ -97,6 +102,22 @@ export default function OrderDetailPage({
       </div>
     );
   }
+
+  const handleConfirmCancel = () => {
+    if (!order) return;
+    setIsCancelling(true);
+    try {
+      const updated = accountService.cancelOrderByCustomer(order.id);
+      setOrder(updated);
+      showToast("سفارش شما با موفقیت لغو شد.", "success");
+      setIsCancelModalOpen(false);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "خطا در لغو سفارش.";
+      showToast(msg, "error");
+    } finally {
+      setIsCancelling(false);
+    }
+  };
 
   const handleCopyTracking = () => {
     if (order.shippingMethod.trackingCode) {
@@ -180,6 +201,29 @@ export default function OrderDetailPage({
           <div className="">
             <OrderTimeline timeline={order.timeline} />
           </div>
+
+          {/* Customer Order Cancellation CTA */}
+          {canCustomerCancelOrder(order.status) && (
+            <div className="bg-rose-50 border border-rose-200 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-1.5 font-bold text-rose-800">
+                  <XCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                  <span>امکان لغو سفارش</span>
+                </div>
+                <p className="text-rose-700 text-[11px]">
+                  سفارش شما در مرحله آماده‌سازی قرار دارد و در صورت تمایل می‌توانید آن را لغو کنید.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsCancelModalOpen(true)}
+                className="w-full sm:w-auto px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl transition-colors cursor-pointer shrink-0"
+              >
+                لغو این سفارش
+              </button>
+            </div>
+          )}
 
           {/* Shipping Tracking Bar */}
           {order.shippingMethod.trackingCode ? (
@@ -361,6 +405,54 @@ export default function OrderDetailPage({
           </div>
         </div>
       </Container>
+
+      {/* Cancel Order Confirmation Modal */}
+      {isCancelModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/50 backdrop-blur-xs transition-opacity animate-in fade-in duration-200"
+          onClick={() => setIsCancelModalOpen(false)}
+          aria-modal="true"
+          role="dialog"
+        >
+          <div
+            className="relative w-full max-w-md bg-background border border-border rounded-2xl shadow-xl p-5 space-y-4 animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-3 text-rose-600">
+              <div className="w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center shrink-0">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-bold text-foreground">
+                تأیید لغو سفارش
+              </h3>
+            </div>
+
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              آیا از لغو سفارش شماره <strong className="text-foreground" dir="ltr">#{order.orderNumber}</strong> اطمینان دارید؟ این عملیات قابل بازگشت نیست.
+            </p>
+
+            <div className="pt-3 border-t border-border-subtle flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setIsCancelModalOpen(false)}
+                disabled={isCancelling}
+                className="px-4 py-2.5 rounded-xl bg-surface-subtle text-foreground text-xs font-bold hover:bg-surface-muted transition-colors cursor-pointer"
+              >
+                انصراف
+              </button>
+
+              <button
+                type="button"
+                onClick={handleConfirmCancel}
+                disabled={isCancelling}
+                className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-colors cursor-pointer disabled:opacity-50"
+              >
+                {isCancelling ? "در حال لغو..." : "بله، سفارش لغو شود"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
