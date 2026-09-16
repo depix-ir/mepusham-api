@@ -7,7 +7,8 @@ import { accountService } from "@/lib/account/accountService";
 import { Order, OrderStatus } from "@/types/account";
 import { OrderCard } from "@/components/orders/OrderCard";
 import { Container } from "@/components/ui/Container";
-import { ShoppingBag, PackageX, ChevronLeft, ArrowRight } from "lucide-react";
+import { AccountPageHeader } from "@/components/account/AccountPageHeader";
+import { ShoppingBag, PackageX } from "lucide-react";
 
 type OrderFilter = "all" | OrderStatus;
 
@@ -68,37 +69,15 @@ export default function OrdersPage() {
   return (
     <div className="py-6 max-w-[800px] m-auto sm:py-10 bg-background min-h-screen pb-24 md:pb-12">
       <Container className="max-w-4xl space-y-6">
-        {/* Breadcrumb Navigation */}
-        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <Link href="/" className="hover:text-foreground transition-colors">
-            خانه
-          </Link>
-          <ChevronLeft className="w-3.5 h-3.5 rtl:rotate-180" />
-          <Link href="/account" className="hover:text-foreground transition-colors">
-            حساب کاربری
-          </Link>
-          <ChevronLeft className="w-3.5 h-3.5 rtl:rotate-180" />
-          <span className="text-foreground font-bold">سفارش‌های من</span>
-        </nav>
-
         {/* Page Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3  pb-4">
-          <div className="space-y-1">
-            <h1 className="text-lg sm:text-xl font-bold text-primary flex items-center gap-2">
-              <ShoppingBag className="w-4 h-4 text-primary" />
-              <span>سفارش‌های من</span>
-            </h1>
-            <p className="text-xs text-muted-foreground">
-              مدیریت و پیگیری سفارش‌های شما
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-primary bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
-              {orders.length} سفارش
-            </span>
-          </div>
-        </div>
+        <AccountPageHeader
+          title="سفارش‌های من"
+          description="مدیریت و پیگیری سفارش‌های شما"
+          icon={ShoppingBag}
+          backUrl="/account"
+          backLabel="بازگشت به حساب کاربری"
+          badgeText={orders.length > 0 ? `${orders.length} سفارش` : undefined}
+        />
 
         {/* Minimal Tab Filters */}
         {orders.length > 0 && (

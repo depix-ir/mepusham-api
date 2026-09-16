@@ -7,17 +7,14 @@ import { useAuth } from "@/store/auth/auth.store";
 import { returnService } from "@/lib/returns/returnService";
 import { ReturnRequest, RETURN_STATUS_LABELS, RequestType } from "@/types/return";
 import { Container } from "@/components/ui/Container";
+import { AccountPageHeader } from "@/components/account/AccountPageHeader";
 import { formatPrice } from "@/lib/formatting/currency";
 import { TomanIcon } from "@/components/icons";
 import {
   RotateCcw,
-  RefreshCw,
   ChevronLeft,
-  ArrowRight,
   Package,
   Calendar,
-  Clock,
-  Filter,
 } from "lucide-react";
 
 export default function CustomerReturnsListPage() {
@@ -90,45 +87,29 @@ export default function CustomerReturnsListPage() {
   return (
     <div className="py-6 sm:py-10 max-w-[800px] m-auto bg-background min-h-screen pb-24 md:pb-12">
       <Container className="max-w-3xl space-y-6">
-        {/* Breadcrumbs */}
-        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <Link href="/" className="hover:text-foreground transition-colors">
-            خانه
-          </Link>
-          <ChevronLeft className="w-3.5 h-3.5 rtl:rotate-180" />
-          <Link href="/account" className="hover:text-foreground transition-colors">
-            حساب کاربری
-          </Link>
-          <ChevronLeft className="w-3.5 h-3.5 rtl:rotate-180" />
-          <span className="text-foreground font-bold">درخواست‌های مرجوعی و تعویض</span>
-        </nav>
-
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border-subtle">
-          <div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-base sm:text-lg font-bold text-foreground flex items-center gap-2">
-                <RotateCcw className="w-5 h-5 text-primary" />
-                <span>درخواست‌های مرجوعی و تعویض</span>
-              </h1>
-              <Link
-                href="/support"
-                className="text-xs font-medium text-primary hover:underline transition-colors"
-              >
-                ارتباط با پشتیبانی
-              </Link>
-            </div>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              مدیریت و پیگیری وضعیت درخواست‌های ثبت شده
-            </p>
-          </div>
+        <AccountPageHeader
+          title="درخواست‌های مرجوعی و تعویض"
+          description="مدیریت و پیگیری وضعیت درخواست‌ها"
+          icon={RotateCcw}
+          backUrl="/account"
+          backLabel="بازگشت به حساب کاربری"
+        />
 
-          {/* Filter Pills */}
+        {/* Filter Pills Bar */}
+        <div className="flex items-center justify-between gap-3 pb-2 border-b border-border-subtle">
+          <Link
+            href="/support"
+            className="text-xs font-medium text-primary hover:underline transition-colors"
+          >
+            ارتباط با پشتیبانی
+          </Link>
+
           <div className="flex items-center gap-1.5 text-xs bg-surface-subtle p-1 rounded-xl">
             <button
               type="button"
               onClick={() => setTypeFilter("all")}
-              className={`px-3 py-1.5 rounded-lg font-bold transition-colors ${
+              className={`px-3 py-1.5 rounded-lg font-bold transition-colors cursor-pointer ${
                 typeFilter === "all" ? "bg-background text-primary shadow-2xs" : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -137,7 +118,7 @@ export default function CustomerReturnsListPage() {
             <button
               type="button"
               onClick={() => setTypeFilter("return")}
-              className={`px-3 py-1.5 rounded-lg font-bold transition-colors ${
+              className={`px-3 py-1.5 rounded-lg font-bold transition-colors cursor-pointer ${
                 typeFilter === "return" ? "bg-background text-primary shadow-2xs" : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -146,7 +127,7 @@ export default function CustomerReturnsListPage() {
             <button
               type="button"
               onClick={() => setTypeFilter("exchange")}
-              className={`px-3 py-1.5 rounded-lg font-bold transition-colors ${
+              className={`px-3 py-1.5 rounded-lg font-bold transition-colors cursor-pointer ${
                 typeFilter === "exchange" ? "bg-background text-primary shadow-2xs" : "text-muted-foreground hover:text-foreground"
               }`}
             >

@@ -1761,7 +1761,7 @@ export const products: Product[] = [
     ],
     options: [],
     variants: [],
-    pricing: { minPrice: 2100000, minCompareAtPrice: 2500000, discountPercent: 16 },
+    pricing: { minPrice: 2100000, minCompareAtPrice: 2500000, discountPercent: 16, hasDiscount: true },
     inventory: { totalStock: 6, trackStock: true, hasAvailableVariants: true },
     tags: ["ساتن", "میدی"],
     status: "active",

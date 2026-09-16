@@ -84,6 +84,7 @@ export type ProductPricing = {
   minPrice: number;
   maxPrice?: number;
   minCompareAtPrice?: number;
+  discountPercent?: number;
   hasDiscount: boolean;
 };
 
