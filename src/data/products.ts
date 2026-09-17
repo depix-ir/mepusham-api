@@ -1,6 +1,127 @@
 import { Product } from "@/types/product";
 import { categories, brands } from "./common";
 
+// Helper color sets
+const colorsStandard = [
+  { id: "black", label: "مشکی", value: "#000000", code: "BLK" },
+  { id: "brown", label: "قهوه‌ای", value: "#654321", code: "BRN" },
+  { id: "cream", label: "کرم", value: "#FFFDD0", code: "CRM" },
+];
+
+const colorsFashion = [
+  { id: "red", label: "قرمز شرابی", value: "#800020", code: "RED" },
+  { id: "beige", label: "کرم نود", value: "#F5F5DC", code: "BEG" },
+  { id: "black", label: "مشکی", value: "#000000", code: "BLK" },
+];
+
+const colorsMetallic = [
+  { id: "gold", label: "طلایی", value: "#FFD700", code: "GLD" },
+  { id: "silver", label: "نقره‌ای", value: "#C0C0C0", code: "SLV" },
+  { id: "rosegold", label: "رزگلد", value: "#B76E79", code: "RSG" },
+];
+
+// Helper size sets
+const shoeSizes = [
+  { id: "s36", label: "36", value: "36", code: "36" },
+  { id: "s37", label: "37", value: "37", code: "37" },
+  { id: "s38", label: "38", value: "38", code: "38" },
+  { id: "s39", label: "39", value: "39", code: "39" },
+  { id: "s40", label: "40", value: "40", code: "40" },
+];
+
+const clothingSizes = [
+  { id: "s", label: "S", value: "S", code: "S" },
+  { id: "m", label: "M", value: "M", code: "M" },
+  { id: "l", label: "L", value: "L", code: "L" },
+  { id: "xl", label: "XL", value: "XL", code: "XL" },
+  { id: "xxl", label: "XXL", value: "XXL", code: "2XL" },
+];
+
+const watchSizes = [
+  { id: "s28", label: "28mm", value: "28", code: "28" },
+  { id: "s32", label: "32mm", value: "32", code: "32" },
+  { id: "s36", label: "36mm", value: "36", code: "36" },
+  { id: "s38", label: "38mm", value: "38", code: "38" },
+  { id: "s40", label: "40mm", value: "40", code: "40" },
+];
+
+const bagSizes = [
+  { id: "mini", label: "مینی (Mini)", value: "mini", code: "MN" },
+  { id: "small", label: "کوچک (Small)", value: "small", code: "SM" },
+  { id: "medium", label: "متوسط (Medium)", value: "medium", code: "MD" },
+  { id: "large", label: "بزرگ (Large)", value: "large", code: "LG" },
+  { id: "xlarge", label: "بسیار بزرگ (XL)", value: "xlarge", code: "XL" },
+];
+
+function make15Variants(
+  prodIdPrefix: string,
+  skuPrefix: string,
+  colors: typeof colorsStandard,
+  sizes: typeof shoeSizes,
+  pricing: { price: number; compareAtPrice?: number; discountPercent?: number },
+  imageIds: string[],
+  stockEach = 5
+) {
+  const options = [
+    {
+      id: "color",
+      name: "رنگ",
+      type: "color" as const,
+      required: true,
+      sortOrder: 0,
+      values: colors.map((c, i) => ({ id: c.id, label: c.label, value: c.value, sortOrder: i })),
+    },
+    {
+      id: "size",
+      name: "سایز",
+      type: "size" as const,
+      required: true,
+      sortOrder: 1,
+      values: sizes.map((s, i) => ({ id: s.id, label: s.label, value: s.value, sortOrder: i })),
+    },
+  ];
+
+  const variants = [];
+  for (const c of colors) {
+    for (const s of sizes) {
+      variants.push({
+        id: `var-${prodIdPrefix}-${c.id}-${s.id}`,
+        sku: `${skuPrefix}-${c.code}-${s.code}`,
+        optionValues: [
+          { optionId: "color", valueId: c.id },
+          { optionId: "size", valueId: s.id },
+        ],
+        pricing,
+        inventory: { stock: stockEach, trackStock: true },
+        imageIds,
+        status: "active" as const,
+      });
+    }
+  }
+
+  return {
+    options,
+    variants,
+    inventory: {
+      totalStock: variants.length * stockEach,
+      trackStock: true,
+      hasAvailableVariants: true,
+    },
+  };
+}
+
+// Build 15 variants for 10 key products
+const bag01Var = make15Variants("bag-01", "BAG-01", colorsStandard, bagSizes, { price: 1850000, compareAtPrice: 2200000, discountPercent: 16 }, ["img-bag-01-1", "img-bag-01-2"]);
+const bag02Var = make15Variants("bag-02", "BAG-02", colorsStandard, bagSizes, { price: 1290000 }, ["img-bag-02-1", "img-bag-02-2"]);
+const sandal01Var = make15Variants("sandal-01", "SND-01", colorsStandard, shoeSizes, { price: 890000, compareAtPrice: 1100000, discountPercent: 19 }, ["img-sandal-01-1", "img-sandal-01-2"]);
+const sandal03Var = make15Variants("sandal-03", "SND-03", colorsFashion, shoeSizes, { price: 1150000, compareAtPrice: 1400000, discountPercent: 18 }, ["img-sandal-03-1", "img-sandal-03-2"]);
+const watch01Var = make15Variants("watch-01", "WTC-01", colorsMetallic, watchSizes, { price: 3450000, compareAtPrice: 4200000, discountPercent: 18 }, ["img-watch-01-1", "img-watch-01-2"]);
+const watch03Var = make15Variants("watch-03", "WTC-03", colorsMetallic, watchSizes, { price: 2890000, compareAtPrice: 3400000, discountPercent: 15 }, ["img-watch-03-1", "img-watch-03-2"]);
+const heel01Var = make15Variants("heel-01", "HEL-01", colorsFashion, shoeSizes, { price: 2150000, compareAtPrice: 2600000, discountPercent: 17 }, ["img-heel-01-1", "img-heel-01-2"]);
+const heel03Var = make15Variants("heel-03", "HEL-03", colorsFashion, shoeSizes, { price: 2450000, compareAtPrice: 2890000, discountPercent: 15 }, ["img-heel-03-1", "img-heel-03-2"]);
+const dress01Var = make15Variants("dress-01", "DRS-01", colorsStandard, clothingSizes, { price: 1250000, compareAtPrice: 1500000, discountPercent: 17 }, ["img-dress-01-1", "img-dress-01-2"]);
+const coat01Var = make15Variants("coat-01", "COT-01", colorsStandard, clothingSizes, { price: 2250000, compareAtPrice: 2700000, discountPercent: 17 }, ["img-coat-01-1", "img-coat-01-2"]);
+
 export const products: Product[] = [
   // ==========================================
   // 1. BAGS & BACKPACKS (15 Products: bag-1 to bag-15)
@@ -17,41 +138,10 @@ export const products: Product[] = [
       { id: "img-bag-01-1", url: "/images/bag-1.webp", alt: "کیف دستی چرم کلاسیک زنانه", sortOrder: 0 },
       { id: "img-bag-01-2", url: "/images/bag-2.webp", alt: "کیف دستی چرم نمای دیگر", sortOrder: 1 },
     ],
-    options: [
-      {
-        id: "color",
-        name: "رنگ",
-        type: "color",
-        required: true,
-        sortOrder: 0,
-        values: [
-          { id: "black", label: "مشکی", value: "#000000", sortOrder: 0 },
-          { id: "brown", label: "قهوه‌ای", value: "#654321", sortOrder: 1 },
-        ],
-      },
-    ],
-    variants: [
-      {
-        id: "var-bag-01-1",
-        sku: "BAG-01-BLK",
-        optionValues: [{ optionId: "color", valueId: "black" }],
-        pricing: { price: 1850000, compareAtPrice: 2200000, discountPercent: 16 },
-        inventory: { stock: 8, trackStock: true },
-        imageIds: ["img-bag-01-1"],
-        status: "active",
-      },
-      {
-        id: "var-bag-01-2",
-        sku: "BAG-01-BRN",
-        optionValues: [{ optionId: "color", valueId: "brown" }],
-        pricing: { price: 1850000, compareAtPrice: 2200000, discountPercent: 16 },
-        inventory: { stock: 4, trackStock: true },
-        imageIds: ["img-bag-01-2"],
-        status: "active",
-      },
-    ],
+    options: bag01Var.options,
+    variants: bag01Var.variants,
     pricing: { minPrice: 1850000, maxPrice: 1850000, minCompareAtPrice: 2200000, hasDiscount: true },
-    inventory: { totalStock: 12, trackStock: true, hasAvailableVariants: true },
+    inventory: bag01Var.inventory,
     tags: ["کیف", "چرم", "تخفیف"],
     status: "active",
     createdAt: "2026-01-01T10:00:00Z",
@@ -68,32 +158,10 @@ export const products: Product[] = [
       { id: "img-bag-02-1", url: "/images/bag-2.webp", alt: "کیف دوشی مینیمال چرمی", sortOrder: 0 },
       { id: "img-bag-02-2", url: "/images/bag-3.webp", alt: "کیف دوشی زاویه دیگر", sortOrder: 1 },
     ],
-    options: [
-      {
-        id: "color",
-        name: "رنگ",
-        type: "color",
-        required: true,
-        sortOrder: 0,
-        values: [
-          { id: "cream", label: "کرم", value: "#FFFDD0", sortOrder: 0 },
-          { id: "black", label: "مشکی", value: "#000000", sortOrder: 1 },
-        ],
-      },
-    ],
-    variants: [
-      {
-        id: "var-bag-02-1",
-        sku: "BAG-02-CRM",
-        optionValues: [{ optionId: "color", valueId: "cream" }],
-        pricing: { price: 1290000 },
-        inventory: { stock: 15, trackStock: true },
-        imageIds: ["img-bag-02-1"],
-        status: "active",
-      },
-    ],
-    pricing: { minPrice: 1290000, hasDiscount: false },
-    inventory: { totalStock: 15, trackStock: true, hasAvailableVariants: true },
+    options: bag02Var.options,
+    variants: bag02Var.variants,
+    pricing: { minPrice: 1290000, maxPrice: 1290000, hasDiscount: false },
+    inventory: bag02Var.inventory,
     tags: ["کیف دوشی", "کژوال"],
     status: "active",
     createdAt: "2026-01-02T10:00:00Z",
@@ -452,42 +520,10 @@ export const products: Product[] = [
       { id: "img-sandal-01-1", url: "/images/sandal-1.webp", alt: "صندل تخت زنانه چرمی", sortOrder: 0 },
       { id: "img-sandal-01-2", url: "/images/sandal-2.webp", alt: "صندل تخت زاویه دیگر", sortOrder: 1 },
     ],
-    options: [
-      {
-        id: "size",
-        name: "سایز",
-        type: "size",
-        required: true,
-        sortOrder: 0,
-        values: [
-          { id: "s37", label: "37", value: "37", sortOrder: 0 },
-          { id: "s38", label: "38", value: "38", sortOrder: 1 },
-          { id: "s39", label: "39", value: "39", sortOrder: 2 },
-        ],
-      },
-    ],
-    variants: [
-      {
-        id: "var-sandal-01-1",
-        sku: "SND-01-37",
-        optionValues: [{ optionId: "size", valueId: "s37" }],
-        pricing: { price: 890000, compareAtPrice: 1100000, discountPercent: 19 },
-        inventory: { stock: 5, trackStock: true },
-        imageIds: ["img-sandal-01-1"],
-        status: "active",
-      },
-      {
-        id: "var-sandal-01-2",
-        sku: "SND-01-38",
-        optionValues: [{ optionId: "size", valueId: "s38" }],
-        pricing: { price: 890000, compareAtPrice: 1100000, discountPercent: 19 },
-        inventory: { stock: 3, trackStock: true },
-        imageIds: ["img-sandal-01-1"],
-        status: "active",
-      },
-    ],
+    options: sandal01Var.options,
+    variants: sandal01Var.variants,
     pricing: { minPrice: 890000, maxPrice: 890000, minCompareAtPrice: 1100000, hasDiscount: true },
-    inventory: { totalStock: 8, trackStock: true, hasAvailableVariants: true },
+    inventory: sandal01Var.inventory,
     tags: ["صندل", "تخت", "تخفیف"],
     status: "active",
     createdAt: "2026-01-01T10:00:00Z",
@@ -523,31 +559,10 @@ export const products: Product[] = [
       { id: "img-sandal-03-1", url: "/images/sandal-3.webp", alt: "صندل بنددار پاشنه مربعی", sortOrder: 0 },
       { id: "img-sandal-03-2", url: "/images/sandal-4.webp", alt: "صندل بنددار زاویه دیگر", sortOrder: 1 },
     ],
-    options: [
-      {
-        id: "color",
-        name: "رنگ",
-        type: "color",
-        required: true,
-        sortOrder: 0,
-        values: [
-          { id: "beige", label: "کرم نود", value: "#F5F5DC", sortOrder: 0 },
-        ],
-      },
-    ],
-    variants: [
-      {
-        id: "var-sandal-03-1",
-        sku: "SND-03-BEG",
-        optionValues: [{ optionId: "color", valueId: "beige" }],
-        pricing: { price: 1150000, compareAtPrice: 1400000, discountPercent: 18 },
-        inventory: { stock: 6, trackStock: true },
-        imageIds: ["img-sandal-03-1"],
-        status: "active",
-      },
-    ],
-    pricing: { minPrice: 1150000, minCompareAtPrice: 1400000, hasDiscount: true },
-    inventory: { totalStock: 6, trackStock: true, hasAvailableVariants: true },
+    options: sandal03Var.options,
+    variants: sandal03Var.variants,
+    pricing: { minPrice: 1150000, maxPrice: 1150000, minCompareAtPrice: 1400000, hasDiscount: true },
+    inventory: sandal03Var.inventory,
     tags: ["صندل", "پاشنه دار"],
     status: "active",
     createdAt: "2026-01-03T10:00:00Z",
@@ -863,32 +878,10 @@ export const products: Product[] = [
       { id: "img-watch-01-1", url: "/images/watch-1.webp", alt: "ساعت مچی زنانه کلاسیک طلایی", sortOrder: 0 },
       { id: "img-watch-01-2", url: "/images/watch-2.webp", alt: "ساعت مچی نمای نزدیک", sortOrder: 1 },
     ],
-    options: [
-      {
-        id: "color",
-        name: "رنگ بدنه",
-        type: "color",
-        required: true,
-        sortOrder: 0,
-        values: [
-          { id: "gold", label: "طلایی", value: "#FFD700", sortOrder: 0 },
-          { id: "silver", label: "نقره‌ای", value: "#C0C0C0", sortOrder: 1 },
-        ],
-      },
-    ],
-    variants: [
-      {
-        id: "var-watch-01-1",
-        sku: "WTC-01-GLD",
-        optionValues: [{ optionId: "color", valueId: "gold" }],
-        pricing: { price: 3450000, compareAtPrice: 4200000, discountPercent: 18 },
-        inventory: { stock: 7, trackStock: true },
-        imageIds: ["img-watch-01-1"],
-        status: "active",
-      },
-    ],
-    pricing: { minPrice: 3450000, minCompareAtPrice: 4200000, hasDiscount: true },
-    inventory: { totalStock: 7, trackStock: true, hasAvailableVariants: true },
+    options: watch01Var.options,
+    variants: watch01Var.variants,
+    pricing: { minPrice: 3450000, maxPrice: 3450000, minCompareAtPrice: 4200000, hasDiscount: true },
+    inventory: watch01Var.inventory,
     tags: ["ساعت", "طلا", "تخفیف"],
     status: "active",
     createdAt: "2026-01-01T10:00:00Z",
@@ -924,31 +917,10 @@ export const products: Product[] = [
       { id: "img-watch-03-1", url: "/images/watch-3.webp", alt: "ساعت مچی رزگلد بند حصیری", sortOrder: 0 },
       { id: "img-watch-03-2", url: "/images/watch-4.webp", alt: "ساعت رزگلد روی دست", sortOrder: 1 },
     ],
-    options: [
-      {
-        id: "color",
-        name: "رنگ",
-        type: "color",
-        required: true,
-        sortOrder: 0,
-        values: [
-          { id: "rosegold", label: "رزگلد", value: "#B76E79", sortOrder: 0 },
-        ],
-      },
-    ],
-    variants: [
-      {
-        id: "var-watch-03-1",
-        sku: "WTC-03-RSG",
-        optionValues: [{ optionId: "color", valueId: "rosegold" }],
-        pricing: { price: 2890000, compareAtPrice: 3400000, discountPercent: 15 },
-        inventory: { stock: 9, trackStock: true },
-        imageIds: ["img-watch-03-1"],
-        status: "active",
-      },
-    ],
-    pricing: { minPrice: 2890000, minCompareAtPrice: 3400000, hasDiscount: true },
-    inventory: { totalStock: 9, trackStock: true, hasAvailableVariants: true },
+    options: watch03Var.options,
+    variants: watch03Var.variants,
+    pricing: { minPrice: 2890000, maxPrice: 2890000, minCompareAtPrice: 3400000, hasDiscount: true },
+    inventory: watch03Var.inventory,
     tags: ["ساعت", "رزگلد"],
     status: "active",
     createdAt: "2026-01-03T10:00:00Z",
@@ -1264,46 +1236,10 @@ export const products: Product[] = [
       { id: "img-heel-01-1", url: "/images/woman-high-heels-1.webp", alt: "کفش پاشنه بلند مجلسی ورنی", sortOrder: 0 },
       { id: "img-heel-01-2", url: "/images/woman-high-heels-2.webp", alt: "کفش مجلسی زاویه دیگر", sortOrder: 1 },
     ],
-    options: [
-      {
-        id: "size",
-        name: "سایز",
-        type: "size",
-        required: true,
-        sortOrder: 0,
-        values: [
-          { id: "s36", label: "36", value: "36", sortOrder: 0 },
-          { id: "s37", label: "37", value: "37", sortOrder: 1 },
-          { id: "s38", label: "38", value: "38", sortOrder: 2 },
-        ],
-      },
-      {
-        id: "color",
-        name: "رنگ",
-        type: "color",
-        required: true,
-        sortOrder: 1,
-        values: [
-          { id: "black", label: "مشکی ورنی", value: "#000000", sortOrder: 0 },
-        ],
-      },
-    ],
-    variants: [
-      {
-        id: "var-heel-01-1",
-        sku: "HEL-01-37",
-        optionValues: [
-          { optionId: "size", valueId: "s37" },
-          { optionId: "color", valueId: "black" },
-        ],
-        pricing: { price: 2150000, compareAtPrice: 2600000, discountPercent: 17 },
-        inventory: { stock: 6, trackStock: true },
-        imageIds: ["img-heel-01-1"],
-        status: "active",
-      },
-    ],
-    pricing: { minPrice: 2150000, minCompareAtPrice: 2600000, hasDiscount: true },
-    inventory: { totalStock: 6, trackStock: true, hasAvailableVariants: true },
+    options: heel01Var.options,
+    variants: heel01Var.variants,
+    pricing: { minPrice: 2150000, maxPrice: 2150000, minCompareAtPrice: 2600000, hasDiscount: true },
+    inventory: heel01Var.inventory,
     tags: ["کفش", "پاشنه بلند", "ورنی", "تخفیف"],
     status: "active",
     createdAt: "2026-01-01T10:00:00Z",
@@ -1339,31 +1275,10 @@ export const products: Product[] = [
       { id: "img-heel-03-1", url: "/images/woman-high-heels-3.webp", alt: "کفش نوک تیز مجلسی", sortOrder: 0 },
       { id: "img-heel-03-2", url: "/images/woman-high-heels-4.webp", alt: "نمای دیگر کفش نوک تیز", sortOrder: 1 },
     ],
-    options: [
-      {
-        id: "color",
-        name: "رنگ",
-        type: "color",
-        required: true,
-        sortOrder: 0,
-        values: [
-          { id: "red", label: "قرمز شرابی", value: "#800020", sortOrder: 0 },
-        ],
-      },
-    ],
-    variants: [
-      {
-        id: "var-heel-03-1",
-        sku: "HEL-03-RED",
-        optionValues: [{ optionId: "color", valueId: "red" }],
-        pricing: { price: 2450000, compareAtPrice: 2890000, discountPercent: 15 },
-        inventory: { stock: 5, trackStock: true },
-        imageIds: ["img-heel-03-1"],
-        status: "active",
-      },
-    ],
-    pricing: { minPrice: 2450000, minCompareAtPrice: 2890000, hasDiscount: true },
-    inventory: { totalStock: 5, trackStock: true, hasAvailableVariants: true },
+    options: heel03Var.options,
+    variants: heel03Var.variants,
+    pricing: { minPrice: 2450000, maxPrice: 2450000, minCompareAtPrice: 2890000, hasDiscount: true },
+    inventory: heel03Var.inventory,
     tags: ["نوک تیز", "قرمز"],
     status: "active",
     createdAt: "2026-01-03T10:00:00Z",
@@ -1679,33 +1594,10 @@ export const products: Product[] = [
       { id: "img-dress-01-1", url: "/images/category-1.webp", alt: "پیراهن ساحلی نخی گلدار زنانه", sortOrder: 0 },
       { id: "img-dress-01-2", url: "/images/product-1.webp", alt: "پیراهن ساحلی نما دیگر", sortOrder: 1 },
     ],
-    options: [
-      {
-        id: "size",
-        name: "سایز",
-        type: "size",
-        required: true,
-        sortOrder: 0,
-        values: [
-          { id: "s", label: "S", value: "S", sortOrder: 0 },
-          { id: "m", label: "M", value: "M", sortOrder: 1 },
-          { id: "l", label: "L", value: "L", sortOrder: 2 },
-        ],
-      },
-    ],
-    variants: [
-      {
-        id: "var-dress-01-1",
-        sku: "DRS-01-M",
-        optionValues: [{ optionId: "size", valueId: "m" }],
-        pricing: { price: 1250000, compareAtPrice: 1500000, discountPercent: 17 },
-        inventory: { stock: 8, trackStock: true },
-        imageIds: ["img-dress-01-1"],
-        status: "active",
-      },
-    ],
-    pricing: { minPrice: 1250000, minCompareAtPrice: 1500000, hasDiscount: true },
-    inventory: { totalStock: 8, trackStock: true, hasAvailableVariants: true },
+    options: dress01Var.options,
+    variants: dress01Var.variants,
+    pricing: { minPrice: 1250000, maxPrice: 1250000, minCompareAtPrice: 1500000, hasDiscount: true },
+    inventory: dress01Var.inventory,
     tags: ["پیراهن", "نخی", "تابستانه"],
     status: "active",
     createdAt: "2026-01-01T10:00:00Z",
@@ -1822,10 +1714,10 @@ export const products: Product[] = [
       { id: "img-coat-01-1", url: "/images/tag-1.webp", alt: "مانتو کتی اورسایز کرپ", sortOrder: 0 },
       { id: "img-coat-01-2", url: "/images/tag-2.webp", alt: "مانتو کتی نما دیگر", sortOrder: 1 },
     ],
-    options: [],
-    variants: [],
-    pricing: { minPrice: 2250000, minCompareAtPrice: 2700000, hasDiscount: true },
-    inventory: { totalStock: 9, trackStock: true, hasAvailableVariants: true },
+    options: coat01Var.options,
+    variants: coat01Var.variants,
+    pricing: { minPrice: 2250000, maxPrice: 2250000, minCompareAtPrice: 2700000, hasDiscount: true },
+    inventory: coat01Var.inventory,
     tags: ["مانتو", "کتی", "پائیزه"],
     status: "active",
     createdAt: "2026-01-01T10:00:00Z",
