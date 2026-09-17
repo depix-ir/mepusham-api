@@ -22,6 +22,13 @@ import {
 export default function AdminCustomersPage() {
   const { showToast } = useToast();
 
+  // Hydration state flag to prevent SSR / CSR hydration mismatch
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
   // Version counter to force state re-evaluation after mutations
   const [dataVersion, setDataVersion] = useState(0);
 
@@ -41,16 +48,19 @@ export default function AdminCustomersPage() {
 
   // Fetch Customers Data
   const customersData = useMemo(() => {
-    return customerService.getCustomers({
-      search,
-      status: statusFilter,
-      purchaseHistory: purchaseHistoryFilter,
-      sortBy,
-      page,
-      pageSize: 10,
-    });
+    return customerService.getCustomers(
+      {
+        search,
+        status: statusFilter,
+        purchaseHistory: purchaseHistoryFilter,
+        sortBy,
+        page,
+        pageSize: 10,
+      },
+      { isHydrated }
+    );
     // eslint-disable-next-deps
-  }, [search, statusFilter, purchaseHistoryFilter, sortBy, page, dataVersion]);
+  }, [search, statusFilter, purchaseHistoryFilter, sortBy, page, dataVersion, isHydrated]);
 
   // Reset page to 1 when filters change
   useEffect(() => {

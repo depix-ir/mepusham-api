@@ -24,8 +24,9 @@ const QUICK_REPLIES_KEY = "mepusham_quick_replies_v1";
 // In-memory store fallback for SSR and Bun test environment
 const memoryStore: Record<string, unknown> = {};
 
-function loadStorage<T>(key: string, initialData: T): T {
-  if (typeof window === "undefined") {
+function loadStorage<T>(key: string, initialData: T, isHydrated?: boolean): T {
+  const activeHydration = isHydrated ?? (typeof window !== "undefined");
+  if (!activeHydration) {
     if (!memoryStore[key]) {
       memoryStore[key] = initialData;
     }
@@ -81,8 +82,8 @@ export interface TicketFilterOptions {
 class SupportService {
   /* ================= TICKETS ================= */
 
-  getTickets(filters?: TicketFilterOptions): SupportTicket[] {
-    let tickets = this.readStoredTickets();
+  getTickets(filters?: TicketFilterOptions, options?: { isHydrated?: boolean }): SupportTicket[] {
+    let tickets = this.readStoredTickets(options?.isHydrated);
 
     if (!filters) return tickets;
 
@@ -667,8 +668,8 @@ class SupportService {
 
   /* ================= STORAGE PERSISTENCE ================= */
 
-  private readStoredTickets(): SupportTicket[] {
-    return loadStorage<SupportTicket[]>(TICKETS_KEY, mockInitialTickets);
+  private readStoredTickets(isHydrated?: boolean): SupportTicket[] {
+    return loadStorage<SupportTicket[]>(TICKETS_KEY, mockInitialTickets, isHydrated);
   }
 
   private persistTickets(tickets: SupportTicket[]): void {

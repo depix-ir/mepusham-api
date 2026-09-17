@@ -26,14 +26,17 @@ const PRODUCTS_STORAGE_KEY = "admin_store_products_v1";
 export class ReturnService {
   /* ================= GET ALL REQUESTS ================= */
 
-  getReturnRequests(filters?: ReturnRequestFilters): {
+  getReturnRequests(
+    filters?: ReturnRequestFilters,
+    options?: { isHydrated?: boolean }
+  ): {
     items: ReturnRequest[];
     total: number;
     page: number;
     pageSize: number;
     totalPages: number;
   } {
-    let requests = this.loadAllRequests();
+    let requests = this.loadAllRequests(options?.isHydrated);
 
     if (!filters) {
       return {
@@ -744,8 +747,9 @@ export class ReturnService {
 
   /* ================= HELPER METHODS & PERSISTENCE ================= */
 
-  private loadAllRequests(): ReturnRequest[] {
-    if (typeof window === "undefined") return mockInitialReturnRequests;
+  private loadAllRequests(isHydrated?: boolean): ReturnRequest[] {
+    const activeHydration = isHydrated ?? (typeof window !== "undefined");
+    if (!activeHydration) return mockInitialReturnRequests;
     try {
       const stored = localStorage.getItem(RETURNS_STORAGE_KEY);
       if (!stored) {

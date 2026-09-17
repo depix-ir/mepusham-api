@@ -32,8 +32,14 @@ const formatDate = (dateString: string) => {
 };
 
 export default function InventoryHistoryPage() {
-  const [logs] = useState<InventoryHistoryLog[]>(() => getInventoryHistoryLogs());
+  const [logs, setLogs] = useState<InventoryHistoryLog[]>(() =>
+    getInventoryHistoryLogs({ isHydrated: false })
+  );
   const [searchQuery, setSearchQuery] = useState("");
+
+  React.useEffect(() => {
+    setLogs(getInventoryHistoryLogs({ isHydrated: true }));
+  }, []);
 
   const filteredLogs = useMemo(() => {
     if (!searchQuery.trim()) return logs;

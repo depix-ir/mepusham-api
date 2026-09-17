@@ -24,8 +24,9 @@ const TICKETS_KEY = "mepusham_tickets_v1";
 class AccountService {
   /* ================= ORDERS ================= */
 
-  getOrders(): Order[] {
-    if (typeof window === "undefined") return mockInitialOrders;
+  getOrders(options?: { isHydrated?: boolean }): Order[] {
+    const isHydrated = options?.isHydrated ?? (typeof window !== "undefined");
+    if (!isHydrated) return mockInitialOrders;
     try {
       const stored = localStorage.getItem(ORDERS_KEY);
       if (!stored) {
@@ -360,8 +361,9 @@ class AccountService {
 
   /* ================= ADDRESSES ================= */
 
-  getAddresses(): UserAddress[] {
-    if (typeof window === "undefined") return mockInitialAddresses;
+  getAddresses(options?: { isHydrated?: boolean }): UserAddress[] {
+    const isHydrated = options?.isHydrated ?? (typeof window !== "undefined");
+    if (!isHydrated) return mockInitialAddresses;
     try {
       const stored = localStorage.getItem(ADDRESSES_KEY);
       if (!stored) {
@@ -447,8 +449,9 @@ class AccountService {
 
   /* ================= SUPPORT / TICKETS ================= */
 
-  getTickets(): SupportTicket[] {
-    if (typeof window === "undefined") return mockInitialTickets;
+  getTickets(options?: { isHydrated?: boolean }): SupportTicket[] {
+    const isHydrated = options?.isHydrated ?? (typeof window !== "undefined");
+    if (!isHydrated) return mockInitialTickets;
     try {
       const stored = localStorage.getItem(TICKETS_KEY);
       if (!stored) {
