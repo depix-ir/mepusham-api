@@ -8,7 +8,7 @@ import { returnService } from "@/lib/returns/returnService";
 import { checkOrderEligibility } from "@/lib/returns/eligibility";
 import { Order, orderStatusLabels, canCustomerCancelOrder } from "@/types/account";
 import { useToast } from "@/components/ui/Toast";
-import { AlertTriangle, XCircle } from "lucide-react";
+import { AccountPageHeader } from "@/components/account/AccountPageHeader";
 import { OrderTimeline } from "@/components/account/orders/OrderTimeline";
 import { OrderItemRow } from "@/components/account/orders/OrderItemRow";
 import { Container } from "@/components/ui/Container";
@@ -18,7 +18,6 @@ import {
   ArrowRight,
   Truck,
   MapPin,
-  HelpCircle,
   Copy,
   Check,
   PackageCheck,
@@ -26,6 +25,12 @@ import {
   ChevronLeft,
   RotateCcw,
   ChevronRight,
+  AlertTriangle,
+  XCircle,
+  User,
+  Phone,
+  Receipt,
+  MessageSquare,
 } from "lucide-react";
 
 export default function OrderDetailPage({
@@ -127,27 +132,9 @@ export default function OrderDetailPage({
     }
   };
 
-  const getStatusBadgeClass = () => {
-    switch (order.status) {
-      case "shipped":
-        return "bg-primary/10 text-primary border-primary/20";
-      case "processing":
-        return "bg-amber-500/10 text-amber-700 border-amber-500/20";
-      case "confirmed":
-      case "pending":
-        return "bg-blue-500/10 text-blue-700 border-blue-500/20";
-      case "delivered":
-        return "bg-emerald-500/10 text-emerald-700 border-emerald-500/20";
-      case "cancelled":
-        return "bg-rose-500/10 text-rose-700 border-rose-500/20";
-      default:
-        return "bg-surface-subtle text-foreground border-border-subtle";
-    }
-  };
-
   return (
-    <div className="py-6 sm:py-10 max-w-[800px] m-auto bg-background min-h-screen pb-24 md:pb-12">
-      <Container className="max-w-3xl space-y-6">
+    <div className="py-6 sm:py-10 bg-background min-h-screen pb-24 md:pb-12">
+      <Container className="max-w-5xl space-y-6">
         {/* Breadcrumb Navigation */}
         <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <Link href="/" className="hover:text-foreground transition-colors">
@@ -165,244 +152,257 @@ export default function OrderDetailPage({
           <span className="text-foreground font-bold" dir="ltr">#{order.orderNumber}</span>
         </nav>
 
-        {/* Top Back Navigation Bar */}
-        <div className="flex items-center justify-between gap-3">
-          <Link
-            href="/orders"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowRight className="w-4 h-4" />
-            <span>بازگشت به سفارش‌ها</span>
-          </Link>
+        {/* Page Header Component */}
+        <AccountPageHeader
+          title={`جزئیات سفارش #${order.orderNumber}`}
+          description={`ثبت شده در ${order.createdAt}`}
+          icon={PackageCheck}
+          backUrl="/orders"
+          backLabel="بازگشت به سفارش‌ها"
+          badgeText={orderStatusLabels[order.status]}
+        />
 
-          <span className={`text-xs font-bold px-3 py-1 rounded-full border ${getStatusBadgeClass()}`}>
-            {orderStatusLabels[order.status]}
-          </span>
-        </div>
-
-        {/* Main Content Wrapper */}
-        <div className="bg-background   rounded-2xl   shadow-2xs space-y-6">
-          {/* Header */}
-          <div className="flex items-center gap-3  pb-4">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-              <PackageCheck className="w-4 h-4" />
-            </div>
-            <div>
-              <h1 className="text-base sm:text-lg font-bold text-foreground">
-                جزئیات سفارش <span dir="ltr">#{order.orderNumber}</span>
-              </h1>
-              <p className="text-xs text-muted-foreground">
-                ثبت شده در {order.createdAt}
-              </p>
-            </div>
-          </div>
-
-          {/* Timeline */}
-          <div className="">
-            <OrderTimeline timeline={order.timeline} />
-          </div>
-
-
-
-          {/* Shipping Tracking Bar */}
-          {order.shippingMethod.trackingCode ? (
-            <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 flex flex-wrap items-center justify-between gap-3 text-xs">
-              <div className="flex items-center gap-2">
-                <Truck className="w-4.5 h-4.5 text-primary shrink-0" />
-                <span>
-                  کد رهگیری {order.shippingMethod.carrierName || order.shippingMethod.title}:{" "}
-                  <strong className="font-mono text-primary mr-1" dir="ltr">
-                    {order.shippingMethod.trackingCode}
-                  </strong>
+        {/* Clean 2-Column Responsive Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
+          {/* Main Primary Content Column (8 cols on desktop) */}
+          <div className="lg:col-span-8 space-y-5">
+            {/* Order Progress & Timeline Card */}
+            <div className="bg-background border border-border rounded-2xl p-4 sm:p-5 space-y-4 shadow-2xs">
+              <h2 className="text-xs sm:text-sm font-bold text-foreground flex items-center justify-between">
+                <span>روند پردازش سفارش</span>
+                <span className="text-[11px] font-mono text-muted-foreground" dir="ltr">
+                  #{order.orderNumber}
                 </span>
-              </div>
+              </h2>
 
-              <button
-                type="button"
-                onClick={handleCopyTracking}
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-primary bg-background px-3 py-1.5 rounded-lg border border-border-subtle hover:bg-surface-subtle transition-colors cursor-pointer shadow-2xs"
-              >
-                {copied ? (
-                  <>
-                    <Check className="w-3.5 h-3.5 text-emerald-600" />
-                    <span className="text-emerald-600">کپی شد</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-3.5 h-3.5" />
-                    <span>کپی کد رهگیری</span>
-                  </>
-                )}
-              </button>
-            </div>
-          ) : (
-            <div className="bg-surface-subtle/60  rounded-xl p-3.5 text-xs text-muted-foreground flex items-center gap-2">
-              <Truck className="w-4 h-4 text-muted-foreground shrink-0" />
-              <span>روش ارسال: <strong>{order.shippingMethod.title}</strong> (کد رهگیری پس از تحویل به پست ثبت می‌شود)</span>
-            </div>
-          )}
+              <OrderTimeline timeline={order.timeline} />
 
-          {/* Purchased Items List */}
-          <div className="space-y-2">
-            <h2 className="text-xs font-bold text-foreground">کالاهای سفارش ({order.items.length})</h2>
-            <div className="bg-surface-subtle/60  rounded-xl p-3 divide-y divide-border-subtle">
-              {order.items.map((item) => (
-                <OrderItemRow key={item.id} item={item} />
-              ))}
-            </div>
-          </div>
+              {/* Shipping Tracking Sub-Bar */}
+              {order.shippingMethod.trackingCode ? (
+                <div className="bg-primary/5 border border-primary/20 rounded-xl p-3.5 flex flex-wrap items-center justify-between gap-2.5 text-xs">
+                  <div className="flex items-center gap-2">
+                    <Truck className="w-4 h-4 text-primary shrink-0" />
+                    <span>
+                      کد رهگیری {order.shippingMethod.carrierName || order.shippingMethod.title}:{" "}
+                      <strong className="font-mono text-primary mr-1" dir="ltr">
+                        {order.shippingMethod.trackingCode}
+                      </strong>
+                    </span>
+                  </div>
 
-          {/* Delivery Address */}
-          <div className="space-y-2">
-            <h2 className="text-xs font-bold text-foreground flex items-center gap-1.5">
-              <MapPin className="w-4 h-4 text-primary" />
-              <span>آدرس تحویل سفارش</span>
-            </h2>
-            <div className="bg-surface-subtle/50  rounded-xl p-4 text-xs text-foreground space-y-1">
-              <p className="font-bold">{order.shippingAddress.recipientName} ({order.shippingAddress.phone})</p>
-              <p className="text-muted-foreground">
-                {order.shippingAddress.province}، {order.shippingAddress.city}، {order.shippingAddress.address}
-              </p>
-              <p className="text-muted-foreground text-[11px]" dir="ltr">
-                کد پستی: {order.shippingAddress.postalCode}
-              </p>
-            </div>
-          </div>
-
-          {/* Financial Summary */}
-          <div className="bg-surface-subtle/50  rounded-xl p-4 space-y-2.5 text-xs">
-            <div className="flex justify-between text-muted-foreground">
-              <span>مجموع کالاها</span>
-              <div className="flex items-center gap-1 font-bold text-foreground">
-                <span>{formatPrice(order.itemsSubtotal)}</span>
-                <TomanIcon className="w-3 h-3 text-muted-foreground" />
-              </div>
-            </div>
-
-            <div className="flex justify-between text-muted-foreground">
-              <span>هزینه ارسال</span>
-              <div className="flex items-center gap-1 font-bold text-foreground">
-                {order.shippingCost === 0 ? (
-                  <span className="text-emerald-600">رایگان</span>
-                ) : (
-                  <>
-                    <span>{formatPrice(order.shippingCost)}</span>
-                    <TomanIcon className="w-3 h-3 text-muted-foreground" />
-                  </>
-                )}
-              </div>
-            </div>
-
-            <div className="pt-2.5  flex justify-between font-bold text-sm text-foreground">
-              <span>مبلغ قابل پرداخت</span>
-              <div className="flex items-center gap-1 text-primary text-base">
-                <span>{formatPrice(order.payableTotal)}</span>
-                <TomanIcon className="w-4 h-4 text-primary" />
-              </div>
-            </div>
-          </div>
-                    {/* Customer Order Cancellation CTA */}
-          {canCustomerCancelOrder(order.status) && (
-            <div className="bg-rose-50 border border-rose-200 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
-              <div className="space-y-0.5">
-                <div className="flex items-center gap-1.5 font-bold text-rose-800">
-                  <XCircle className="w-4 h-4 text-rose-600 shrink-0" />
-                  <span>امکان لغو سفارش</span>
+                  <button
+                    type="button"
+                    onClick={handleCopyTracking}
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-primary bg-background px-3 py-1.5 rounded-lg border border-border-subtle hover:bg-surface-subtle transition-colors cursor-pointer shadow-2xs shrink-0"
+                  >
+                    {copied ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        <span className="text-emerald-600">کپی شد</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5" />
+                        <span>کپی کد</span>
+                      </>
+                    )}
+                  </button>
                 </div>
-                <p className="text-rose-700 text-[11px]">
-                  سفارش شما در مرحله آماده‌سازی قرار دارد و در صورت تمایل می‌توانید آن را لغو کنید.
-                </p>
-              </div>
+              ) : (
+                <div className="bg-surface-subtle/70 rounded-xl p-3 text-xs text-muted-foreground flex items-center gap-2">
+                  <Truck className="w-4 h-4 text-muted-foreground shrink-0" />
+                  <span>روش ارسال: <strong className="text-foreground">{order.shippingMethod.title}</strong> (کد رهگیری پس از تحویل به پست صادر می‌شود)</span>
+                </div>
+              )}
 
-              <button
-                type="button"
-                onClick={() => setIsCancelModalOpen(true)}
-                className="w-full sm:w-auto px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl transition-colors cursor-pointer shrink-0"
-              >
-                لغو این سفارش
-              </button>
-            </div>
-          )}
-
-          {/* Return / Exchange CTA Section */}
-          {(() => {
-            const existingRequests = returnService.getReturnRequests().items;
-            const eligibility = checkOrderEligibility(order, existingRequests);
-
-            if (eligibility.isEligible) {
-              return (
-                <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <RotateCcw className="w-4 h-4 text-primary" />
-                      <h3 className="text-xs sm:text-sm font-bold text-foreground">
-                        درخواست مرجوعی یا تعویض کالا
-                      </h3>
+              {/* Customer Cancellation Alert Banner */}
+              {canCustomerCancelOrder(order.status) && (
+                <div className="bg-rose-50 border border-rose-200/80 rounded-xl p-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-1.5 font-bold text-rose-800">
+                      <XCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                      <span>امکان لغو سفارش</span>
                     </div>
-                    <p className="text-xs text-muted-foreground">
-                      این سفارش واجد شرایط مرجوعی یا تعویض است (مهلت مرجوعی ۲ روز از تحویل).
+                    <p className="text-rose-700 text-[11px]">
+                      این سفارش هنوز ارسال نشده و می‌توانید آن را بدون کسر کارمزد لغو کنید.
                     </p>
                   </div>
-                  <Link
-                    href={`/orders/${order.id}/return`}
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground font-bold text-xs rounded-xl hover:bg-primary-hover transition-colors shadow-xs shrink-0"
+
+                  <button
+                    type="button"
+                    onClick={() => setIsCancelModalOpen(true)}
+                    className="w-full sm:w-auto px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl transition-colors cursor-pointer shrink-0 shadow-2xs"
                   >
-                    <span>ثبت درخواست مرجوعی / تعویض</span>
-                    <ChevronRight className="w-4 h-4 rtl:rotate-180" />
+                    لغو سفارش
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Purchased Items List Card */}
+            <div className="bg-background border border-border rounded-2xl p-4 sm:p-5 space-y-3 shadow-2xs">
+              <h2 className="text-xs sm:text-sm font-bold text-foreground">
+                کالاهای سفارش ({order.items.length})
+              </h2>
+              <div className="divide-y divide-border-subtle">
+                {order.items.map((item) => (
+                  <OrderItemRow key={item.id} item={item} />
+                ))}
+              </div>
+            </div>
+
+            {/* Return / Exchange CTA Card */}
+            {(() => {
+              const existingRequests = returnService.getReturnRequests().items;
+              const eligibility = checkOrderEligibility(order, existingRequests);
+
+              if (eligibility.isEligible) {
+                return (
+                  <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3.5">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <RotateCcw className="w-4 h-4 text-primary" />
+                        <h3 className="text-xs sm:text-sm font-bold text-foreground">
+                          درخواست مرجوعی یا تعویض کالا
+                        </h3>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        این سفارش واجد شرایط مرجوعی یا تعویض است (مهلت مرجوعی ۲ روز کاری).
+                      </p>
+                    </div>
+                    <Link
+                      href={`/orders/${order.id}/return`}
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-primary text-primary-foreground font-bold text-xs rounded-xl hover:bg-primary-hover transition-colors shadow-xs shrink-0"
+                    >
+                      <span>ثبت درخواست</span>
+                      <ChevronRight className="w-4 h-4 rtl:rotate-180" />
+                    </Link>
+                  </div>
+                );
+              }
+
+              return (
+                <div className="bg-surface-subtle/60 border border-border-subtle/80 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <RotateCcw className="w-4 h-4 text-muted-foreground/70 shrink-0" />
+                    <span>
+                      <strong>وضعیت مرجوعی:</strong> {eligibility.reason || "این سفارش امکان مرجوعی یا تعویض ندارد."}
+                    </span>
+                  </div>
+                  <Link
+                    href="/returns"
+                    className="text-xs font-bold text-primary hover:underline shrink-0"
+                  >
+                    قوانین مرجوعی
                   </Link>
                 </div>
               );
-            }
+            })()}
+          </div>
 
-            return (
-              <div className="bg-surface-subtle/70 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <RotateCcw className="w-4 h-4 text-muted-foreground/70 shrink-0" />
-                  <span>
-                    <strong>مرجوعی / تعویض:</strong> {eligibility.reason || "این سفارش در حال حاضر امکان مرجوعی یا تعویض ندارد."}
-                  </span>
+          {/* Sidebar Column (4 cols on desktop) */}
+          <div className="lg:col-span-4 space-y-5">
+            {/* Financial Payment Summary Card */}
+            <div className="bg-background border border-border rounded-2xl p-4 sm:p-5 space-y-3 shadow-2xs">
+              <h2 className="text-xs sm:text-sm font-bold text-foreground flex items-center gap-2 pb-2 border-b border-border-subtle">
+                <Receipt className="w-4 h-4 text-primary" />
+                <span>خلاصه پرداخت</span>
+              </h2>
+
+              <div className="space-y-2.5 text-xs">
+                <div className="flex justify-between text-muted-foreground">
+                  <span>مجموع قیمت کالاها</span>
+                  <div className="flex items-center gap-1 font-bold text-foreground">
+                    <span>{formatPrice(order.itemsSubtotal)}</span>
+                    <TomanIcon className="w-3 h-3 text-muted-foreground" />
+                  </div>
                 </div>
+
+                <div className="flex justify-between text-muted-foreground">
+                  <span>هزینه ارسال</span>
+                  <div className="flex items-center gap-1 font-bold text-foreground">
+                    {order.shippingCost === 0 ? (
+                      <span className="text-emerald-600">رایگان</span>
+                    ) : (
+                      <>
+                        <span>{formatPrice(order.shippingCost)}</span>
+                        <TomanIcon className="w-3 h-3 text-muted-foreground" />
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                <div className="pt-2.5 border-t border-border-subtle flex justify-between font-bold text-xs sm:text-sm text-foreground">
+                  <span>مبلغ کل پرداخت شده</span>
+                  <div className="flex items-center gap-1 text-primary">
+                    <span>{formatPrice(order.payableTotal)}</span>
+                    <TomanIcon className="w-3.5 h-3.5 text-primary" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Delivery Address Details Card */}
+            <div className="bg-background border border-border rounded-2xl p-4 sm:p-5 space-y-3 shadow-2xs">
+              <h2 className="text-xs sm:text-sm font-bold text-foreground flex items-center gap-2 pb-2 border-b border-border-subtle">
+                <MapPin className="w-4 h-4 text-primary" />
+                <span>آدرس و تحویل گیرنده</span>
+              </h2>
+
+              <div className="space-y-2 text-xs text-foreground">
+                <div className="flex items-center gap-2">
+                  <User className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                  <span className="font-bold">{order.shippingAddress.recipientName}</span>
+                </div>
+
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Phone className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                  <span dir="ltr" className="font-mono text-xs">{order.shippingAddress.phone}</span>
+                </div>
+
+                <div className="pt-1.5 text-muted-foreground leading-relaxed border-t border-border-subtle/60 space-y-1">
+                  <p>
+                    {order.shippingAddress.province}، {order.shippingAddress.city}، {order.shippingAddress.address}
+                  </p>
+                  <p className="text-[11px]" dir="ltr">
+                    کد پستی: <span className="font-mono">{order.shippingAddress.postalCode}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Support & Help Card */}
+            <div className="bg-surface-subtle/60 border border-border-subtle rounded-2xl p-4 space-y-3 text-xs">
+              <span className="font-bold text-foreground block">پشتیبانی و پیگیری</span>
+
+              <div className="space-y-2">
                 <Link
-                  href="/returns"
-                  className="text-xs font-bold text-primary hover:underline shrink-0"
+                  href="/support"
+                  className="p-2.5 bg-background border border-border-subtle rounded-xl flex items-center justify-between hover:border-primary transition-colors group"
                 >
-                  مطالعه قوانین مرجوعی
+                  <div className="flex items-center gap-2">
+                    <MessageSquare className="w-4 h-4 text-primary shrink-0" />
+                    <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors">
+                      ارسال تیکت پشتیبانی
+                    </span>
+                  </div>
+                  <ChevronLeft className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors rtl:rotate-0" />
+                </Link>
+
+                <Link
+                  href="/account/returns"
+                  className="p-2.5 bg-background border border-border-subtle rounded-xl flex items-center justify-between hover:border-primary transition-colors group"
+                >
+                  <div className="flex items-center gap-2">
+                    <RotateCcw className="w-4 h-4 text-muted-foreground shrink-0 group-hover:text-primary transition-colors" />
+                    <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors">
+                      پیگیری درخواست‌های مرجوعی
+                    </span>
+                  </div>
+                  <ChevronLeft className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors rtl:rotate-0" />
                 </Link>
               </div>
-            );
-          })()}
-
-          {/* Support Action Bar */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-            <Link
-              href="/support"
-              className="p-3.5 bg-surface-subtle/60 rounded-xl flex items-center gap-3 hover:border-border transition-colors group"
-            >
-              <HelpCircle className="w-4 h-4 text-primary shrink-0" />
-              <div className="space-y-0.5">
-                <span className="text-xs font-bold text-foreground block group-hover:text-primary transition-colors">
-                  ارتباط با پشتیبانی
-                </span>
-                <span className="text-[11px] text-muted-foreground block">
-                  ثبت تیکت یا پیگیری سفارش
-                </span>
-              </div>
-            </Link>
-
-            <Link
-              href="/account/returns"
-              className="p-3.5 bg-surface-subtle/60 rounded-xl flex items-center gap-3 hover:border-border transition-colors group"
-            >
-              <RotateCcw className="w-4 h-4 text-muted-foreground shrink-0 group-hover:text-foreground transition-colors" />
-              <div className="space-y-0.5">
-                <span className="text-xs font-bold text-foreground block group-hover:text-primary transition-colors">
-                  درخواست‌های مرجوعی من
-                </span>
-                <span className="text-[11px] text-muted-foreground block">
-                  پیگیری وضعیت مرجوعی و تعویض
-                </span>
-              </div>
-            </Link>
+            </div>
           </div>
         </div>
       </Container>
