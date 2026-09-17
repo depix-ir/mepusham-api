@@ -25,6 +25,7 @@ import {
   CheckCircle2,
   Clock,
   Send,
+  MessageSquare,
 } from "lucide-react";
 
 export default function ReturnDetailPage({
@@ -282,6 +283,23 @@ export default function ReturnDetailPage({
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Direct Support Link Card */}
+          <div className="bg-surface-subtle/60 border border-border-subtle rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+            <div className="space-y-0.5">
+              <span className="font-bold text-foreground block">سوالی درباره مرجوعی دارید؟</span>
+              <p className="text-muted-foreground text-[11px]">
+                کارشناسان پشتیبانی آماده پاسخگویی و راهنمایی شما در مورد فرآیند مرجوعی هستند.
+              </p>
+            </div>
+            <Link
+              href={`/account/support/new?returnId=${request.id}`}
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-primary text-primary-foreground text-xs font-bold rounded-xl hover:bg-primary-hover transition-colors shadow-2xs shrink-0"
+            >
+              <MessageSquare className="w-3.5 h-3.5" />
+              <span>ارسال تیکت پشتیبانی</span>
+            </Link>
           </div>
         </div>
       </Container>

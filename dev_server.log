@@ -2,10 +2,15 @@ $ next dev
 ▲ Next.js 16.3.4 (Turbopack)
 - Local:         http://localhost:3000
 - Network:       http://192.168.0.2:3000
-✓ Ready in 564ms
-✓ Running next.config.ts took 45ms
+✓ Ready in 595ms
+✓ Running next.config.ts took 53ms
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
 
-○ Compiling /admin/discounts ...
- GET /admin/discounts 200 in 5.3s (next.js: 4.8s, application-code: 490ms)
- GET /admin/discounts?tab=campaigns 200 in 82ms (next.js: 17ms, application-code: 65ms)
- GET /admin/discounts?tab=free-shipping 200 in 51ms (next.js: 13ms, application-code: 38ms)
+
+○ Compiling /admin/support ...
+ GET /admin/support 200 in 7.0s (next.js: 6.3s, application-code: 673ms)
+ GET /admin/support/ticket-1001 200 in 2.1s (next.js: 1990ms, application-code: 111ms)
+ GET /support 200 in 516ms (next.js: 403ms, application-code: 114ms)

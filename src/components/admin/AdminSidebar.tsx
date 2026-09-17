@@ -6,14 +6,12 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Package,
-  Layers,
   Boxes,
   ShoppingBag,
   RotateCcw,
   Users,
-  Ticket,
+  Headphones,
   Percent,
-  Truck,
   ShieldCheck,
   ChevronRight,
   ChevronLeft,
@@ -35,7 +33,7 @@ export const ADMIN_NAV_ITEMS: NavItem[] = [
   { id: "orders", title: "سفارش‌ها", href: "/admin/orders", icon: ShoppingBag },
   { id: "returns", title: "مرجوعی‌ها", href: "/admin/returns", icon: RotateCcw },
   { id: "customers", title: "مشتریان", href: "/admin/customers", icon: Users },
-  { id: "tickets", title: "تیکت‌ها", href: "/admin/tickets", icon: Ticket },
+  { id: "support", title: "پشتیبانی", href: "/admin/support", icon: Headphones },
   { id: "discounts", title: "تخفیف‌ها", href: "/admin/discounts", icon: Percent },
   { id: "users-roles", title: "کاربران و دسترسی‌ها", href: "/admin/users", icon: ShieldCheck },
 ];
@@ -77,7 +75,6 @@ export function AdminSidebar({
               <span className="font-bold text-sm truncate text-foreground">
                 پنل مدیریت فروشگاه
               </span>
- 
             </div>
           )}
         </div>
@@ -121,7 +118,7 @@ export function AdminSidebar({
               title={collapsed && !mobileOpen ? item.title : undefined}
             >
               <Icon
-                className={`w-3 h-3 shrink-0 ${
+                className={`w-3.5 h-3.5 shrink-0 ${
                   isActive ? "text-primary-foreground" : "text-muted-foreground group-hover:text-foreground"
                 }`}
               />
@@ -145,7 +142,7 @@ export function AdminSidebar({
           className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-surface-subtle transition-colors"
           title={collapsed && !mobileOpen ? "مشاهده فروشگاه" : undefined}
         >
-          <Store className="w-3 h-3 shrink-0" />
+          <Store className="w-3.5 h-3.5 shrink-0" />
           {(!collapsed || mobileOpen) && <span>مشاهده فروشگاه</span>}
         </Link>
       </div>

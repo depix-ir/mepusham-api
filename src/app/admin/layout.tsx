@@ -23,7 +23,8 @@ function AdminLayoutContent({
       !item.href.startsWith("/admin/inventory") &&
       !item.href.startsWith("/admin/returns") &&
       !item.href.startsWith("/admin/discounts") &&
-      !item.href.startsWith("/admin/shipping")
+      !item.href.startsWith("/admin/shipping") &&
+      !item.href.startsWith("/admin/support")
     ) {
       showToast(`بخش «${item.title}» به زودی اضافه خواهد شد.`, "info");
     }
