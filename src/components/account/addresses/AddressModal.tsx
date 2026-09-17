@@ -163,7 +163,7 @@ export function AddressModal({
             className="p-1.5 -ml-1 text-muted-foreground hover:text-foreground rounded-full hover:bg-surface-muted transition-colors cursor-pointer"
             aria-label="بستن"
           >
-            <X className="w-5 h-5 sm:w-4 sm:h-4" />
+            <X className="w-4 h-4 sm:w-4 sm:h-4" />
           </button>
         </div>
 

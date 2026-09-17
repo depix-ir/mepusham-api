@@ -60,7 +60,7 @@ export function CampaignDetailModal({
         <div className="p-4 border-b border-border flex items-center justify-between shrink-0 bg-surface-subtle">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center shrink-0">
-              <Sparkles className="w-5 h-5" />
+              <Sparkles className="w-4 h-4" />
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -79,7 +79,7 @@ export function CampaignDetailModal({
             type="button"
             className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-surface-muted rounded-full transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 

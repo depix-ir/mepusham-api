@@ -45,7 +45,7 @@ export function DiscountDetailModal({
         <div className="p-4 border-b border-border flex items-center justify-between bg-surface-subtle shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-              <Percent className="w-5 h-5" />
+              <Percent className="w-4 h-4" />
             </div>
             <div>
               <h3 className="font-bold text-base md:text-lg text-foreground">
@@ -62,7 +62,7 @@ export function DiscountDetailModal({
               onClick={onClose}
               className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-surface-muted rounded-full transition-colors"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
         </div>

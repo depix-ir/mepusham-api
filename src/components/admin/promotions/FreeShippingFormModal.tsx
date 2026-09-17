@@ -207,7 +207,7 @@ export function FreeShippingFormModal({
             type="button"
             className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-surface-muted rounded-full transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
@@ -500,7 +500,7 @@ export function FreeShippingFormModal({
                 }`}
               >
                 <div
-                  className={`w-5 h-5 rounded-full bg-white transition-transform ${
+                  className={`w-4 h-4 rounded-full bg-white transition-transform ${
                     isActive ? "-translate-x-6" : "translate-x-0"
                   }`}
                 />
@@ -532,7 +532,7 @@ export function FreeShippingFormModal({
               </div>
 
               <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-center">
-                <Truck className="w-5 h-5 text-emerald-600 mx-auto mb-1" />
+                <Truck className="w-4 h-4 text-emerald-600 mx-auto mb-1" />
                 <span className="text-xs font-bold text-emerald-800">
                   هزینه ارسال: ۰ تومان
                 </span>

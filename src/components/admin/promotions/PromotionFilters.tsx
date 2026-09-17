@@ -224,7 +224,7 @@ export function PromotionFilters({
           <SlidersHorizontal className="w-4 h-4 text-primary" />
           <span>فیلترها</span>
           {activeCount > 0 && (
-            <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">
+            <span className="w-4 h-4 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">
               {activeCount.toLocaleString("fa-IR")}
             </span>
           )}
@@ -237,7 +237,7 @@ export function PromotionFilters({
           <div className="bg-background border-t border-border rounded-t-3xl p-5 shadow-2xl flex flex-col gap-4 max-h-[80vh] overflow-y-auto dir-rtl">
             <div className="flex items-center justify-between pb-2 border-b border-border">
               <div className="flex items-center gap-2">
-                <SlidersHorizontal className="w-5 h-5 text-primary" />
+                <SlidersHorizontal className="w-4 h-4 text-primary" />
                 <h3 className="font-bold text-base text-foreground">
                   فیلترهای پیشرفته
                 </h3>
@@ -246,7 +246,7 @@ export function PromotionFilters({
                 onClick={() => setIsDrawerOpen(false)}
                 className="p-1 text-muted-foreground hover:text-foreground"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 

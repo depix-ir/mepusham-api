@@ -107,7 +107,7 @@ export function ProductPickerModal({
             className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-surface-muted rounded-full transition-colors"
             aria-label="بستن"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
@@ -171,7 +171,7 @@ export function ProductPickerModal({
                   }`}
                 >
                   <div
-                    className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 transition-colors ${
+                    className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
                       isSelected
                         ? "bg-primary border-primary text-primary-foreground"
                         : "border-border-subtle bg-background"

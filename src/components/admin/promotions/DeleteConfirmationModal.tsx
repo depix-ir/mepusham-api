@@ -31,14 +31,14 @@ export function DeleteConfirmationModal({
       <div className="bg-background border border-border rounded-2xl w-full max-w-md p-4 sm:p-6 shadow-2xl flex flex-col gap-4 dir-rtl">
         <div className="flex items-start justify-between">
           <div className="w-10 h-10 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
-            <AlertTriangle className="w-5 h-5" />
+            <AlertTriangle className="w-4 h-4" />
           </div>
           <button
             type="button"
             onClick={onClose}
             className="p-1 text-muted-foreground hover:text-foreground rounded-full transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
