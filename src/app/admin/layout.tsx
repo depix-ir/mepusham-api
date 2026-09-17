@@ -24,7 +24,8 @@ function AdminLayoutContent({
       !item.href.startsWith("/admin/returns") &&
       !item.href.startsWith("/admin/discounts") &&
       !item.href.startsWith("/admin/shipping") &&
-      !item.href.startsWith("/admin/support")
+      !item.href.startsWith("/admin/support") &&
+      !item.href.startsWith("/admin/customers")
     ) {
       showToast(`بخش «${item.title}» به زودی اضافه خواهد شد.`, "info");
     }

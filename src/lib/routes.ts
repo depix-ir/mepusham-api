@@ -67,5 +67,7 @@ export const routes = {
     inventory: "/admin/inventory",
     support: "/admin/support",
     supportDetail: (id: string) => `/admin/support/${id}`,
+    customers: "/admin/customers",
+    customerDetail: (id: string) => `/admin/customers/${id}`,
   },
 } as const;
