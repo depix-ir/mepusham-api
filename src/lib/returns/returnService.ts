@@ -276,16 +276,28 @@ export class ReturnService {
       );
     }
 
-    // 3. Exchange Variant Validation
+    // 3. Exchange Variant Validation & Price Difference Calculation
     const targetProduct = params.productsCatalog.find((p) => p.id === params.replacementProductId);
     if (!targetProduct) {
       throw new Error("محصول مقصد برای تعویض یافت نشد.");
+    }
+
+    const targetVariant = targetProduct.variants.find((v) => v.id === params.replacementVariantId);
+    if (!targetVariant && targetProduct.variants.length > 0) {
+      throw new Error("تنوع انتخابی یافت نشد.");
     }
 
     const variantValidation = validateExchangeVariant(targetProduct, params.replacementVariantId);
     if (!variantValidation.isValid) {
       throw new Error(variantValidation.reason || "تنوع مقصد انتخاب‌شده قابل تعویض نیست.");
     }
+
+    const replacementPrice = targetVariant ? targetVariant.price : targetProduct.price;
+    const originalUnitPrice = orderItem.finalUnitPrice;
+
+    // Price difference per item * quantity
+    // Positive = customer pays extra, Negative = merchant refunds difference
+    const priceDifference = (replacementPrice - originalUnitPrice) * params.quantity;
 
     const policy = getReturnPolicy(params.reason);
     const nowIso = new Date().toISOString();
@@ -308,7 +320,7 @@ export class ReturnService {
       reason: params.reason,
       customerNote: params.customerNote,
       evidence: params.evidence,
-      refundAmount: 0, // Refund is 0 for exchanges
+      refundAmount: priceDifference < 0 ? Math.abs(priceDifference) : 0,
     };
 
     const newRequest: ReturnRequest = {
@@ -337,7 +349,10 @@ export class ReturnService {
         replacementProductId: params.replacementProductId,
         replacementVariantId: params.replacementVariantId,
         replacementVariantDisplay: params.replacementVariantDisplay,
-        priceDifference: 0,
+        replacementProductTitle: targetProduct.title,
+        replacementUnitPrice: replacementPrice,
+        originalUnitPrice: originalUnitPrice,
+        priceDifference: priceDifference,
       },
       timeline: [
         {

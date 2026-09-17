@@ -20,7 +20,6 @@ import {
 export default function CustomerReturnsListPage() {
   const { isAuthLoading, isAuthenticated } = useAuth();
   const [requests, setRequests] = useState<ReturnRequest[]>([]);
-  const [typeFilter, setTypeFilter] = useState<"all" | RequestType>("all");
 
   useEffect(() => {
     const data = returnService.getReturnRequests();
@@ -54,11 +53,6 @@ export default function CustomerReturnsListPage() {
       </div>
     );
   }
-
-  const filteredRequests = requests.filter((r) => {
-    if (typeFilter === "all") return true;
-    return r.type === typeFilter;
-  });
 
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
@@ -96,50 +90,23 @@ export default function CustomerReturnsListPage() {
           backLabel="بازگشت به حساب کاربری"
         />
 
-        {/* Filter Pills Bar */}
+        {/* Support Link Header Bar */}
         <div className="flex items-center justify-between gap-3 pb-2 border-b border-border-subtle">
+          <span className="text-xs text-muted-foreground">
+            تعداد کل درخواست‌ها: {requests.length}
+          </span>
           <Link
             href="/support"
             className="text-xs font-medium text-primary hover:underline transition-colors"
           >
             ارتباط با پشتیبانی
           </Link>
-
-          <div className="flex items-center gap-1.5 text-xs bg-surface-subtle p-1 rounded-xl">
-            <button
-              type="button"
-              onClick={() => setTypeFilter("all")}
-              className={`px-3 py-1.5 rounded-lg font-bold transition-colors cursor-pointer ${
-                typeFilter === "all" ? "bg-background text-primary shadow-2xs" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              همه ({requests.length})
-            </button>
-            <button
-              type="button"
-              onClick={() => setTypeFilter("return")}
-              className={`px-3 py-1.5 rounded-lg font-bold transition-colors cursor-pointer ${
-                typeFilter === "return" ? "bg-background text-primary shadow-2xs" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              مرجوعی ({requests.filter((r) => r.type === "return").length})
-            </button>
-            <button
-              type="button"
-              onClick={() => setTypeFilter("exchange")}
-              className={`px-3 py-1.5 rounded-lg font-bold transition-colors cursor-pointer ${
-                typeFilter === "exchange" ? "bg-background text-primary shadow-2xs" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              تعویض ({requests.filter((r) => r.type === "exchange").length})
-            </button>
-          </div>
         </div>
 
         {/* Requests List */}
-        {filteredRequests.length > 0 ? (
+        {requests.length > 0 ? (
           <div className="space-y-4">
-            {filteredRequests.map((req) => {
+            {requests.map((req) => {
               const firstItem = req.items[0];
 
               return (
