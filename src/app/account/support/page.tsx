@@ -59,7 +59,7 @@ export default function AccountSupportPage() {
 
   return (
     <div className="py-6 sm:py-10 bg-background min-h-screen pb-24 md:pb-12">
-      <Container>
+      <div className="max-w-[800px] mx-auto">
         <div className="space-y-6">
           <AccountPageHeader
             title="پشتیبانی و تیکت‌ها"
@@ -71,7 +71,7 @@ export default function AccountSupportPage() {
 
           <CustomerTicketList tickets={tickets} />
         </div>
-      </Container>
+      </div>
     </div>
   );
 }

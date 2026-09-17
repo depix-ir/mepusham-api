@@ -109,30 +109,24 @@ export function AccountDropdown() {
       onKeyDown={handleKeyDown}
     >
       {/* Trigger Button */}
-      <button
-        type="button"
-        onClick={handleClickToggle}
-        aria-expanded={isOpen}
-        aria-haspopup="true"
-        aria-label="حساب کاربری"
-        className={`flex items-center justify-center gap-1.5 rounded-full w-10 h-10 md:w-auto md:h-10 md:px-3 text-sm font-medium text-foreground hover:bg-surface-subtle transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 shrink-0 ${
-          isOpen ? "bg-surface-subtle text-primary" : ""
-        }`}
-      >
-        <UserIcon size={22} className="shrink-0" />
-        <span className="hidden md:inline-block text-xs font-semibold max-w-[120px] truncate">
-          {isAuthenticated && user
-            ? user.firstName
-              ? user.firstName
-              : "حساب کاربری"
-            : "ورود / ثبت‌نام"}
-        </span>
-        <ChevronDown
-          className={`hidden md:inline-block w-3.5 h-3.5 text-muted transition-transform duration-200 ${
-            isOpen ? "rotate-180 text-primary" : ""
-          }`}
-        />
-      </button>
+<button
+  type="button"
+  onClick={handleClickToggle}
+  aria-expanded={isOpen}
+  aria-haspopup="true"
+  aria-label="حساب کاربری"
+  className={`hidden md:flex items-center justify-center rounded-full
+    md:w-auto md:h-10 md:px-2.5
+    text-sm font-medium text-foreground
+    hover:bg-surface-subtle transition-all
+    focus-visible:outline-none focus-visible:ring-2
+    focus-visible:ring-primary focus-visible:ring-offset-2
+    shrink-0
+    ${isOpen ? "bg-surface-subtle text-primary" : ""}`}
+>
+  <UserIcon size={22} className="shrink-0" />
+</button> 
+
 
       {/* Popover Menu Dropdown - Desktop Only */}
       {isOpen && (
@@ -140,7 +134,7 @@ export function AccountDropdown() {
           role="menu"
           aria-orientation="vertical"
           aria-labelledby="account-menu-button"
-          className="hidden md:block absolute left-0 rtl:left-0 rtl:right-auto md:rtl:right-0 md:rtl:left-auto mt-2 w-60 rounded-2xl bg-background border border-border-subtle shadow-xl py-2 z-50 transition-all duration-150 animate-in fade-in slide-in-from-top-2"
+          className="hidden md:block absolute left-0 rtl:left-0 rtl:right-auto md:rtl:right-0 md:rtl:left-auto mt-2 w-60 rounded-2xl bg-background border border-border-subtle shadow-xl p-2 z-50 transition-all duration-150 animate-in fade-in slide-in-from-top-2"
         >
           {isAuthenticated && user ? (
             <>
@@ -148,7 +142,7 @@ export function AccountDropdown() {
               <Link
                 href={routes.account.root}
                 onClick={() => setIsOpen(false)}
-                className="block px-4 py-3 border-b border-border-subtle mb-1 bg-surface-subtle/50 hover:bg-primary/5 rounded-t-2xl transition-colors group cursor-pointer"
+                className="block px-2 py-2 border-b border-border-subtle mb-1  hover:bg-primary/5 rounded-t-2xl transition-colors group cursor-pointer"
               >
                 <p className="text-xs font-bold text-foreground group-hover:text-primary transition-colors truncate">
                   {userDisplayName}
