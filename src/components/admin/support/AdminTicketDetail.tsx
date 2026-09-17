@@ -76,7 +76,7 @@ export function AdminTicketDetail({ ticket: initialTicket }: AdminTicketDetailPr
   let relatedReturn: ReturnRequest | undefined = undefined;
   if (ticket.returnId) {
     try {
-      relatedReturn = returnService.getReturnById(ticket.returnId);
+      relatedReturn = returnService.getReturnRequestById(ticket.returnId);
     } catch {
       relatedReturn = undefined;
     }
