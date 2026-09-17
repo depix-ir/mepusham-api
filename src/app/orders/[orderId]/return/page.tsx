@@ -63,6 +63,7 @@ export default function OrderReturnPage({
   const [evidenceImages, setEvidenceImages] = useState<string[]>([]);
 
   // For Exchange Flow
+  const [replacementProductId, setReplacementProductId] = useState<string>("");
   const [replacementVariantId, setReplacementVariantId] = useState<string>("");
 
   // Workflow step: 1 = Item & Type, 2 = Reason & Details, 3 = Replacement (if exchange), 4 = Review, 5 = Success
@@ -164,6 +165,11 @@ export default function OrderReturnPage({
     ? products.find((p) => p.id === selectedOrderItem.productId)
     : undefined;
 
+  // Selected replacement product (either same current product or chosen another product)
+  const selectedTargetProduct: Product | undefined = replacementProductId
+    ? products.find((p) => p.id === replacementProductId)
+    : currentProduct;
+
   const handleAddEvidenceMock = () => {
     if (evidenceImages.length >= 3) {
       showToast("حداکثر ۳ تصویر می‌توانید بارگذاری کنید.", "error");
@@ -207,17 +213,18 @@ export default function OrderReturnPage({
           return;
         }
 
-        const selectedVariant = currentProduct?.variants.find((v) => v.id === replacementVariantId);
+        const targetProd = selectedTargetProduct || currentProduct;
+        const selectedVariant = targetProd?.variants.find((v) => v.id === replacementVariantId);
         const variantDisplay = selectedVariant
           ? selectedVariant.optionValues.map((ov) => ov.valueId).join(" / ")
-          : replacementVariantId;
+          : (targetProd?.variants.length === 0 ? "تک سایز/تک رنگ" : replacementVariantId);
 
         const req = returnService.createExchangeRequest({
           order,
           orderItemId: selectedOrderItem.id,
-          replacementProductId: currentProduct?.id || selectedOrderItem.productId,
-          replacementVariantId,
-          replacementVariantDisplay: variantDisplay,
+          replacementProductId: targetProd?.id || selectedOrderItem.productId,
+          replacementVariantId: replacementVariantId || "default",
+          replacementVariantDisplay: `${targetProd?.title || ""} (${variantDisplay})`,
           quantity: selectedQuantity,
           reason: selectedReason,
           customerNote: selectedReason === "other" ? `${otherReasonText} ${customerNote}`.trim() : customerNote,
@@ -534,14 +541,15 @@ export default function OrderReturnPage({
               </div>
             )}
 
-            {/* Navigation Buttons */}
-            <div className="flex items-center justify-between gap-3 pt-3">
+            {/* Navigation Buttons (Equal 50% width and height) */}
+            <div className="grid grid-cols-2 gap-3 pt-3 w-full">
               <button
                 type="button"
                 onClick={() => setStep(1)}
-                className="px-5 py-2.5 border border-border-subtle text-foreground font-bold text-xs rounded-xl hover:bg-surface-subtle transition-colors"
+                className="h-11 border border-border-subtle text-foreground font-bold text-xs rounded-xl hover:bg-surface-subtle transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                مرحله قبل
+                <ChevronLeft className="w-4 h-4" />
+                <span>مرحله قبل</span>
               </button>
 
               <button
@@ -553,34 +561,111 @@ export default function OrderReturnPage({
                     setStep(4);
                   }
                 }}
-                className="px-6 py-2.5 bg-primary text-primary-foreground font-bold text-xs rounded-xl hover:bg-primary-hover transition-colors flex items-center gap-2"
+                className="h-11 bg-primary text-primary-foreground font-bold text-xs rounded-xl hover:bg-primary-hover transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                <span>{requestType === "exchange" ? "مرحله بعد (انتخاب جایگزین)" : "بررسی و ادامه"}</span>
+                <span>{requestType === "exchange" ? "مرحله بعد (جایگزین)" : "بررسی و ادامه"}</span>
                 <ChevronRight className="w-4 h-4 rtl:rotate-180" />
               </button>
             </div>
           </div>
         )}
 
-        {/* STEP 3: REPLACEMENT VARIANT SELECTION (FOR EXCHANGE ONLY) */}
+        {/* STEP 3: REPLACEMENT PRODUCT & VARIANT SELECTION (FOR EXCHANGE ONLY) */}
         {step === 3 && requestType === "exchange" && (
           <div className="space-y-6">
+            {/* Guidance Banner */}
             <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 space-y-2">
               <h3 className="text-xs font-bold text-primary flex items-center gap-2">
                 <RefreshCw className="w-4 h-4" />
-                <span>انتخاب تنوع جدید جهت تعویض</span>
+                <span>راهنمای تعویض محصول و مابه‌التفاوت قیمت</span>
               </h3>
-              <p className="text-xs text-muted-foreground">
-                لطفاً رنگ یا سایز جدیدی که می‌خواهید برای شما ارسال شود را انتخاب کنید.
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                شما می‌توانید محصول فعلی را با رنگ/سایز دیگر یا <strong>یک محصول کاملاً متفاوت</strong> تعویض کنید!
               </p>
+              <ul className="text-[11px] text-muted-foreground list-disc list-inside space-y-1 pt-1">
+                <li>در صورت انتخاب محصول گران‌تر، مابه‌التفاوت پرداخت می‌گردد.</li>
+                <li>در صورت انتخاب محصول ارزان‌تر، مابه‌التفاوت به حساب شما بازگردانده می‌شود.</li>
+                <li>کالای جدید پس از دریافت و کارشناسی کالا توسط انبار برای شما ارسال خواهد شد.</li>
+              </ul>
             </div>
 
-            {/* Variant Selector */}
-            {currentProduct && currentProduct.variants && currentProduct.variants.length > 0 ? (
+            {/* Target Product Selector Dropdown */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-foreground block">
+                محصول مورد نظر جهت تعویض را انتخاب کنید:
+              </label>
+              <select
+                value={replacementProductId || currentProduct?.id || ""}
+                onChange={(e) => {
+                  const newProdId = e.target.value;
+                  setReplacementProductId(newProdId);
+                  const newProd = products.find((p) => p.id === newProdId);
+                  if (newProd && newProd.variants && newProd.variants.length > 0) {
+                    const firstActive = newProd.variants.find((v) => v.status === "active" && (v.inventory?.stock ?? 0) > 0);
+                    setReplacementVariantId(firstActive ? firstActive.id : newProd.variants[0].id);
+                  } else {
+                    setReplacementVariantId("default");
+                  }
+                }}
+                className="w-full px-3.5 py-2.5 bg-background border border-border-subtle rounded-xl text-xs font-bold text-foreground focus:outline-none focus:border-primary"
+              >
+                <option value={currentProduct?.id}>
+                  {currentProduct?.title} (همین مدل - {formatPrice(currentProduct?.price || 0)} تومان)
+                </option>
+                {products
+                  .filter((p) => p.id !== currentProduct?.id)
+                  .map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.title} ({formatPrice(p.price)} تومان)
+                    </option>
+                  ))}
+              </select>
+            </div>
+
+            {/* Selected Product Preview Card */}
+            {selectedTargetProduct && (
+              <div className="bg-surface-subtle/60 border border-border-subtle rounded-2xl p-4 flex items-center gap-3">
+                <div className="relative w-16 h-16 rounded-xl bg-surface-muted overflow-hidden shrink-0">
+                  <Image
+                    src={selectedTargetProduct.images[0] || selectedOrderItem.image}
+                    alt={selectedTargetProduct.title}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="flex-1 min-w-0 space-y-1 text-xs">
+                  <h4 className="font-bold text-foreground truncate">{selectedTargetProduct.title}</h4>
+                  <div className="flex items-center gap-2">
+                    <span className="text-muted-foreground">قیمت جدید:</span>
+                    <span className="font-bold text-foreground">{formatPrice(selectedTargetProduct.price)}</span>
+                    <TomanIcon className="w-3 h-3 text-muted-foreground" />
+                  </div>
+                  {/* Price Difference Indicator */}
+                  {selectedTargetProduct.price !== selectedOrderItem.finalUnitPrice && (
+                    <div className="text-[11px] font-bold">
+                      {selectedTargetProduct.price > selectedOrderItem.finalUnitPrice ? (
+                        <span className="text-amber-700">
+                          مابه‌التفاوت قابل پرداخت: +{formatPrice((selectedTargetProduct.price - selectedOrderItem.finalUnitPrice) * selectedQuantity)} تومان
+                        </span>
+                      ) : (
+                        <span className="text-emerald-700">
+                          مابه‌التفاوت بازگشتی به خریدار: {formatPrice((selectedOrderItem.finalUnitPrice - selectedTargetProduct.price) * selectedQuantity)} تومان
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Variant Selector for Chosen Target Product */}
+            {selectedTargetProduct && selectedTargetProduct.variants && selectedTargetProduct.variants.length > 0 ? (
               <div className="space-y-3">
-                <label className="text-xs font-bold text-foreground block">تنوع‌های موجود برای این محصول:</label>
+                <label className="text-xs font-bold text-foreground block">
+                  تنوع‌های (رنگ/سایز) موجود برای {selectedTargetProduct.title}:
+                </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  {currentProduct.variants.map((v) => {
+                  {selectedTargetProduct.variants.map((v) => {
                     const isAvailable = v.status === "active" && (v.inventory?.stock ?? 0) > 0;
                     const isSelected = replacementVariantId === v.id;
                     const variantDisplay = v.optionValues.map((ov) => ov.valueId).join(" / ");
@@ -612,29 +697,35 @@ export default function OrderReturnPage({
                 </div>
               </div>
             ) : (
-              <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 text-xs text-amber-700">
-                این محصول تنوع رنگ/سایز چندگانه ندارد. برای تغییر مدل با پشتیبانی تماس بگیرید.
+              <div className="bg-surface-subtle border border-border-subtle rounded-xl p-3.5 text-xs text-muted-foreground">
+                این محصول تک‌سایز/تک‌رنگ است و نیازی به انتخاب تنوع فرعی ندارد.
               </div>
             )}
 
-            {/* Navigation Buttons */}
-            <div className="flex items-center justify-between gap-3 pt-3">
+            {/* Navigation Buttons (Equal 50% width and height) */}
+            <div className="grid grid-cols-2 gap-3 pt-3 w-full">
               <button
                 type="button"
                 onClick={() => setStep(2)}
-                className="px-5 py-2.5 border border-border-subtle text-foreground font-bold text-xs rounded-xl hover:bg-surface-subtle transition-colors"
+                className="h-11 border border-border-subtle text-foreground font-bold text-xs rounded-xl hover:bg-surface-subtle transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                مرحله قبل
+                <ChevronLeft className="w-4 h-4" />
+                <span>مرحله قبل</span>
               </button>
 
               <button
                 type="button"
-                disabled={!replacementVariantId}
-                onClick={() => setStep(4)}
-                className="px-6 py-2.5 bg-primary text-primary-foreground font-bold text-xs rounded-xl hover:bg-primary-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                disabled={selectedTargetProduct?.variants?.length ? !replacementVariantId : false}
+                onClick={() => {
+                  if (!replacementVariantId && selectedTargetProduct?.variants?.length === 0) {
+                    setReplacementVariantId("default");
+                  }
+                  setStep(4);
+                }}
+                className="h-11 bg-primary text-primary-foreground font-bold text-xs rounded-xl hover:bg-primary-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <span>بررسی و تأیید نهایی</span>
-                <ChevronLeft className="w-4 h-4 rtl:rotate-180" />
+                <ChevronRight className="w-4 h-4 rtl:rotate-180" />
               </button>
             </div>
           </div>
@@ -705,21 +796,22 @@ export default function OrderReturnPage({
               </p>
             </div>
 
-            {/* Submit Actions */}
-            <div className="flex items-center justify-between gap-3 pt-3">
+            {/* Submit Actions (Equal 50% width and height) */}
+            <div className="grid grid-cols-2 gap-3 pt-3 w-full">
               <button
                 type="button"
                 onClick={() => setStep(requestType === "exchange" ? 3 : 2)}
-                className="px-5 py-2.5 border border-border-subtle text-foreground font-bold text-xs rounded-xl hover:bg-surface-subtle transition-colors"
+                className="h-11 border border-border-subtle text-foreground font-bold text-xs rounded-xl hover:bg-surface-subtle transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                اصلاح اطلاعات
+                <ChevronLeft className="w-4 h-4" />
+                <span>اصلاح اطلاعات</span>
               </button>
 
               <button
                 type="button"
                 disabled={isSubmitting}
                 onClick={handleSubmitRequest}
-                className="px-7 py-3 bg-primary text-primary-foreground font-bold text-xs rounded-xl hover:bg-primary-hover transition-colors shadow-sm flex items-center gap-2 disabled:opacity-50 cursor-pointer"
+                className="h-11 bg-primary text-primary-foreground font-bold text-xs rounded-xl hover:bg-primary-hover transition-colors shadow-xs flex items-center justify-center gap-1.5 disabled:opacity-50 cursor-pointer"
               >
                 {isSubmitting ? (
                   <>
@@ -729,7 +821,7 @@ export default function OrderReturnPage({
                 ) : (
                   <>
                     <CheckCircle2 className="w-4 h-4" />
-                    <span>تأیید و ثبت نهایی درخواست</span>
+                    <span>تأیید و ثبت نهایی</span>
                   </>
                 )}
               </button>

@@ -292,10 +292,25 @@ export default function AdminReturnDetailPage({
                         تنوع فعلی: {item.variantDisplay || "پیش‌فرض"} {item.sku && `(SKU: ${item.sku})`}
                       </div>
 
-                      {/* If Exchange: Show Replacement Variant */}
+                      {/* If Exchange: Show Replacement Variant and Price Difference Info */}
                       {request.type === "exchange" && request.exchange && (
-                        <div className="mt-1 p-1.5 bg-indigo-50 border border-indigo-200 rounded text-[11px] text-indigo-900 font-medium">
-                          تنوع درخواستی جایگزین: {request.exchange.replacementVariantDisplay || "سایز/رنگ مقصد"}
+                        <div className="mt-1 p-2 bg-indigo-50 border border-indigo-200 rounded text-[11px] text-indigo-900 font-medium space-y-1">
+                          <div>
+                            کالای درخواستی جایگزین: <strong>{request.exchange.replacementVariantDisplay || request.exchange.replacementProductTitle || "سایز/رنگ مقصد"}</strong>
+                          </div>
+                          {request.exchange.priceDifference !== undefined && request.exchange.priceDifference !== 0 && (
+                            <div className="font-bold">
+                              {request.exchange.priceDifference > 0 ? (
+                                <span className="text-amber-700">
+                                  مابه‌التفاوت قابل دریافت از مشتری: +{formatToman(request.exchange.priceDifference)}
+                                </span>
+                              ) : (
+                                <span className="text-emerald-700">
+                                  مابه‌التفاوت قابل استرداد به مشتری: {formatToman(Math.abs(request.exchange.priceDifference))}
+                                </span>
+                              )}
+                            </div>
+                          )}
                         </div>
                       )}
 
@@ -603,16 +618,16 @@ export default function AdminReturnDetailPage({
                 </button>
               )}
 
-              {/* Step 4: Process Refund (If return & inspection approved) */}
-              {request.type === "return" &&
-                (request.status === "inspection_approved" || request.status === "refund_pending") && (
+              {/* Step 4: Process Refund (If return OR if exchange with negative price difference needing refund) */}
+              {((request.type === "return" && (request.status === "inspection_approved" || request.status === "refund_pending")) ||
+                (request.type === "exchange" && (request.exchange?.priceDifference ?? 0) < 0 && (request.status === "inspection_approved" || request.status === "replacement_pending"))) && (
                   <button
                     onClick={() => setShowRefundModal(true)}
                     disabled={isSubmitting}
                     className="w-full py-2 px-3 text-xs font-semibold bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition-colors flex items-center justify-center gap-1.5 shadow-xs"
                   >
                     <DollarSign className="w-4 h-4" />
-                    <span>ثبت بازپرداخت مالی به مشتری</span>
+                    <span>ثبت بازپرداخت مالی {request.type === "exchange" ? "مابه‌التفاوت" : "به مشتری"}</span>
                   </button>
                 )}
 

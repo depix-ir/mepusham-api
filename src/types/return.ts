@@ -97,7 +97,10 @@ export type ExchangeDetails = {
   replacementVariantId: string;
   replacementVariantDisplay?: string;
   replacementProductId: string;
-  priceDifference?: number;
+  replacementProductTitle?: string;
+  replacementUnitPrice?: number;
+  originalUnitPrice?: number;
+  priceDifference?: number; // Positive = customer pays more, Negative = merchant refunds difference
   replacementShipment?: {
     status: "pending" | "preparing" | "shipped" | "delivered";
     trackingCode?: string;
