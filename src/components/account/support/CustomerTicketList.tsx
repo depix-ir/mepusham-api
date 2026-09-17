@@ -75,7 +75,7 @@ export function CustomerTicketList({ tickets }: CustomerTicketListProps) {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-surface border border-border rounded-2xl p-4 sm:p-5 shadow-2xs">
         <div className="space-y-1">
           <h1 className="text-base sm:text-xl font-bold text-foreground flex items-center gap-2">
-            <MessageSquare className="w-5 h-5 text-primary" />
+            <MessageSquare className="w-4 h-4 text-primary" />
             <span>پشتیبانی و تیکت‌های من</span>
           </h1>
           <p className="text-xs text-muted-foreground">
