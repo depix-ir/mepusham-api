@@ -610,13 +610,13 @@ export default function OrderReturnPage({
                 className="w-full px-3.5 py-2.5 bg-background border border-border-subtle rounded-xl text-xs font-bold text-foreground focus:outline-none focus:border-primary"
               >
                 <option value={currentProduct?.id}>
-                  {currentProduct?.title} (همین مدل - {formatPrice(currentProduct?.price || 0)} تومان)
+                  {currentProduct?.title} (همین مدل - {formatPrice(currentProduct?.pricing.minPrice || 0)} تومان)
                 </option>
                 {products
                   .filter((p) => p.id !== currentProduct?.id)
                   .map((p) => (
                     <option key={p.id} value={p.id}>
-                      {p.title} ({formatPrice(p.price)} تومان)
+                      {p.title} ({formatPrice(p.pricing.minPrice)} تومان)
                     </option>
                   ))}
               </select>
@@ -627,7 +627,7 @@ export default function OrderReturnPage({
               <div className="bg-surface-subtle/60 border border-border-subtle rounded-2xl p-4 flex items-center gap-3">
                 <div className="relative w-16 h-16 rounded-xl bg-surface-muted overflow-hidden shrink-0">
                   <Image
-                    src={selectedTargetProduct.images[0] || selectedOrderItem.image}
+                    src={selectedTargetProduct.images[0]?.url || selectedOrderItem.image}
                     alt={selectedTargetProduct.title}
                     fill
                     className="object-cover"
@@ -637,19 +637,19 @@ export default function OrderReturnPage({
                   <h4 className="font-bold text-foreground truncate">{selectedTargetProduct.title}</h4>
                   <div className="flex items-center gap-2">
                     <span className="text-muted-foreground">قیمت جدید:</span>
-                    <span className="font-bold text-foreground">{formatPrice(selectedTargetProduct.price)}</span>
+                    <span className="font-bold text-foreground">{formatPrice(selectedTargetProduct.pricing.minPrice)}</span>
                     <TomanIcon className="w-3 h-3 text-muted-foreground" />
                   </div>
                   {/* Price Difference Indicator */}
-                  {selectedTargetProduct.price !== selectedOrderItem.finalUnitPrice && (
+                  {selectedTargetProduct.pricing.minPrice !== selectedOrderItem.finalUnitPrice && (
                     <div className="text-[11px] font-bold">
-                      {selectedTargetProduct.price > selectedOrderItem.finalUnitPrice ? (
+                      {selectedTargetProduct.pricing.minPrice > selectedOrderItem.finalUnitPrice ? (
                         <span className="text-amber-700">
-                          مابه‌التفاوت قابل پرداخت: +{formatPrice((selectedTargetProduct.price - selectedOrderItem.finalUnitPrice) * selectedQuantity)} تومان
+                          مابه‌التفاوت قابل پرداخت: +{formatPrice((selectedTargetProduct.pricing.minPrice - selectedOrderItem.finalUnitPrice) * selectedQuantity)} تومان
                         </span>
                       ) : (
                         <span className="text-emerald-700">
-                          مابه‌التفاوت بازگشتی به خریدار: {formatPrice((selectedOrderItem.finalUnitPrice - selectedTargetProduct.price) * selectedQuantity)} تومان
+                          مابه‌التفاوت بازگشتی به خریدار: {formatPrice((selectedOrderItem.finalUnitPrice - selectedTargetProduct.pricing.minPrice) * selectedQuantity)} تومان
                         </span>
                       )}
                     </div>
