@@ -37,7 +37,6 @@ export const ADMIN_NAV_ITEMS: NavItem[] = [
   { id: "customers", title: "مشتریان", href: "/admin/customers", icon: Users },
   { id: "tickets", title: "تیکت‌ها", href: "/admin/tickets", icon: Ticket },
   { id: "discounts", title: "تخفیف‌ها", href: "/admin/discounts", icon: Percent },
-  { id: "free-shipping", title: "ارسال رایگان", href: "/admin/shipping", icon: Truck },
   { id: "users-roles", title: "کاربران و دسترسی‌ها", href: "/admin/users", icon: ShieldCheck },
 ];
 

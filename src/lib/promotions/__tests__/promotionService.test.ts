@@ -7,8 +7,13 @@ import {
   createFreeShippingRule,
   getFreeShippingRules,
   deactivateFreeShippingRule,
+  createCampaign,
+  getCampaign,
+  updateCampaign,
+  deactivateCampaign,
+  deleteCampaign,
 } from "../promotionService";
-import { ProductDiscount, FreeShippingRule } from "@/types/promotion";
+import { ProductDiscount, FreeShippingRule, Campaign } from "@/types/promotion";
 
 describe("Promotion Service & Status Logic", () => {
   const mockNow = new Date("2026-06-15T12:00:00Z");
@@ -35,6 +40,49 @@ describe("Promotion Service & Status Logic", () => {
 
     // Active
     expect(getPromotionStatus(true, pastIso, futureIso, mockNow)).toBe("active");
+  });
+
+  describe("Campaign CRUD & Life Cycle Services", () => {
+    test("can create, update, deactivate, and delete a Campaign entity", () => {
+      const newCamp = createCampaign({
+        title: "کمپین عیدانه جدید",
+        description: "توضیحات تست کمپین",
+        productIds: ["prod-01", "prod-02"],
+        startsAt: pastIso,
+        endsAt: futureIso,
+        minPurchaseAmount: 1000000,
+        maxPurchaseAmount: 5000000,
+        usageLimit: 300,
+        isActive: true,
+      });
+
+      expect(newCamp.id).toBeDefined();
+      expect(newCamp.title).toBe("کمپین عیدانه جدید");
+      expect(newCamp.usedCount).toBe(0);
+
+      // Verify retrieval
+      const fetched = getCampaign(newCamp.id);
+      expect(fetched).toBeDefined();
+      expect(fetched?.productIds).toEqual(["prod-01", "prod-02"]);
+
+      // Update
+      const updated = updateCampaign(newCamp.id, {
+        title: "کمپین عیدانه بروزرسانی شده",
+        minPurchaseAmount: 1500000,
+      });
+      expect(updated?.title).toBe("کمپین عیدانه بروزرسانی شده");
+      expect(updated?.minPurchaseAmount).toBe(1500000);
+
+      // Deactivate
+      const deactivated = deactivateCampaign(newCamp.id);
+      expect(deactivated?.isActive).toBe(false);
+      expect(getPromotionStatus(deactivated!.isActive, deactivated!.startsAt, deactivated!.endsAt, mockNow)).toBe("disabled");
+
+      // Delete
+      const deletedSuccess = deleteCampaign(newCamp.id);
+      expect(deletedSuccess).toBe(true);
+      expect(getCampaign(newCamp.id)).toBeUndefined();
+    });
   });
 
   describe("calculateBestDiscount (Discount Priority & Non-Stacking Rules)", () => {

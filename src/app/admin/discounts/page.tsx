@@ -5,18 +5,25 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { PromotionTabs, PromotionTabType } from "@/components/admin/promotions/PromotionTabs";
 import { PromotionSummaryCards } from "@/components/admin/promotions/PromotionSummaryCards";
 import { PromotionFilters, PromotionFilterState } from "@/components/admin/promotions/PromotionFilters";
+
 import { DiscountTable } from "@/components/admin/promotions/DiscountTable";
 import { FreeShippingTable } from "@/components/admin/promotions/FreeShippingTable";
+import { CampaignTable } from "@/components/admin/promotions/CampaignTable";
+
 import { DiscountFormModal } from "@/components/admin/promotions/DiscountFormModal";
 import { FreeShippingFormModal } from "@/components/admin/promotions/FreeShippingFormModal";
+import { CampaignFormModal } from "@/components/admin/promotions/CampaignFormModal";
+
 import { DiscountDetailModal } from "@/components/admin/promotions/DiscountDetailModal";
 import { FreeShippingDetailModal } from "@/components/admin/promotions/FreeShippingDetailModal";
+import { CampaignDetailModal } from "@/components/admin/promotions/CampaignDetailModal";
+
 import { DeleteConfirmationModal } from "@/components/admin/promotions/DeleteConfirmationModal";
-import { CampaignPickerModal } from "@/components/admin/promotions/CampaignPickerModal";
 import { useToast } from "@/components/ui/Toast";
 
 import {
   ProductDiscount,
+  Campaign,
   FreeShippingRule,
   getPromotionStatus,
 } from "@/types/promotion";
@@ -27,6 +34,11 @@ import {
   updateDiscount,
   deactivateDiscount,
   deleteDiscount,
+  getCampaigns,
+  createCampaign,
+  updateCampaign,
+  deactivateCampaign,
+  deleteCampaign,
   getFreeShippingRules,
   createFreeShippingRule,
   updateFreeShippingRule,
@@ -43,10 +55,15 @@ function DiscountsContent() {
 
   const tabParam = searchParams.get("tab");
   const activeTab: PromotionTabType =
-    tabParam === "free-shipping" ? "free-shipping" : "discounts";
+    tabParam === "campaigns"
+      ? "campaigns"
+      : tabParam === "free-shipping"
+      ? "free-shipping"
+      : "discounts";
 
   // Data states
   const [discounts, setDiscounts] = useState<ProductDiscount[]>([]);
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [freeShippingRules, setFreeShippingRules] = useState<FreeShippingRule[]>([]);
 
   // Filter state
@@ -58,22 +75,28 @@ function DiscountsContent() {
     sortBy: "newest",
   });
 
-  // Modal States
+  // Modal States for Discounts
   const [isDiscountFormOpen, setIsDiscountFormOpen] = useState(false);
   const [editingDiscount, setEditingDiscount] = useState<ProductDiscount | null>(null);
   const [viewingDiscount, setViewingDiscount] = useState<ProductDiscount | null>(null);
   const [deletingDiscount, setDeletingDiscount] = useState<ProductDiscount | null>(null);
 
+  // Modal States for Campaigns
+  const [isCampaignFormOpen, setIsCampaignFormOpen] = useState(false);
+  const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
+  const [viewingCampaign, setViewingCampaign] = useState<Campaign | null>(null);
+  const [deletingCampaign, setDeletingCampaign] = useState<Campaign | null>(null);
+
+  // Modal States for Free Shipping
   const [isFreeShippingFormOpen, setIsFreeShippingFormOpen] = useState(false);
   const [editingRule, setEditingRule] = useState<FreeShippingRule | null>(null);
   const [viewingRule, setViewingRule] = useState<FreeShippingRule | null>(null);
   const [deletingRule, setDeletingRule] = useState<FreeShippingRule | null>(null);
 
-  const [isCampaignModalOpen, setIsCampaignModalOpen] = useState(false);
-
   // Load initial data
   const loadData = () => {
     setDiscounts(getDiscounts());
+    setCampaigns(getCampaigns());
     setFreeShippingRules(getFreeShippingRules());
   };
 
@@ -102,6 +125,22 @@ function DiscountsContent() {
     return { total, active, scheduled, inactive };
   }, [discounts]);
 
+  const campaignMetrics = useMemo(() => {
+    const total = campaigns.length;
+    let active = 0;
+    let scheduled = 0;
+    let inactive = 0;
+
+    campaigns.forEach((c) => {
+      const st = getPromotionStatus(c.isActive, c.startsAt, c.endsAt);
+      if (st === "active") active++;
+      else if (st === "scheduled") scheduled++;
+      else inactive++;
+    });
+
+    return { total, active, scheduled, inactive };
+  }, [campaigns]);
+
   const freeShippingMetrics = useMemo(() => {
     const total = freeShippingRules.length;
     let active = 0;
@@ -122,20 +161,16 @@ function DiscountsContent() {
   const filteredDiscounts = useMemo(() => {
     return discounts
       .filter((d) => {
-        // Status filter
         const st = getPromotionStatus(d.isActive, d.startsAt, d.endsAt);
         if (filters.status !== "all" && st !== filters.status) return false;
 
-        // Type filter
         if (filters.type !== "all" && d.type !== filters.type) return false;
 
-        // Scope filter
         if (filters.scope !== "all") {
           if (filters.scope === "campaign" && !d.campaignId) return false;
           if (filters.scope === "products" && (!d.productIds || d.productIds.length === 0)) return false;
         }
 
-        // Search query
         if (filters.search.trim()) {
           const q = filters.search.toLowerCase().trim();
           const matchTitle = d.title.toLowerCase().includes(q);
@@ -156,10 +191,37 @@ function DiscountsContent() {
         if (filters.sortBy === "highestUsage") {
           return b.usedCount - a.usedCount;
         }
-        // Newest default
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       });
   }, [discounts, filters]);
+
+  // Filtered & Sorted Campaigns
+  const filteredCampaigns = useMemo(() => {
+    return campaigns
+      .filter((c) => {
+        const st = getPromotionStatus(c.isActive, c.startsAt, c.endsAt);
+        if (filters.status !== "all" && st !== filters.status) return false;
+
+        if (filters.search.trim()) {
+          const q = filters.search.toLowerCase().trim();
+          const matchTitle = c.title.toLowerCase().includes(q);
+          const matchDesc = c.description?.toLowerCase().includes(q);
+          const matchId = c.id.toLowerCase().includes(q);
+          if (!matchTitle && !matchDesc && !matchId) return false;
+        }
+
+        return true;
+      })
+      .sort((a, b) => {
+        if (filters.sortBy === "oldest") {
+          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        }
+        if (filters.sortBy === "highestUsage") {
+          return b.usedCount - a.usedCount;
+        }
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      });
+  }, [campaigns, filters]);
 
   // Filtered & Sorted Free Shipping Rules
   const filteredFreeShippingRules = useMemo(() => {
@@ -222,6 +284,34 @@ function DiscountsContent() {
     loadData();
   };
 
+  // Handlers for Campaign Mutations
+  const handleSaveCampaign = (
+    data: Omit<Campaign, "id" | "usedCount" | "createdAt" | "updatedAt">
+  ) => {
+    if (editingCampaign) {
+      updateCampaign(editingCampaign.id, data);
+      showToast("کمپین با موفقیت بروزرسانی شد.", "success");
+    } else {
+      createCampaign(data);
+      showToast("کمپین جدید با موفقیت ایجاد شد.", "success");
+    }
+    setEditingCampaign(null);
+    loadData();
+  };
+
+  const handleDeactivateCampaign = (campaign: Campaign) => {
+    deactivateCampaign(campaign.id);
+    showToast(`کمپین «${campaign.title}» غیرفعال شد.`, "info");
+    loadData();
+  };
+
+  const handleDeleteCampaign = (campaign: Campaign) => {
+    deleteCampaign(campaign.id);
+    showToast(`کمپین «${campaign.title}» با موفقیت حذف شد.`, "success");
+    setDeletingCampaign(null);
+    loadData();
+  };
+
   // Handlers for Free Shipping Mutations
   const handleSaveFreeShipping = (
     data: Omit<FreeShippingRule, "id" | "usedCount" | "createdAt" | "updatedAt">
@@ -256,40 +346,51 @@ function DiscountsContent() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl md:text-2xl font-bold text-foreground">
-            {activeTab === "discounts" ? "مدیریت تخفیف‌ها" : "قوانین ارسال رایگان"}
+            {activeTab === "discounts"
+              ? "مدیریت تخفیف‌ها"
+              : activeTab === "campaigns"
+              ? "کمپین‌ها"
+              : "قوانین ارسال رایگان"}
           </h1>
           <p className="text-xs md:text-sm text-muted-foreground mt-1">
             {activeTab === "discounts"
-              ? "مدیریت و زمان‌بندی تخفیف‌های درصدی و مبلغ ثابت محصولات و کمپین‌ها"
+              ? "مدیریت و زمان‌بندی تخفیف‌های درصدی و مبلغ ثابت محصولات"
+              : activeTab === "campaigns"
+              ? "مدیریت و برگزاری کمپین‌ها و جشنواره‌های فروش ویژه محصولات"
               : "مدیریت شرایط و شروط تخصیص ارسال رایگان به خریداران"}
           </p>
         </div>
 
         <div className="flex items-center gap-2.5">
-          {activeTab === "discounts" ? (
-            <>
-              <button
-                type="button"
-                onClick={() => setIsCampaignModalOpen(true)}
-                className="px-3.5 py-2 text-xs md:text-sm font-semibold text-foreground bg-background border border-border rounded-xl hover:bg-surface-subtle transition-colors flex items-center gap-1.5 shadow-2xs"
-              >
-                <Sparkles className="w-4 h-4 text-amber-500" />
-                <span>مشاهده کمپین‌ها</span>
-              </button>
+          {activeTab === "discounts" && (
+            <button
+              type="button"
+              onClick={() => {
+                setEditingDiscount(null);
+                setIsDiscountFormOpen(true);
+              }}
+              className="px-4 py-2 text-xs md:text-sm font-bold text-primary-foreground bg-primary rounded-xl hover:bg-primary/90 transition-colors flex items-center gap-1.5 shadow-2xs"
+            >
+              <Plus className="w-4 h-4 stroke-[3]" />
+              <span>ایجاد تخفیف</span>
+            </button>
+          )}
 
-              <button
-                type="button"
-                onClick={() => {
-                  setEditingDiscount(null);
-                  setIsDiscountFormOpen(true);
-                }}
-                className="px-4 py-2 text-xs md:text-sm font-bold text-primary-foreground bg-primary rounded-xl hover:bg-primary/90 transition-colors flex items-center gap-1.5 shadow-2xs"
-              >
-                <Plus className="w-4 h-4 stroke-[3]" />
-                <span>ایجاد تخفیف</span>
-              </button>
-            </>
-          ) : (
+          {activeTab === "campaigns" && (
+            <button
+              type="button"
+              onClick={() => {
+                setEditingCampaign(null);
+                setIsCampaignFormOpen(true);
+              }}
+              className="px-4 py-2 text-xs md:text-sm font-bold text-primary-foreground bg-primary rounded-xl hover:bg-primary/90 transition-colors flex items-center gap-1.5 shadow-2xs"
+            >
+              <Plus className="w-4 h-4 stroke-[3]" />
+              <span>ایجاد کمپین</span>
+            </button>
+          )}
+
+          {activeTab === "free-shipping" && (
             <button
               type="button"
               onClick={() => {
@@ -310,18 +411,30 @@ function DiscountsContent() {
         activeTab={activeTab}
         onTabChange={handleTabChange}
         discountCount={discounts.length}
+        campaignCount={campaigns.length}
         freeShippingCount={freeShippingRules.length}
       />
 
       {/* Summary Cards */}
-      {activeTab === "discounts" ? (
+      {activeTab === "discounts" && (
         <PromotionSummaryCards
           totalCount={discountMetrics.total}
           activeCount={discountMetrics.active}
           scheduledCount={discountMetrics.scheduled}
           inactiveCount={discountMetrics.inactive}
         />
-      ) : (
+      )}
+
+      {activeTab === "campaigns" && (
+        <PromotionSummaryCards
+          totalCount={campaignMetrics.total}
+          activeCount={campaignMetrics.active}
+          scheduledCount={campaignMetrics.scheduled}
+          inactiveCount={campaignMetrics.inactive}
+        />
+      )}
+
+      {activeTab === "free-shipping" && (
         <PromotionSummaryCards
           totalCount={freeShippingMetrics.total}
           activeCount={freeShippingMetrics.active}
@@ -339,7 +452,7 @@ function DiscountsContent() {
       />
 
       {/* Data Table / Cards */}
-      {activeTab === "discounts" ? (
+      {activeTab === "discounts" && (
         <DiscountTable
           discounts={filteredDiscounts}
           onView={(d) => setViewingDiscount(d)}
@@ -350,7 +463,22 @@ function DiscountsContent() {
           onDeactivate={(d) => handleDeactivateDiscount(d)}
           onDelete={(d) => setDeletingDiscount(d)}
         />
-      ) : (
+      )}
+
+      {activeTab === "campaigns" && (
+        <CampaignTable
+          campaigns={filteredCampaigns}
+          onView={(c) => setViewingCampaign(c)}
+          onEdit={(c) => {
+            setEditingCampaign(c);
+            setIsCampaignFormOpen(true);
+          }}
+          onDeactivate={(c) => handleDeactivateCampaign(c)}
+          onDelete={(c) => setDeletingCampaign(c)}
+        />
+      )}
+
+      {activeTab === "free-shipping" && (
         <FreeShippingTable
           rules={filteredFreeShippingRules}
           onView={(r) => setViewingRule(r)}
@@ -401,6 +529,44 @@ function DiscountsContent() {
         onDelete={() => deletingDiscount && handleDeleteDiscount(deletingDiscount)}
       />
 
+      {/* Modals for Campaigns */}
+      <CampaignFormModal
+        isOpen={isCampaignFormOpen}
+        onClose={() => {
+          setIsCampaignFormOpen(false);
+          setEditingCampaign(null);
+        }}
+        initialData={editingCampaign}
+        onSave={handleSaveCampaign}
+      />
+
+      <CampaignDetailModal
+        isOpen={!!viewingCampaign}
+        onClose={() => setViewingCampaign(null)}
+        campaign={viewingCampaign}
+        onEdit={(c) => {
+          setViewingCampaign(null);
+          setEditingCampaign(c);
+          setIsCampaignFormOpen(true);
+        }}
+        onDeactivate={(c) => handleDeactivateCampaign(c)}
+        onDelete={(c) => {
+          setViewingCampaign(null);
+          setDeletingCampaign(c);
+        }}
+      />
+
+      <DeleteConfirmationModal
+        isOpen={!!deletingCampaign}
+        onClose={() => setDeletingCampaign(null)}
+        title="حذف کمپین"
+        itemTitle={deletingCampaign?.title || ""}
+        isActive={deletingCampaign ? getPromotionStatus(deletingCampaign.isActive, deletingCampaign.startsAt, deletingCampaign.endsAt) === "active" : false}
+        usedCount={deletingCampaign?.usedCount || 0}
+        onDeactivate={() => deletingCampaign && handleDeactivateCampaign(deletingCampaign)}
+        onDelete={() => deletingCampaign && handleDeleteCampaign(deletingCampaign)}
+      />
+
       {/* Modals for Free Shipping */}
       <FreeShippingFormModal
         isOpen={isFreeShippingFormOpen}
@@ -438,23 +604,13 @@ function DiscountsContent() {
         onDeactivate={() => deletingRule && handleDeactivateFreeShipping(deletingRule)}
         onDelete={() => deletingRule && handleDeleteFreeShipping(deletingRule)}
       />
-
-      {/* Campaign Picker Modal View */}
-      <CampaignPickerModal
-        isOpen={isCampaignModalOpen}
-        onClose={() => setIsCampaignModalOpen(false)}
-        onConfirm={(campId) => {
-          setIsCampaignModalOpen(false);
-          showToast(`کمپین با موفقیت انتخاب شد.`, "info");
-        }}
-      />
     </div>
   );
 }
 
 export default function AdminDiscountsPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-muted-foreground">در حال بارگذاری تخفیف‌ها...</div>}>
+    <Suspense fallback={<div className="p-8 text-center text-muted-foreground">در حال بارگذاری پروموشن‌ها...</div>}>
       <DiscountsContent />
     </Suspense>
   );
