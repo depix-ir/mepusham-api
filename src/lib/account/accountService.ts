@@ -4,12 +4,18 @@ import {
   SupportTicket,
   TicketStatus,
   TicketMessage,
+  orderStatusLabels,
+  getNextAdminStatus,
+  canCustomerCancelOrder,
+  canAdminCancelOrder,
 } from "@/types/account";
 import {
   mockInitialOrders,
   mockInitialAddresses,
   mockInitialTickets,
 } from "@/data/mockAccountData";
+import { products as catalogProducts } from "@/data/products";
+import { Product, ProductOption, ProductOptionValue, ProductVariant } from "@/types/product";
 
 const ORDERS_KEY = "mepusham_orders_v1";
 const ADDRESSES_KEY = "mepusham_addresses_v1";
@@ -63,11 +69,10 @@ class AccountService {
             date: nowFa,
           };
         } else {
-          const statusLabels = require("@/types/account").orderStatusLabels;
           updatedTimeline.push({
             id: `tl-${Date.now()}`,
             status: newStatus,
-            title: statusLabels[newStatus] || newStatus,
+            title: orderStatusLabels[newStatus] || newStatus,
             date: nowFa,
             completed: true,
           });
@@ -101,7 +106,6 @@ class AccountService {
     targetStatus?: import("@/types/account").OrderStatus
   ): { updatedCount: number; updatedOrders: Order[] } {
     const orders = this.getOrders();
-    const { getNextAdminStatus } = require("@/types/account");
     let updatedCount = 0;
 
     const updated = orders.map((order) => {
@@ -143,7 +147,6 @@ class AccountService {
     if (!order) {
       throw new Error("سفارش مورد نظر یافت نشد.");
     }
-    const { canCustomerCancelOrder } = require("@/types/account");
     if (!canCustomerCancelOrder(order.status)) {
       throw new Error("امکان لغو این سفارش در وضعیت فعلی وجود ندارد.");
     }
@@ -183,7 +186,6 @@ class AccountService {
 
   bulkCancelOrders(orderIds: string[]): { cancelledCount: number; updatedOrders: Order[] } {
     const orders = this.getOrders();
-    const { canAdminCancelOrder } = require("@/types/account");
     let cancelledCount = 0;
 
     const updated = orders.map((order) => {
@@ -248,23 +250,19 @@ class AccountService {
     const newOrderNumber = `${12458 + orders.length}`;
     const newOrderId = `order-${newOrderNumber}`;
 
-    // Dynamically look up products to construct full item snapshots
-    // Importing products inline or referencing module catalog
-    const { products } = require("@/data/products");
-
     const orderItems: Order["items"] = payload.items.map((item, index) => {
-      const product = products.find((p: any) => p.id === item.productId);
+      const product = catalogProducts.find((p: Product) => p.id === item.productId);
       const title = product ? product.title : "محصول خریداری شده";
       const image = product?.images?.[0]?.url || "/images/bag-1.webp";
 
       let variantInfo: { color?: string; size?: string } | undefined;
       if (product && item.variantId) {
-        const variantObj = product.variants?.find((v: any) => v.id === item.variantId);
+        const variantObj = product.variants?.find((v: ProductVariant) => v.id === item.variantId);
         if (variantObj && variantObj.optionValues) {
           variantInfo = {};
-          variantObj.optionValues.forEach((optVal: any) => {
-            const opt = product.options?.find((o: any) => o.id === optVal.optionId);
-            const val = opt?.values?.find((v: any) => v.id === optVal.valueId);
+          variantObj.optionValues.forEach((optVal: { optionId: string; valueId: string }) => {
+            const opt = product.options?.find((o: ProductOption) => o.id === optVal.optionId);
+            const val = opt?.values?.find((v: ProductOptionValue) => v.id === optVal.valueId);
             if (opt?.type === "color" && val) variantInfo!.color = val.label;
             if (opt?.type === "size" && val) variantInfo!.size = val.label;
           });

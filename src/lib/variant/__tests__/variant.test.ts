@@ -3,7 +3,6 @@ import { validateImageFile } from "@/lib/media/uploadService";
 import {
   generateLiveVariants,
   checkVariantCollision,
-  getCombinationKey,
   ColorSelection,
 } from "@/lib/variant/variantGenerator";
 import { ProductOption, ProductVariant } from "@/types/product";
