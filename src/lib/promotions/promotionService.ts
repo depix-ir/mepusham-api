@@ -171,6 +171,18 @@ export function updateCampaign(
   return updatedCampaign;
 }
 
+export function deactivateCampaign(id: string): Campaign | undefined {
+  return updateCampaign(id, { isActive: false });
+}
+
+export function deleteCampaign(id: string): boolean {
+  const campaigns = getCampaigns();
+  const filtered = campaigns.filter((c) => c.id !== id);
+  if (filtered.length === campaigns.length) return false;
+  saveStorage(STORAGE_KEYS.CAMPAIGNS, filtered);
+  return true;
+}
+
 // ==========================================
 // FREE SHIPPING CRUD SERVICES
 // ==========================================
