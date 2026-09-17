@@ -21,7 +21,9 @@ function AdminLayoutContent({
       item.href !== "/admin/dashboard" &&
       !item.href.startsWith("/admin/products") &&
       !item.href.startsWith("/admin/inventory") &&
-      !item.href.startsWith("/admin/returns")
+      !item.href.startsWith("/admin/returns") &&
+      !item.href.startsWith("/admin/discounts") &&
+      !item.href.startsWith("/admin/shipping")
     ) {
       showToast(`بخش «${item.title}» به زودی اضافه خواهد شد.`, "info");
     }
