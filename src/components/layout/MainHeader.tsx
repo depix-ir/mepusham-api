@@ -7,6 +7,7 @@ import { SearchInput } from "@/components/ui/SearchInput";
 import { HeartIcon, UserIcon } from "@/components/icons";
 import { CartButton } from "./CartButton";
 import { useWishlist } from "@/store/wishlist/wishlist.store";
+import { routes } from "@/lib/routes";
 
 interface MainHeaderProps {
   cartItemCount?: number;
@@ -20,7 +21,7 @@ export function MainHeader({ cartItemCount = 0 }: MainHeaderProps) {
       <Container className="flex items-center justify-between gap-3 md:gap-6">
         {/* Desktop Brand Logo */}
         <Link
-          href="/"
+          href={routes.home}
           className="hidden md:flex items-center gap-2 text-2xl font-black text-primary tracking-tight shrink-0 hover:opacity-90 transition-opacity"
         >
           <span>مپوشام</span>
@@ -31,7 +32,7 @@ export function MainHeader({ cartItemCount = 0 }: MainHeaderProps) {
           <SearchInput
             brandMark={
               <Link
-                href="/"
+                href={routes.home}
                 onClick={(e) => e.stopPropagation()}
                 className="text-primary font-black text-sm hover:opacity-80 transition-opacity cursor-pointer"
               >
@@ -45,7 +46,7 @@ export function MainHeader({ cartItemCount = 0 }: MainHeaderProps) {
         <div className="flex items-center gap-2 md:gap-3 shrink-0">
           {/* Wishlist Button (Desktop) */}
           <Link
-            href="/wishlist"
+            href={routes.account.wishlist}
             className="hidden md:inline-flex relative items-center justify-center rounded-full w-10 h-10 text-sm text-foreground hover:bg-surface-subtle transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 shrink-0"
             aria-label={wishlistCount > 0 ? `پسندیده‌ها (${wishlistCount})` : "پسندیده‌ها"}
           >
@@ -59,7 +60,7 @@ export function MainHeader({ cartItemCount = 0 }: MainHeaderProps) {
 
           {/* Account Button (Desktop) */}
           <Link
-            href="/account"
+            href={routes.account.root}
             className="hidden md:inline-flex items-center justify-center rounded-full w-10 h-10 text-sm text-foreground hover:bg-surface-subtle transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 shrink-0"
             aria-label="حساب کاربری"
           >

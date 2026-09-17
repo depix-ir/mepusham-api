@@ -1,11 +1,6 @@
-import { Metadata } from "next";
-import { WishlistClientPage } from "@/components/wishlist/WishlistClientPage";
+import { redirect } from "next/navigation";
+import { routes } from "@/lib/routes";
 
-export const metadata: Metadata = {
-  title: "پسندیده‌ها | مپوشام",
-  description: "لیست محصولات پسندیده شده شما در فروشگاه مپوشام",
-};
-
-export default function WishlistPage() {
-  return <WishlistClientPage />;
+export default function WishlistRedirectPage() {
+  redirect(routes.account.wishlist);
 }

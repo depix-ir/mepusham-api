@@ -22,7 +22,7 @@ export default function ReturnsPage() {
         <ul className="list-disc list-inside space-y-2 text-neutral-700 pr-2">
           <li>کالا در حالت اولیه و با اتیکت اصلی باشد.</li>
           <li>کالا دچار آسیب‌دیدگی یا بوی عطر و مواد شوینده نشده باشد.</li>
-          <li>جهت هماهنگی مرجوعی، می‌توانید از بخش <a href="/support" className="text-primary font-bold hover:underline">پشتیبانی و تیکت‌ها</a> اقدام نمایید.</li>
+          <li>جهت هماهنگی مرجوعی، می‌توانید از بخش <a href="/account/support" className="text-primary font-bold hover:underline">پشتیبانی و تیکت‌ها</a> اقدام نمایید.</li>
         </ul>
       </div>
     </Container>

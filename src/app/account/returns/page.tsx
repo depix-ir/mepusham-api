@@ -10,6 +10,7 @@ import { Container } from "@/components/ui/Container";
 import { AccountPageHeader } from "@/components/account/AccountPageHeader";
 import { formatPrice } from "@/lib/formatting/currency";
 import { TomanIcon } from "@/components/icons";
+import { routes } from "@/lib/routes";
 import {
   RotateCcw,
   ChevronLeft,
@@ -97,7 +98,7 @@ export default function CustomerReturnsListPage() {
             تعداد کل درخواست‌ها: {requests.length}
           </span>
           <Link
-            href="/support"
+            href={routes.account.support.list()}
             className="text-xs font-medium text-primary hover:underline transition-colors"
           >
             ارتباط با پشتیبانی
@@ -123,7 +124,7 @@ export default function CustomerReturnsListPage() {
                       </span>
                       <span className="text-muted-foreground">•</span>
                       <span className="text-muted-foreground">
-                        سفارش: <Link href={`/orders/${req.orderId}`} className="font-mono hover:underline" dir="ltr">#{req.orderNumber}</Link>
+                        سفارش: <Link href={routes.account.orders.detail(req.orderId)} className="font-mono hover:underline" dir="ltr">#{req.orderNumber}</Link>
                       </span>
                     </div>
 
@@ -206,7 +207,7 @@ export default function CustomerReturnsListPage() {
               </p>
             </div>
             <Link
-              href="/orders"
+              href={routes.account.orders.list}
               className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground font-bold text-xs rounded-xl hover:bg-primary-hover transition-colors shadow-xs"
             >
               <Package className="w-4 h-4" />

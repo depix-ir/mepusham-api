@@ -7,6 +7,7 @@ import { Order } from "@/types/account";
 import { Container } from "@/components/ui/Container";
 import { formatPrice } from "@/lib/formatting/currency";
 import { TomanIcon } from "@/components/icons";
+import { routes } from "@/lib/routes";
 import { CheckCircle2, ArrowRight, PackageCheck, ShoppingBag, MapPin } from "lucide-react";
 
 export default function OrderConfirmationPage({
@@ -37,13 +38,13 @@ export default function OrderConfirmationPage({
           </p>
           <div className="flex flex-col sm:flex-row gap-2 justify-center pt-2">
             <Link
-              href="/orders"
+              href={routes.account.orders.list}
               className="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-bold text-xs hover:bg-primary-hover transition-colors shadow-xs"
             >
               مشاهده سفارش‌ها
             </Link>
             <Link
-              href="/products"
+              href={routes.products.list}
               className="px-5 py-2.5 rounded-xl bg-surface-subtle border border-border-subtle text-foreground font-bold text-xs hover:bg-surface-muted transition-colors"
             >
               ادامه خرید
@@ -107,7 +108,7 @@ export default function OrderConfirmationPage({
           {/* Action CTAs */}
           <div className="flex flex-col sm:flex-row gap-3 pt-2">
             <Link
-              href={`/orders/${order.id}`}
+              href={routes.account.orders.detail(order.id)}
               className="flex-1 py-3 px-4 rounded-xl bg-primary text-primary-foreground font-bold text-xs flex items-center justify-center gap-2 hover:bg-primary-hover transition-colors shadow-xs"
             >
               <PackageCheck className="w-4 h-4" />
@@ -115,7 +116,7 @@ export default function OrderConfirmationPage({
             </Link>
 
             <Link
-              href="/products"
+              href={routes.products.list}
               className="flex-1 py-3 px-4 rounded-xl bg-surface-subtle border border-border-subtle text-foreground font-bold text-xs flex items-center justify-center gap-2 hover:bg-surface-muted transition-colors"
             >
               <ShoppingBag className="w-4 h-4" />

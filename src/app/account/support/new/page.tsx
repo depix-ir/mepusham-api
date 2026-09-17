@@ -12,7 +12,7 @@ import { Container } from "@/components/ui/Container";
 import { PlusCircle, LogIn, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 
-export default function NewTicketPage() {
+function NewTicketContent() {
   const { user, isAuthenticated, isAuthLoading } = useAuth();
   const searchParams = useSearchParams();
 
@@ -86,5 +86,19 @@ export default function NewTicketPage() {
         </div>
       </Container>
     </div>
+  );
+}
+
+export default function NewTicketPage() {
+  return (
+    <React.Suspense
+      fallback={
+        <div className="py-20 flex justify-center items-center">
+          <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+        </div>
+      }
+    >
+      <NewTicketContent />
+    </React.Suspense>
   );
 }

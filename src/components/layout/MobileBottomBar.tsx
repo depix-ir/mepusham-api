@@ -11,6 +11,7 @@ import {
   UserIcon,
 } from "@/components/icons";
 import { useWishlist } from "@/store/wishlist/wishlist.store";
+import { routes } from "@/lib/routes";
 
 export interface NavItem {
   id: string;
@@ -20,11 +21,11 @@ export interface NavItem {
 }
 
 export const defaultBottomNavItems: NavItem[] = [
-  { id: "home", label: "خانه", href: "/", icon: HomeIcon },
-  { id: "products", label: "محصولات", href: "/products", icon: ProductsIcon },
-  { id: "orders", label: "سفارش‌ها", href: "/orders", icon: OrdersIcon },
-  { id: "wishlist", label: "پسندیده‌ها", href: "/wishlist", icon: HeartIcon },
-  { id: "account", label: "حساب کاربری", href: "/account", icon: UserIcon },
+  { id: "home", label: "خانه", href: routes.home, icon: HomeIcon },
+  { id: "products", label: "محصولات", href: routes.products.list, icon: ProductsIcon },
+  { id: "orders", label: "سفارش‌ها", href: routes.account.orders.list, icon: OrdersIcon },
+  { id: "wishlist", label: "پسندیده‌ها", href: routes.account.wishlist, icon: HeartIcon },
+  { id: "account", label: "حساب کاربری", href: routes.account.root, icon: UserIcon },
 ];
 
 export interface MobileBottomBarProps {
