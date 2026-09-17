@@ -234,7 +234,7 @@ export default function CheckoutPage() {
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-background flex flex-col">
-        <CheckoutHeader />
+        <CheckoutHeader currentStep="shipping" />
         <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-12 flex items-center justify-center">
           <div className="w-full bg-background border border-border-subtle rounded-2xl p-6 sm:p-12 shadow-xs">
             <CartEmptyState />
@@ -247,7 +247,7 @@ export default function CheckoutPage() {
   return (
     <div className="min-h-screen bg-background flex flex-col pb-24 lg:pb-12">
       {/* Minimal Header */}
-      <CheckoutHeader />
+      <CheckoutHeader currentStep="shipping" />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
         {/* Main 12-Column RTL Grid */}

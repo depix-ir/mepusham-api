@@ -4,8 +4,9 @@ import React from "react";
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { SearchInput } from "@/components/ui/SearchInput";
-import { HeartIcon, UserIcon } from "@/components/icons";
+import { HeartIcon } from "@/components/icons";
 import { CartButton } from "./CartButton";
+import { AccountDropdown } from "./AccountDropdown";
 import { useWishlist } from "@/store/wishlist/wishlist.store";
 import { routes } from "@/lib/routes";
 
@@ -58,14 +59,8 @@ export function MainHeader({ cartItemCount = 0 }: MainHeaderProps) {
             )}
           </Link>
 
-          {/* Account Button (Desktop) */}
-          <Link
-            href={routes.account.root}
-            className="hidden md:inline-flex items-center justify-center rounded-full w-10 h-10 text-sm text-foreground hover:bg-surface-subtle transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 shrink-0"
-            aria-label="حساب کاربری"
-          >
-            <UserIcon size={22} />
-          </Link>
+          {/* Account Dropdown Button (Mobile & Desktop) */}
+          <AccountDropdown />
 
           {/* Cart Button (Handles Mobile & Desktop) */}
           <CartButton cartItemCount={cartItemCount} />
