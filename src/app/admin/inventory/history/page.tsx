@@ -59,7 +59,7 @@ export default function InventoryHistoryPage() {
               className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-surface-subtle transition-colors"
               title="بازگشت به موجودی"
             >
-              <ArrowRight className="w-5 h-5" />
+              <ArrowRight className="" />
             </Link>
             <h1 className="text-xl md:text-2xl font-black text-foreground tracking-tight">
               تاریخچه تغییرات موجودی

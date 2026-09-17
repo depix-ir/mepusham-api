@@ -65,7 +65,7 @@ export function AdminOrderDetailDrawer({
             className="p-2 text-muted-foreground hover:text-foreground hover:bg-surface-subtle rounded-lg transition-colors"
             title="بستن"
           >
-            <X className="w-5 h-5" />
+            <X className="" />
           </button>
         </div>
 

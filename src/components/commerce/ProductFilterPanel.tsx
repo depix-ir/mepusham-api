@@ -176,7 +176,7 @@ export function ProductFilterPanel({
                 <div className="flex items-center gap-2.5">
                   {/* Custom Professional Checkbox Box */}
                   <div
-                    className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all duration-200 shrink-0 peer-focus-visible:ring-2 peer-focus-visible:ring-primary/30 ${
+                    className={` rounded-md border flex items-center justify-center transition-all duration-200 shrink-0 peer-focus-visible:ring-2 peer-focus-visible:ring-primary/30 ${
                       isChecked
                         ? "bg-primary border-primary text-white shadow-xs scale-100"
                         : "border-border-product bg-background group-hover:border-primary/60 group-hover:scale-105"

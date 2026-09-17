@@ -53,7 +53,7 @@ export function ConfirmActionDialog({
                 : "bg-amber-100 text-amber-700"
             }`}
           >
-            <AlertTriangle className="w-5 h-5" />
+            <AlertTriangle className="" />
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="text-sm font-bold text-foreground leading-snug">

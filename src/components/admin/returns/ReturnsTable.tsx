@@ -236,7 +236,7 @@ export function ReturnsTable({ requests, isLoading, onRefresh }: ReturnsTablePro
                         className="object-cover"
                       />
                     ) : (
-                      <ImageIcon className="w-5 h-5 text-muted-foreground absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                      <ImageIcon className=" text-muted-foreground absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
                     )}
                   </div>
                   <div className="min-w-0 flex-1 text-xs">

@@ -781,7 +781,7 @@ export default function AdminInventoryPage() {
           <SlidersHorizontal className="w-4 h-4 text-muted-foreground" />
           <span>فیلترها</span>
           {activeFiltersCount > 0 && (
-            <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">
+            <span className=" rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">
               {activeFiltersCount}
             </span>
           )}
@@ -1107,7 +1107,7 @@ export default function AdminInventoryPage() {
                               {/* Minus Button */}
                               <button
                                 onClick={() => handleStockDelta(item, -1)}
-                                className="w-5 h-5 flex items-center justify-center rounded hover:bg-surface-muted text-foreground font-bold transition-colors"
+                                className=" flex items-center justify-center rounded hover:bg-surface-muted text-foreground font-bold transition-colors"
                                 aria-label="کاهش موجودی"
                                 title="کاهش موجودی (-۱)"
                               >
@@ -1126,7 +1126,7 @@ export default function AdminInventoryPage() {
                               {/* Plus Button */}
                               <button
                                 onClick={() => handleStockDelta(item, 1)}
-                                className="w-5 h-5 flex items-center justify-center rounded hover:bg-surface-muted text-foreground font-bold transition-colors"
+                                className=" flex items-center justify-center rounded hover:bg-surface-muted text-foreground font-bold transition-colors"
                                 aria-label="افزایش موجودی"
                                 title="افزایش موجودی (+۱)"
                               >

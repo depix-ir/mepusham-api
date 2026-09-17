@@ -28,7 +28,7 @@ export function EvidenceModal({ images, isOpen, onClose }: EvidenceModalProps) {
             onClick={onClose}
             className="p-1 text-muted-foreground hover:text-foreground rounded-md hover:bg-surface-subtle"
           >
-            <X className="w-5 h-5" />
+            <X className="" />
           </button>
         </div>
 
@@ -101,7 +101,7 @@ export function RejectModal({ isOpen, onClose, onConfirm, isSubmitting }: Reject
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
       <div className="bg-background border border-border rounded-lg max-w-md w-full p-5 space-y-4 shadow-xl">
         <div className="flex items-center gap-2.5 text-rose-600 font-bold text-base border-b border-border pb-3">
-          <AlertTriangle className="w-5 h-5 shrink-0" />
+          <AlertTriangle className=" shrink-0" />
           <h3>رد درخواست مرجوعی / تعویض</h3>
         </div>
 
@@ -204,7 +204,7 @@ export function ProcessRefundModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
       <div className="bg-background border border-border rounded-lg max-w-md w-full p-5 space-y-4 shadow-xl">
         <div className="flex items-center gap-2 text-emerald-700 font-bold text-base border-b border-border pb-3">
-          <DollarSign className="w-5 h-5 shrink-0 text-emerald-600" />
+          <DollarSign className=" shrink-0 text-emerald-600" />
           <h3>ثبت بازپرداخت مالی به مشتری</h3>
         </div>
 

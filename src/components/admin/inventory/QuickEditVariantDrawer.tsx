@@ -99,7 +99,7 @@ export function QuickEditVariantDrawer({
         {/* Header */}
         <div className="h-16 px-5 border-b border-border flex items-center justify-between shrink-0 bg-surface-subtle">
           <div className="flex items-center gap-2">
-            <Edit className="w-5 h-5 text-primary" />
+            <Edit className=" text-primary" />
             <h2 className="text-base font-extrabold text-foreground">ویرایش واریانت</h2>
           </div>
           <button
@@ -107,7 +107,7 @@ export function QuickEditVariantDrawer({
             className="p-1.5 text-muted-foreground hover:text-foreground rounded-md transition-colors"
             aria-label="Close drawer"
           >
-            <X className="w-5 h-5" />
+            <X className="" />
           </button>
         </div>
 

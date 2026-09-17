@@ -266,7 +266,7 @@ export default function OrderReturnPage({
         <div className="flex items-center justify-between pb-2 border-b border-border-subtle">
           <div>
             <h1 className="text-base sm:text-lg font-bold text-foreground flex items-center gap-2">
-              <RotateCcw className="w-5 h-5 text-primary" />
+              <RotateCcw className=" text-primary" />
               <span>ثبت درخواست مرجوعی یا تعویض کالا</span>
             </h1>
             <p className="text-xs text-muted-foreground mt-0.5">
@@ -393,7 +393,7 @@ export default function OrderReturnPage({
                       {check.isEligible && (
                         <div className="shrink-0">
                           <div
-                            className={`w-5 h-5 rounded-full border flex items-center justify-center ${
+                            className={` rounded-full border flex items-center justify-center ${
                               isSelected ? "border-primary bg-primary text-primary-foreground" : "border-muted-foreground/30"
                             }`}
                           >
@@ -548,7 +548,7 @@ export default function OrderReturnPage({
                 onClick={() => setStep(1)}
                 className="h-11 border border-border-subtle text-foreground font-bold text-xs rounded-xl hover:bg-surface-subtle transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                <ChevronLeft className="w-4 h-4" />
+                <ChevronRight className="w-4 h-4" />
                 <span>مرحله قبل</span>
               </button>
 
@@ -709,7 +709,7 @@ export default function OrderReturnPage({
                 onClick={() => setStep(2)}
                 className="h-11 border border-border-subtle text-foreground font-bold text-xs rounded-xl hover:bg-surface-subtle transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                <ChevronLeft className="w-4 h-4" />
+                <ChevronRight className="w-4 h-4" />
                 <span>مرحله قبل</span>
               </button>
 
@@ -790,7 +790,7 @@ export default function OrderReturnPage({
 
             {/* Policy Info Card */}
             <div className="bg-primary/5 border border-primary/20 rounded-xl p-3.5 text-xs text-muted-foreground flex items-start gap-2.5">
-              <ShieldCheck className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+              <ShieldCheck className=" text-primary shrink-0 mt-0.5" />
               <p className="leading-relaxed">
                 پس از ثبت درخواست، همکاران ما آن را بررسی و کد رهگیری/آدرس ارسال را برای شما صادر می‌کنند. مبلغ بازپرداخت پس از دریافت و کارشناسی کالا به حساب شما واریز خواهد شد.
               </p>
@@ -803,7 +803,7 @@ export default function OrderReturnPage({
                 onClick={() => setStep(requestType === "exchange" ? 3 : 2)}
                 className="h-11 border border-border-subtle text-foreground font-bold text-xs rounded-xl hover:bg-surface-subtle transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                <ChevronLeft className="w-4 h-4" />
+                <ChevronRight className="w-4 h-4" />
                 <span>اصلاح اطلاعات</span>
               </button>
 

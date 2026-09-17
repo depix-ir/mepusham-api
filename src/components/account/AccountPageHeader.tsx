@@ -43,7 +43,7 @@ export function AccountPageHeader({
 
       <div className="space-y-1">
         <h1 className="text-lg sm:text-xl md:text-2xl font-bold flex items-center gap-2">
-          {Icon && <Icon className="w-5 h-5 sm:w-6 sm:h-6 shrink-0" />}
+          {Icon && <Icon className="w-4 h-4 sm:w-6 sm:h-6 shrink-0" />}
           <span>{title}</span>
         </h1>
         <p className="text-xs sm:text-sm opacity-90 leading-relaxed max-w-xl">

@@ -75,7 +75,7 @@ export function AccountDashboard({
             <div className="flex flex-row items-center justify-between gap-3 sm:gap-4">
               <div className="flex items-center gap-2.5 sm:gap-4 min-w-0">
                 <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-primary-foreground text-primary flex items-center justify-center font-bold text-sm sm:text-xl shrink-0">
-                  {user.firstName ? user.firstName.charAt(0) : <UserIcon className="w-5 h-5 sm:w-7 sm:h-7 text-primary" />}
+                  {user.firstName ? user.firstName.charAt(0) : <UserIcon className=" sm:w-7 sm:h-7 text-primary" />}
                 </div>
                 <div className="space-y-0.5 sm:space-y-1 min-w-0">
                   <h1 className="text-xs sm:text-xl font-bold text-primary-foreground flex items-center gap-2 truncate">

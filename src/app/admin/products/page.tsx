@@ -642,7 +642,7 @@ export default function AdminProductsPage() {
           <SlidersHorizontal className="w-4 h-4 text-muted-foreground" />
           <span>فیلترها</span>
           {activeFiltersCount > 0 && (
-            <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">
+            <span className=" rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">
               {activeFiltersCount}
             </span>
           )}
@@ -1743,7 +1743,7 @@ export default function AdminProductsPage() {
           <div className="relative bg-background border border-border rounded-xl shadow-xl w-full max-w-sm p-6 space-y-4 z-10">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-error/10 text-error flex items-center justify-center shrink-0">
-                <AlertTriangle className="w-5 h-5" />
+                <AlertTriangle className="" />
               </div>
               <div>
                 <h3 className="text-sm font-bold text-foreground">تایید حذف محصول</h3>
@@ -1787,7 +1787,7 @@ export default function AdminProductsPage() {
           <div className="relative bg-background border border-border rounded-xl shadow-xl w-full max-w-sm p-6 space-y-4 z-10">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-error/10 text-error flex items-center justify-center shrink-0">
-                <AlertTriangle className="w-5 h-5" />
+                <AlertTriangle className="" />
               </div>
               <div>
                 <h3 className="text-sm font-bold text-foreground">حذف واریانت</h3>
@@ -1915,7 +1915,7 @@ export default function AdminProductsPage() {
           <div className="relative bg-background border border-border rounded-xl shadow-xl w-full max-w-sm p-6 space-y-4 z-10">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-error/10 text-error flex items-center justify-center shrink-0">
-                <AlertTriangle className="w-5 h-5" />
+                <AlertTriangle className="" />
               </div>
               <div>
                 <h3 className="text-sm font-bold text-foreground">حذف گروهی</h3>

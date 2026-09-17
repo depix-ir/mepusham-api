@@ -15,6 +15,7 @@ import {
   ChevronLeft,
   Package,
   Calendar,
+  ChevronRight,
 } from "lucide-react";
 
 export default function CustomerReturnsListPage() {
@@ -186,7 +187,7 @@ export default function CustomerReturnsListPage() {
                       className="inline-flex items-center gap-1 font-bold text-primary hover:underline text-xs"
                     >
                       <span>جزئیات و پیگیری</span>
-                      <ChevronLeft className="w-4 h-4 rtl:rotate-180" />
+                      <ChevronRight className="w-4 h-4 rtl:rotate-180" />
                     </Link>
                   </div>
                 </div>

@@ -152,7 +152,7 @@ export default function ReturnDetailPage({
           {(request.status === "approved" || request.status === "awaiting_customer_shipment") && (
             <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 sm:p-5 space-y-3">
               <div className="flex items-center gap-2">
-                <Truck className="w-5 h-5 text-primary shrink-0" />
+                <Truck className=" text-primary shrink-0" />
                 <h3 className="text-xs sm:text-sm font-bold text-foreground">
                   درخواست شما تأیید شد - لطفاً کالا را ارسال کنید
                 </h3>
