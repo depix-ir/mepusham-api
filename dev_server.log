@@ -1,23 +1,44 @@
-$ next dev
-▲ Next.js 16.3.4 (Turbopack)
+▲ Next.js 16.3.5 (Turbopack)
 - Local:         http://localhost:3000
 - Network:       http://192.168.0.2:3000
-✓ Ready in 560ms
-✓ Running next.config.ts took 46ms
+✓ Ready in 534ms
+✓ Running next.config.ts took 51ms
+Turbopack build encountered 1 error:
+./src/app
+Error: Could not find the Next.js package (next/package.json)
+Resolved from: /app/src/app
+Filesystem root used for resolution: /app
 
-○ Compiling /admin/customers ...
- GET /admin/customers 200 in 4.9s (next.js: 4.2s, application-code: 699ms)
- GET /admin/customers 200 in 141ms (next.js: 6ms, application-code: 135ms)
- GET /admin/inventory/history 200 in 754ms (next.js: 645ms, application-code: 109ms)
- GET /admin/orders 200 in 627ms (next.js: 532ms, application-code: 95ms)
- GET /admin/returns 200 in 557ms (next.js: 463ms, application-code: 95ms)
-[browser] Image with src "/images/bag-2.webp" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
-[browser] Image with src "/images/bag-1.webp" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
- GET /images/shoes-1.webp 404 in 462ms (next.js: 292ms, application-code: 170ms)
-⨯ The requested resource isn't a valid image for /images/shoes-1.webp received null
- GET /images/jacket-1.webp 404 in 465ms (next.js: 324ms, application-code: 140ms)
-⨯ The requested resource isn't a valid image for /images/jacket-1.webp received null
- GET /admin/support 200 in 483ms (next.js: 370ms, application-code: 113ms)
- GET /account/orders 200 in 417ms (next.js: 327ms, application-code: 91ms)
- GET /account/returns 200 in 422ms (next.js: 349ms, application-code: 73ms)
- GET /account/support 200 in 422ms (next.js: 337ms, application-code: 85ms)
+Possible causes:
+  - node_modules is being reorganized by a concurrent install (e.g. pnpm adding a package with a `next` peer dependency). This is transient and should clear once the install completes.
+  - node_modules/next was removed, renamed, or has a broken symlink.
+  - The workspace root is incorrect — see turbopack.root in the Next.js config docs for how to configure it.
+  - In a monorepo, the Next.js package may only exist in a directory above the closest directory containing a package manager lockfile. The workspace root is detected by locating the nearest package manager lockfile.
+  - Next.js is installed globally rather than as a project dependency. This is not supported; install it locally.
+
+Note: To ensure a hermetic build and a portable cache, files outside of the workspace root are not compiled.
+
+https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory
+
+
+It looks like you're trying to use TypeScript but do not have the required package(s) installed.
+Installing dependencies
+
+If you are not trying to use TypeScript, please remove the tsconfig.json file from your package root (and any TypeScript files in your app and pages directories).
+
+
+Installing devDependencies (npm):
+- typescript
+- @types/react
+- @types/node
+
+npm warn deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+
+added 732 packages, and audited 733 packages in 38s
+
+151 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+
+
