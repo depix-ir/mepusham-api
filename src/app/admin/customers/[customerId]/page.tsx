@@ -11,7 +11,7 @@ import { useToast } from "@/components/ui/Toast";
 import { formatPrice } from "@/lib/formatting/currency";
 import { routes } from "@/lib/routes";
 import { orderStatusLabels } from "@/types/account";
-import { returnStatusLabels } from "@/types/return";
+import { RETURN_STATUS_LABELS } from "@/types/return";
 import { supportStatusLabelsAdmin } from "@/types/support";
 import { TomanIcon } from "@/components/icons";
 import {
@@ -339,7 +339,7 @@ export default function AdminCustomerDetailPage() {
                     </span>
                   </div>
                   <span className="text-[11px] text-muted-foreground block">
-                    نوع: {r.type === "return" ? "مرجوعی" : "تعویض"} | وضعیت: {returnStatusLabels[r.status] || r.status}
+                    نوع: {r.type === "return" ? "مرجوعی" : "تعویض"} | وضعیت: {RETURN_STATUS_LABELS[r.status] || r.status}
                   </span>
                 </div>
 
