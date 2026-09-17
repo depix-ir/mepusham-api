@@ -292,7 +292,7 @@ export class ReturnService {
       throw new Error(variantValidation.reason || "تنوع مقصد انتخاب‌شده قابل تعویض نیست.");
     }
 
-    const replacementPrice = targetVariant ? targetVariant.price : targetProduct.price;
+    const replacementPrice = targetVariant ? targetVariant.pricing.price : targetProduct.pricing.minPrice;
     const originalUnitPrice = orderItem.finalUnitPrice;
 
     // Price difference per item * quantity
