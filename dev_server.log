@@ -2,68 +2,22 @@ $ next dev
 ▲ Next.js 16.3.4 (Turbopack)
 - Local:         http://localhost:3000
 - Network:       http://192.168.0.2:3000
-✓ Ready in 558ms
-✓ Running next.config.ts took 47ms
+✓ Ready in 560ms
+✓ Running next.config.ts took 46ms
 
-○ Compiling / ...
- HEAD / 200 in 5.2s (next.js: 4.3s, application-code: 844ms)
- GET /orders 307 in 731ms (next.js: 617ms, application-code: 114ms)
- GET /account/orders 200 in 457ms (next.js: 358ms, application-code: 99ms)
- GET /orders 307 in 131ms (next.js: 4ms, application-code: 127ms)
- GET /account/orders 200 in 81ms (next.js: 5ms, application-code: 76ms)
- GET /support 307 in 469ms (next.js: 325ms, application-code: 143ms)
- GET /account/support 200 in 519ms (next.js: 380ms, application-code: 139ms)
- GET /wishlist 307 in 396ms (next.js: 306ms, application-code: 89ms)
- GET /account/wishlist 200 in 504ms (next.js: 376ms, application-code: 128ms)
- GET /account/orders 200 in 71ms (next.js: 5ms, application-code: 66ms)
-[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
-
-- A server/client branch `if (typeof window !== 'undefined')`.
-- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
-- Date formatting in a user's locale which doesn't match the server.
-- External changing data without sending a snapshot of it along with the HTML.
-- Invalid HTML tag nesting.
-
-It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
-
-https://react.dev/link/hydration-mismatch
-
-  ...
-    <WishlistProvider>
-      <AppShell>
-        <Header>
-          <header className="w-full sti...">
-            <AnnouncementBar>
-            <MainHeader cartItemCount={undefined}>
-              <div className="w-full bg-...">
-                <Container className="flex items...">
-                  <div className="w-full max...">
-                    <LinkComponent>
-                    <div className="flex-1 max...">
-                      <SearchInput brandMark={<LinkComponent>}>
-                        <Search brandMark={<LinkComponent>}>
-                          <div ref={{current:null}} className="relative w...">
-                            <div className="relative f...">
-                              <div>
-                              <input
-                                ref={{current:null}}
-                                type="text"
-                                inputMode="search"
-                                value=""
-                                onChange={function onChange}
-                                onFocus={function handleInputFocus}
-                                onClick={function handleMobileInputClick}
-                                onKeyDown={function useSearchSuggestions.useCallback[handleKeyDown]}
-                                placeholder="جستجوی محصول در نام برند"
-                                role="combobox"
-                                aria-autocomplete="list"
-                                aria-expanded={false}
-                                aria-controls="search-suggestions-dropdown-desktop"
-                                aria-activedescendant={undefined}
-                                className="w-full bg-transparent pr-3 text-xs md:text-sm text-foreground placeholder:t..."
--                               style={{caret-color:"transparent"}}
-                              >
-                              ...
-                    ...
-            ...
-        ...
+○ Compiling /admin/customers ...
+ GET /admin/customers 200 in 4.9s (next.js: 4.2s, application-code: 699ms)
+ GET /admin/customers 200 in 141ms (next.js: 6ms, application-code: 135ms)
+ GET /admin/inventory/history 200 in 754ms (next.js: 645ms, application-code: 109ms)
+ GET /admin/orders 200 in 627ms (next.js: 532ms, application-code: 95ms)
+ GET /admin/returns 200 in 557ms (next.js: 463ms, application-code: 95ms)
+[browser] Image with src "/images/bag-2.webp" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/images/bag-1.webp" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+ GET /images/shoes-1.webp 404 in 462ms (next.js: 292ms, application-code: 170ms)
+⨯ The requested resource isn't a valid image for /images/shoes-1.webp received null
+ GET /images/jacket-1.webp 404 in 465ms (next.js: 324ms, application-code: 140ms)
+⨯ The requested resource isn't a valid image for /images/jacket-1.webp received null
+ GET /admin/support 200 in 483ms (next.js: 370ms, application-code: 113ms)
+ GET /account/orders 200 in 417ms (next.js: 327ms, application-code: 91ms)
+ GET /account/returns 200 in 422ms (next.js: 349ms, application-code: 73ms)
+ GET /account/support 200 in 422ms (next.js: 337ms, application-code: 85ms)

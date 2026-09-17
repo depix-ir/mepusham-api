@@ -35,6 +35,11 @@ export default function AdminCustomerDetailPage() {
   const router = useRouter();
   const { showToast } = useToast();
 
+  const [isHydrated, setIsHydrated] = useState(false);
+  React.useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
   const customerId = (params?.customerId as string) || "";
   const [dataVersion, setDataVersion] = useState(0);
 
@@ -44,8 +49,8 @@ export default function AdminCustomerDetailPage() {
 
   // Fetch Customer Overview Data
   const overview = useMemo(() => {
-    return customerService.getCustomerById(customerId);
-  }, [customerId, dataVersion]);
+    return customerService.getCustomerById(customerId, { isHydrated });
+  }, [customerId, dataVersion, isHydrated]);
 
   if (!overview) {
     return (

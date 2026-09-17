@@ -64,8 +64,9 @@ function normalizePhone(phone?: string): string {
 class CustomerService {
   /* ================= STORAGE HELPERS ================= */
 
-  private getStoredStatuses(): Record<string, CustomerStatus> {
-    if (typeof window === "undefined") {
+  private getStoredStatuses(isHydrated?: boolean): Record<string, CustomerStatus> {
+    const activeHydration = isHydrated ?? (typeof window !== "undefined");
+    if (!activeHydration) {
       return (memoryStore[CUSTOMER_STATUSES_KEY] as Record<string, CustomerStatus>) || {};
     }
     try {
@@ -88,11 +89,12 @@ class CustomerService {
     }
   }
 
-  private getStoredProfiles(): Record<
+  private getStoredProfiles(isHydrated?: boolean): Record<
     string,
     { firstName: string; lastName: string; phone?: string }
   > {
-    if (typeof window === "undefined") {
+    const activeHydration = isHydrated ?? (typeof window !== "undefined");
+    if (!activeHydration) {
       return (
         (memoryStore[CUSTOMER_PROFILES_KEY] as Record<
           string,
@@ -132,10 +134,10 @@ class CustomerService {
 
   /* ================= DERIVE ALL CUSTOMERS ================= */
 
-  private getAllCustomersMap(): Map<string, CustomerAccount> {
+  private getAllCustomersMap(isHydrated?: boolean): Map<string, CustomerAccount> {
     const map = new Map<string, CustomerAccount>();
-    const statuses = this.getStoredStatuses();
-    const profiles = this.getStoredProfiles();
+    const statuses = this.getStoredStatuses(isHydrated);
+    const profiles = this.getStoredProfiles(isHydrated);
 
     // 1. Current Auth User / Default Mock User
     const currentUser = authService.getCurrentUser() || mockDefaultUser;
@@ -162,7 +164,7 @@ class CustomerService {
     }
 
     // 2. Discover Customers from Orders
-    const orders = accountService.getOrders();
+    const orders = accountService.getOrders({ isHydrated });
     orders.forEach((o) => {
       const phone = normalizePhone(o.shippingAddress.phone);
       if (!phone) return;
@@ -205,7 +207,7 @@ class CustomerService {
     });
 
     // 3. Discover Customers from Support Tickets
-    const tickets = supportService.getTickets();
+    const tickets = supportService.getTickets(undefined, { isHydrated });
     tickets.forEach((t) => {
       const phone = normalizePhone(t.customerPhone);
       if (!phone) return;
@@ -238,7 +240,7 @@ class CustomerService {
     });
 
     // 4. Discover Customers from Return Requests
-    const returnsRes = returnService.getReturnRequests();
+    const returnsRes = returnService.getReturnRequests(undefined, { isHydrated });
     returnsRes.items.forEach((r) => {
       const phone = normalizePhone(r.customerPhone);
       if (!phone) return;
@@ -275,7 +277,10 @@ class CustomerService {
 
   /* ================= GET LIST WITH FILTERS & PAGINATION ================= */
 
-  getCustomers(filters?: CustomerFilters): {
+  getCustomers(
+    filters?: CustomerFilters,
+    options?: { isHydrated?: boolean }
+  ): {
     items: CustomerAccount[];
     total: number;
     page: number;
@@ -283,7 +288,7 @@ class CustomerService {
     totalPages: number;
     summaryStats: CustomerSummaryStats;
   } {
-    const customersMap = this.getAllCustomersMap();
+    const customersMap = this.getAllCustomersMap(options?.isHydrated);
     let allList = Array.from(customersMap.values());
 
     const summaryStats: CustomerSummaryStats = {
@@ -359,8 +364,11 @@ class CustomerService {
 
   /* ================= GET CUSTOMER BY ID ================= */
 
-  getCustomerById(customerId: string): CustomerOverview | undefined {
-    const customersMap = this.getAllCustomersMap();
+  getCustomerById(
+    customerId: string,
+    options?: { isHydrated?: boolean }
+  ): CustomerOverview | undefined {
+    const customersMap = this.getAllCustomersMap(options?.isHydrated);
     const cleanId = customerId.trim();
 
     let foundCustomer: CustomerAccount | undefined;

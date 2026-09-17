@@ -167,8 +167,9 @@ export function isDuplicateVariant(
 /**
  * Inventory History log functions.
  */
-export function getInventoryHistoryLogs(): InventoryHistoryLog[] {
-  if (typeof window === "undefined") return getInitialMockHistory();
+export function getInventoryHistoryLogs(options?: { isHydrated?: boolean }): InventoryHistoryLog[] {
+  const isHydrated = options?.isHydrated ?? (typeof window !== "undefined");
+  if (!isHydrated) return getInitialMockHistory();
   try {
     const stored = localStorage.getItem(HISTORY_STORAGE_KEY);
     if (stored) {
