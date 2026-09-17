@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { routes } from "@/lib/routes";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 export function CheckoutHeader() {
@@ -16,7 +17,7 @@ export function CheckoutHeader() {
         {/* Support Link & Back to Cart Link */}
         <div className="flex items-center gap-4">
           <Link
-            href="/cart"
+            href={routes.cart}
             className="flex items-center gap-1 text-xs font-medium text-muted hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-4 h-4 rtl:rotate-180" />
@@ -24,7 +25,7 @@ export function CheckoutHeader() {
           </Link>
 
           <Link
-            href="/support"
+            href={routes.account.support.list()}
             className="hidden sm:inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline transition-colors"
           >
             <span>پشتیبانی آنلاین</span>

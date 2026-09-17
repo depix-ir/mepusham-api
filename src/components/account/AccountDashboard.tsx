@@ -8,6 +8,7 @@ import { accountService } from "@/lib/account/accountService";
 import { returnService } from "@/lib/returns/returnService";
 import { useWishlist } from "@/store/wishlist/wishlist.store";
 import { toPersianDigits } from "@/lib/formatting/currency";
+import { routes } from "@/lib/routes";
 import { EditProfileModal } from "./info/EditProfileModal";
 import { LogoutDialog } from "./logout/LogoutDialog";
 import {
@@ -105,7 +106,7 @@ export function AccountDashboard({
           <div className="bg-background border border-border/80 rounded-2xl divide-y divide-border/60 shadow-2xs overflow-hidden">
             {/* 1. Orders Card */}
             <Link
-              href="/orders"
+              href={routes.account.orders.list}
               className="group flex items-center justify-between py-2.5 px-3 sm:p-3.5 hover:bg-surface-subtle/50 transition-colors"
             >
               <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
@@ -134,7 +135,7 @@ export function AccountDashboard({
 
             {/* 2. Returns & Exchanges Card */}
             <Link
-              href="/account/returns"
+              href={routes.account.returns.list}
               className="group flex items-center justify-between py-2.5 px-3 sm:p-3.5 hover:bg-surface-subtle/50 transition-colors"
             >
               <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
@@ -163,7 +164,7 @@ export function AccountDashboard({
 
             {/* 3. Support & Tickets Card */}
             <Link
-              href="/support"
+              href={routes.account.support.list()}
               className="group flex items-center justify-between py-2.5 px-3 sm:p-3.5 hover:bg-surface-subtle/50 transition-colors"
             >
               <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
@@ -193,7 +194,7 @@ export function AccountDashboard({
 
             {/* 4. Addresses Management Card - Link to /account/addresses */}
             <Link
-              href="/account/addresses"
+              href={routes.account.addresses}
               className="group flex items-center justify-between py-2.5 px-3 sm:p-3.5 hover:bg-surface-subtle/50 transition-colors"
             >
               <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
@@ -222,7 +223,7 @@ export function AccountDashboard({
 
             {/* 5. Wishlist Card */}
             <Link
-              href="/wishlist"
+              href={routes.account.wishlist}
               className="group flex items-center justify-between py-2.5 px-3 sm:p-3.5 hover:bg-surface-subtle/50 transition-colors"
             >
               <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">

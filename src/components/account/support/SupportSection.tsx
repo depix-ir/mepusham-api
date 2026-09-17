@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { SupportTicket, ticketStatusLabels } from "@/types/account";
+import { routes } from "@/lib/routes";
 import { Headset, ChevronLeft, Plus, MessageSquare } from "lucide-react";
 
 interface SupportSectionProps {
@@ -29,7 +30,7 @@ export function SupportSection({ tickets }: SupportSectionProps) {
         </h2>
 
         <Link
-          href="/support"
+          href={routes.account.support.list()}
           className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline cursor-pointer"
         >
           <span>ورود به مرکز پشتیبانی</span>
@@ -64,7 +65,7 @@ export function SupportSection({ tickets }: SupportSectionProps) {
         {/* Call-to-action buttons */}
         <div className="pt-1 flex gap-2">
           <Link
-            href="/support"
+            href={routes.account.support.list()}
             className="flex-1 py-2 px-3 rounded-xl bg-primary text-primary-foreground text-xs font-bold hover:bg-primary-hover transition-colors flex items-center justify-center gap-1.5 shadow-2xs"
           >
             <Plus className="w-3.5 h-3.5" />

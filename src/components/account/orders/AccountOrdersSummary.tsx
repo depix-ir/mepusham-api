@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { Order, orderStatusLabels } from "@/types/account";
+import { routes } from "@/lib/routes";
 import { ShoppingBag, ArrowLeft, Package, Clock, RotateCcw } from "lucide-react";
 
 interface AccountOrdersSummaryProps {
@@ -46,14 +47,14 @@ export function AccountOrdersSummary({ orders }: AccountOrdersSummaryProps) {
 
         <div className="flex items-center gap-3 text-xs">
           <Link
-            href="/account/returns"
+            href={routes.account.returns.list}
             className="inline-flex items-center gap-1 font-bold text-muted-foreground hover:text-foreground transition-colors"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>مرجوعی‌ها</span>
           </Link>
           <Link
-            href="/orders"
+            href={routes.account.orders.list}
             className="inline-flex items-center gap-1 font-bold text-primary hover:underline group cursor-pointer"
           >
             <span>مشاهده همه</span>
@@ -92,7 +93,7 @@ export function AccountOrdersSummary({ orders }: AccountOrdersSummaryProps) {
           </div>
 
           <Link
-            href={`/orders/${latestOrder.id}`}
+            href={routes.account.orders.detail(latestOrder.id)}
             className="inline-flex items-center justify-center px-3 py-1.5 rounded-lg bg-background border border-border/80 text-xs font-bold text-foreground hover:bg-surface-subtle transition-colors shrink-0"
           >
             مشاهده جزئیات

@@ -2,15 +2,68 @@ $ next dev
 ▲ Next.js 16.3.4 (Turbopack)
 - Local:         http://localhost:3000
 - Network:       http://192.168.0.2:3000
-✓ Ready in 595ms
-✓ Running next.config.ts took 53ms
-Attention: Next.js now collects completely anonymous telemetry regarding usage.
-This information is used to shape Next.js' roadmap and prioritize features.
-You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
-https://nextjs.org/telemetry
+✓ Ready in 558ms
+✓ Running next.config.ts took 47ms
 
+○ Compiling / ...
+ HEAD / 200 in 5.2s (next.js: 4.3s, application-code: 844ms)
+ GET /orders 307 in 731ms (next.js: 617ms, application-code: 114ms)
+ GET /account/orders 200 in 457ms (next.js: 358ms, application-code: 99ms)
+ GET /orders 307 in 131ms (next.js: 4ms, application-code: 127ms)
+ GET /account/orders 200 in 81ms (next.js: 5ms, application-code: 76ms)
+ GET /support 307 in 469ms (next.js: 325ms, application-code: 143ms)
+ GET /account/support 200 in 519ms (next.js: 380ms, application-code: 139ms)
+ GET /wishlist 307 in 396ms (next.js: 306ms, application-code: 89ms)
+ GET /account/wishlist 200 in 504ms (next.js: 376ms, application-code: 128ms)
+ GET /account/orders 200 in 71ms (next.js: 5ms, application-code: 66ms)
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
 
-○ Compiling /admin/support ...
- GET /admin/support 200 in 7.0s (next.js: 6.3s, application-code: 673ms)
- GET /admin/support/ticket-1001 200 in 2.1s (next.js: 1990ms, application-code: 111ms)
- GET /support 200 in 516ms (next.js: 403ms, application-code: 114ms)
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <WishlistProvider>
+      <AppShell>
+        <Header>
+          <header className="w-full sti...">
+            <AnnouncementBar>
+            <MainHeader cartItemCount={undefined}>
+              <div className="w-full bg-...">
+                <Container className="flex items...">
+                  <div className="w-full max...">
+                    <LinkComponent>
+                    <div className="flex-1 max...">
+                      <SearchInput brandMark={<LinkComponent>}>
+                        <Search brandMark={<LinkComponent>}>
+                          <div ref={{current:null}} className="relative w...">
+                            <div className="relative f...">
+                              <div>
+                              <input
+                                ref={{current:null}}
+                                type="text"
+                                inputMode="search"
+                                value=""
+                                onChange={function onChange}
+                                onFocus={function handleInputFocus}
+                                onClick={function handleMobileInputClick}
+                                onKeyDown={function useSearchSuggestions.useCallback[handleKeyDown]}
+                                placeholder="جستجوی محصول در نام برند"
+                                role="combobox"
+                                aria-autocomplete="list"
+                                aria-expanded={false}
+                                aria-controls="search-suggestions-dropdown-desktop"
+                                aria-activedescendant={undefined}
+                                className="w-full bg-transparent pr-3 text-xs md:text-sm text-foreground placeholder:t..."
+-                               style={{caret-color:"transparent"}}
+                              >
+                              ...
+                    ...
+            ...
+        ...
