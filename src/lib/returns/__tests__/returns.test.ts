@@ -1,17 +1,15 @@
-import { describe, test, expect, beforeEach } from "bun:test";
+import { describe, test, expect } from "bun:test";
 import {
   isWithinReturnWindow,
   checkItemEligibility,
-  checkOrderEligibility,
   validateExchangeVariant,
 } from "../eligibility";
 import {
   isValidStateTransition,
-  getAllowedNextStatuses,
 } from "../stateMachine";
 import { getReturnPolicy } from "../policy";
 import { ReturnRequest } from "@/types/return";
-import { Order, OrderItem } from "@/types/account";
+import { OrderItem } from "@/types/account";
 import { Product } from "@/types/product";
 
 describe("Return Window Enforcement (2 Days / 48 Hours)", () => {

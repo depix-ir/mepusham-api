@@ -8,9 +8,7 @@ import {
   InspectionResult,
   ReturnTimelineEvent,
   Refund,
-  ReturnShipment,
   ExchangeDetails,
-  RequestType,
 } from "@/types/return";
 import { getReturnPolicy } from "./policy";
 import {
@@ -70,7 +68,7 @@ export class ReturnService {
     // Apply Filter: Date Range
     if (filters.dateRange && filters.dateRange !== "all") {
       const now = new Date();
-      let cutoff = new Date();
+      const cutoff = new Date();
       if (filters.dateRange === "today") {
         cutoff.setHours(0, 0, 0, 0);
       } else if (filters.dateRange === "7days") {
@@ -193,7 +191,6 @@ export class ReturnService {
 
     const policy = getReturnPolicy(params.reason);
     const nowIso = new Date().toISOString();
-    const nowFa = new Date().toLocaleDateString("fa-IR");
 
     const count = allRequests.length + 1020;
     const reqNum = `RET-${count}`;
@@ -457,10 +454,10 @@ export class ReturnService {
 
       return {
         ...req,
-        status: nextStatus as any,
+        status: nextStatus as ReturnRequest["status"],
         shipment: {
           ...req.shipment,
-          status: "in_transit",
+          status: "in_transit" as const,
           method: params.method || req.shipment?.method || "post",
           trackingCode: params.trackingCode,
           shippedAt: nowIso,
@@ -548,7 +545,6 @@ export class ReturnService {
       const nowIso = new Date().toISOString();
 
       let hasSellable = false;
-      let hasRejected = false;
 
       // Update inspection results for items
       const updatedItems = req.items.map((item) => {
@@ -567,9 +563,6 @@ export class ReturnService {
             item.variantDisplay,
             actorName
           );
-        } else {
-          hasRejected = true;
-          // damaged / unsellable / needs_review => inventory += 0 (Do NOT add to stock)
         }
 
         return {
@@ -603,7 +596,7 @@ export class ReturnService {
 
       return {
         ...req,
-        status: nextStatus as any,
+        status: nextStatus as ReturnRequest["status"],
         items: updatedItems,
         timeline: [...req.timeline, newTimeline],
         updatedAt: nowIso,
