@@ -12,6 +12,7 @@ import {
   INSPECTION_RESULT_LABELS,
 } from "@/types/return";
 import { Container } from "@/components/ui/Container";
+import { AccountPageHeader } from "@/components/account/AccountPageHeader";
 import { formatPrice } from "@/lib/formatting/currency";
 import { TomanIcon } from "@/components/icons";
 import { useToast } from "@/components/ui/Toast";
@@ -20,15 +21,10 @@ import {
   RefreshCw,
   ChevronLeft,
   ArrowRight,
-  Package,
   Truck,
   CheckCircle2,
   Clock,
-  AlertCircle,
-  FileText,
   Send,
-  ShieldCheck,
-  CreditCard,
 } from "lucide-react";
 
 export default function ReturnDetailPage({
@@ -120,30 +116,6 @@ export default function ReturnDetailPage({
     }
   };
 
-  const getStatusBadgeClass = (status: string) => {
-    switch (status) {
-      case "requested":
-      case "under_review":
-        return "bg-amber-500/10 text-amber-700 border-amber-500/20";
-      case "approved":
-      case "awaiting_customer_shipment":
-      case "in_transit":
-      case "received":
-      case "inspection":
-        return "bg-blue-500/10 text-blue-700 border-blue-500/20";
-      case "inspection_approved":
-      case "refunded":
-      case "replacement_shipped":
-      case "completed":
-        return "bg-emerald-500/10 text-emerald-700 border-emerald-500/20";
-      case "rejected":
-      case "inspection_rejected":
-        return "bg-rose-500/10 text-rose-700 border-rose-500/20";
-      default:
-        return "bg-surface-subtle text-foreground border-border-subtle";
-    }
-  };
-
   return (
     <div className="py-6 sm:py-10 max-w-[800px] m-auto bg-background min-h-screen pb-24 md:pb-12">
       <Container className="max-w-3xl space-y-6">
@@ -164,47 +136,18 @@ export default function ReturnDetailPage({
           <span className="text-foreground font-bold" dir="ltr">#{request.requestNumber}</span>
         </nav>
 
-          {/* Back Link, Support & Badge Header */}
-        <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <Link
-                href="/account/returns"
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <ArrowRight className="w-4 h-4" />
-                <span>بازگشت به درخواست‌ها</span>
-              </Link>
-              <span className="text-muted-foreground text-xs">•</span>
-              <Link
-                href="/support"
-                className="text-xs font-medium text-primary hover:underline transition-colors"
-              >
-                پشتیبانی مرجوعی
-              </Link>
-            </div>
-
-          <span className={`text-xs font-bold px-3 py-1 rounded-full border ${getStatusBadgeClass(request.status)}`}>
-            {RETURN_STATUS_LABELS[request.status] || request.status}
-          </span>
-        </div>
+        {/* Page Header Component */}
+        <AccountPageHeader
+          title={`درخواست ${request.type === "return" ? "مرجوعی" : "تعویض"} #${request.requestNumber}`}
+          description={`ثبت شده برای سفارش #${request.orderNumber} در ${new Date(request.createdAt).toLocaleDateString("fa-IR")}`}
+          icon={request.type === "return" ? RotateCcw : RefreshCw}
+          backUrl="/account/returns"
+          backLabel="بازگشت به درخواست‌ها"
+          badgeText={RETURN_STATUS_LABELS[request.status] || request.status}
+        />
 
         {/* Main Content Box */}
         <div className="bg-background rounded-2xl space-y-6">
-          {/* Header Title */}
-          <div className="flex items-center gap-3 pb-4 border-b border-border-subtle">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-              {request.type === "return" ? <RotateCcw className="w-5 h-5" /> : <RefreshCw className="w-5 h-5" />}
-            </div>
-            <div>
-              <h1 className="text-base sm:text-lg font-bold text-foreground">
-                درخواست {request.type === "return" ? "مرجوعی" : "تعویض"} <span dir="ltr">#{request.requestNumber}</span>
-              </h1>
-              <p className="text-xs text-muted-foreground">
-                ثبت شده برای سفارش <Link href={`/orders/${request.orderId}`} className="font-mono text-primary hover:underline" dir="ltr">#{request.orderNumber}</Link> در {new Date(request.createdAt).toLocaleDateString("fa-IR")}
-              </p>
-            </div>
-          </div>
-
           {/* Customer Shipping Input Prompt (When Approved & Awaiting Customer Shipment) */}
           {(request.status === "approved" || request.status === "awaiting_customer_shipment") && (
             <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 sm:p-5 space-y-3">
