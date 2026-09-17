@@ -377,13 +377,13 @@ export default function OrderDetailPage({
 
               <div className="space-y-2">
                 <Link
-                  href="/support"
+                  href={`/account/support/new?orderId=${order.id}`}
                   className="p-2.5 bg-background border border-border-subtle rounded-xl flex items-center justify-between hover:border-primary transition-colors group"
                 >
                   <div className="flex items-center gap-2">
                     <MessageSquare className="w-4 h-4 text-primary shrink-0" />
                     <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors">
-                      ارسال تیکت پشتیبانی
+                      مشکل در این سفارش دارید؟ تماس با پشتیبانی
                     </span>
                   </div>
                   <ChevronLeft className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors rtl:rotate-0" />

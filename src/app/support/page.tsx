@@ -1,37 +1,31 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { useAuth } from "@/store/auth/auth.store";
-import { accountService } from "@/lib/account/accountService";
-import { SupportTicket, Order, ticketStatusLabels, TicketAttachment } from "@/types/account";
+import { supportService } from "@/lib/support/supportService";
+import { SupportTicket } from "@/types/support";
 import { Container } from "@/components/ui/Container";
 import { FAQSection } from "@/components/support/FAQSection";
 import { PurchaseGuidesSection } from "@/components/support/PurchaseGuidesSection";
-import { TicketForm } from "@/components/support/TicketForm";
-import { TicketDetailView } from "@/components/support/TicketDetailView";
+import { CustomerTicketList } from "@/components/account/support/CustomerTicketList";
 import { AccountPageHeader } from "@/components/account/AccountPageHeader";
-import Link from "next/link";
 import {
   Headset,
-  Plus,
   MessageSquare,
-  ChevronLeft,
   LogIn,
   HelpCircle,
   BookOpen,
+  ChevronLeft,
 } from "lucide-react";
 
 type ActiveTab = "faqs" | "guides" | "tickets";
 
-export default function SupportPage() {
-  const { user, isAuthenticated, isAuthLoading } = useAuth();
+export default function PublicSupportPage() {
+  const { user, isAuthenticated } = useAuth();
 
   const [activeTab, setActiveTab] = useState<ActiveTab>("tickets");
   const [tickets, setTickets] = useState<SupportTicket[]>([]);
-  const [orders, setOrders] = useState<Order[]>([]);
-
-  const [viewMode, setViewMode] = useState<"list" | "create" | "detail">("list");
-  const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
 
   // Parse tab param from URL on initial load if present
   useEffect(() => {
@@ -44,55 +38,12 @@ export default function SupportPage() {
     }
   }, []);
 
-  // Load account tickets & orders when authenticated
+  // Load support tickets when authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      setTickets(accountService.getTickets());
-      setOrders(accountService.getOrders());
+      setTickets(supportService.getTickets());
     }
   }, [isAuthenticated]);
-
-  const handleCreateTicket = useCallback(
-    (data: {
-      subject: string;
-      orderId?: string;
-      orderNumber?: string;
-      message: string;
-      attachments?: TicketAttachment[];
-    }) => {
-      accountService.createTicket(data);
-      const updatedTickets = accountService.getTickets();
-      setTickets(updatedTickets);
-      setViewMode("list");
-    },
-    []
-  );
-
-  const handleSendMessage = useCallback(
-    (ticketId: string, text: string, attachments?: TicketAttachment[]) => {
-      accountService.addTicketMessage(ticketId, text, attachments);
-      const updatedTickets = accountService.getTickets();
-      setTickets(updatedTickets);
-
-      // Keep active ticket updated
-      const updated = updatedTickets.find((t) => t.id === ticketId);
-      if (updated) setSelectedTicket(updated);
-    },
-    []
-  );
-
-  const getStatusBadgeClass = (status: SupportTicket["status"]) => {
-    switch (status) {
-      case "waiting-user":
-        return "bg-emerald-500/10 text-emerald-700 border-emerald-500/20";
-      case "waiting-support":
-        return "bg-amber-500/10 text-amber-700 border-amber-500/20";
-      case "open":
-        return "bg-blue-500/10 text-blue-700 border-blue-500/20";
-      default:
-        return "bg-surface-subtle text-muted-foreground border-border-subtle";
-    }
-  };
 
   return (
     <div className="py-6 sm:py-10 bg-background min-h-screen pb-24 md:pb-12">
@@ -101,7 +52,7 @@ export default function SupportPage() {
           {/* Top Header */}
           <AccountPageHeader
             title="مرکز پشتیبانی و تیکت‌ها"
-            description="راهنمای مشتریان و ثبت تیکت پشتیبانی"
+            description="راهنمای مشتریان، سوالات متداول و ثبت تیکت پشتیبانی"
             icon={Headset}
             backUrl="/account"
             backLabel="بازگشت به حساب کاربری"
@@ -111,10 +62,7 @@ export default function SupportPage() {
           <div className="flex items-center gap-2 border-b border-border pb-3 overflow-x-auto no-scrollbar">
             <button
               type="button"
-              onClick={() => {
-                setActiveTab("tickets");
-                setViewMode("list");
-              }}
+              onClick={() => setActiveTab("tickets")}
               className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
                 activeTab === "tickets"
                   ? "bg-primary text-primary-foreground shadow-2xs"
@@ -124,7 +72,7 @@ export default function SupportPage() {
               <MessageSquare className="w-4 h-4" />
               <span>تیکت‌های من</span>
               {tickets.length > 0 && (
-                <span className="  ">
+                <span className="px-1.5 py-0.5 rounded-full bg-white/20 text-[11px] font-mono font-bold">
                   {tickets.length}
                 </span>
               )}
@@ -164,7 +112,7 @@ export default function SupportPage() {
             {activeTab === "guides" && <PurchaseGuidesSection />}
 
             {activeTab === "tickets" && (
-              <div className="space-y-6">
+              <div>
                 {!isAuthenticated ? (
                   /* Unauthenticated State Prompt */
                   <div className="bg-surface border border-border rounded-2xl p-6 sm:p-10 text-center max-w-lg mx-auto space-y-4 shadow-2xs">
@@ -172,9 +120,9 @@ export default function SupportPage() {
                       <LogIn className="w-6 h-6" />
                     </div>
                     <div className="space-y-1">
-                      <h3 className="text-base font-bold text-foreground">
+                      <h2 className="text-base font-bold text-foreground">
                         برای ثبت و پیگیری تیکت وارد شوید
-                      </h3>
+                      </h2>
                       <p className="text-xs text-muted-foreground leading-relaxed">
                         مشاهده سوالات متداول و راهنماها نیازی به ورود ندارد، اما برای ارتباط با پشتیبانی باید وارد حساب کاربری خود شوید.
                       </p>
@@ -188,114 +136,7 @@ export default function SupportPage() {
                     </Link>
                   </div>
                 ) : (
-                  /* Authenticated Ticket System Workflow */
-                  <div>
-                    {viewMode === "create" && (
-                      <TicketForm
-                        orders={orders}
-                        onCancel={() => setViewMode("list")}
-                        onSubmit={handleCreateTicket}
-                      />
-                    )}
-
-                    {viewMode === "detail" && selectedTicket && (
-                      <TicketDetailView
-                        ticket={selectedTicket}
-                        onBack={() => {
-                          setViewMode("list");
-                          setSelectedTicket(null);
-                        }}
-                        onSendMessage={handleSendMessage}
-                      />
-                    )}
-
-                    {viewMode === "list" && (
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <h2 className="text-base sm:text-lg font-bold text-foreground">
-                            فهرست تیکت‌های پشتیبانی
-                          </h2>
-                          <button
-                            type="button"
-                            onClick={() => setViewMode("create")}
-                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold hover:bg-primary-hover transition-colors shadow-2xs cursor-pointer"
-                          >
-                            <Plus className="w-4 h-4" />
-                            <span>ثبت تیکت جدید</span>
-                          </button>
-                        </div>
-
-                        {tickets.length > 0 ? (
-                          <div className="grid grid-cols-1 gap-2.5">
-                            {tickets.map((t) => (
-                              <div
-                                key={t.id}
-                                onClick={() => {
-                                  setSelectedTicket(t);
-                                  setViewMode("detail");
-                                }}
-                                className="p-3.5 sm:p-4 bg-surface border border-border rounded-2xl flex items-center justify-between gap-3 hover:border-primary/50 transition-all cursor-pointer group shadow-2xs"
-                              >
-                                <div className="space-y-1 min-w-0 flex-1">
-                                  <div className="flex items-center gap-1.5 flex-wrap">
-                                    <span className="text-[11px] text-muted-foreground font-mono font-bold" dir="ltr">
-                                      #{t.ticketNumber}
-                                    </span>
-                                    <h3 className="text-xs sm:text-sm font-bold text-foreground truncate group-hover:text-primary transition-colors">
-                                      {t.subject}
-                                    </h3>
-                                  </div>
-
-                                  <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11px] text-muted-foreground">
-                                    {t.orderNumber && (
-                                      <span>
-                                        سفارش <strong className="text-foreground font-mono" dir="ltr">#{t.orderNumber}</strong>
-                                      </span>
-                                    )}
-                                    <span>بروزرسانی: {t.updatedAt}</span>
-                                    <span>{t.messages.length} پیام</span>
-                                  </div>
-                                </div>
-
-                                <div className="flex items-center gap-2 shrink-0">
-                                  <span
-                                    className={`text-[10px] sm:text-[11px] font-bold px-2.5 py-0.5 sm:py-1 rounded-full border ${getStatusBadgeClass(
-                                      t.status
-                                    )}`}
-                                  >
-                                    {ticketStatusLabels[t.status]}
-                                  </span>
-                                  <ChevronLeft className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="p-8 border border-dashed border-border rounded-2xl text-center space-y-3 bg-surface-subtle/30">
-                            <div className="w-10 h-10 rounded-full bg-surface-muted text-muted-foreground mx-auto flex items-center justify-center">
-                              <MessageSquare className="w-3 h-3" />
-                            </div>
-                            <div className="space-y-1">
-                              <p className="text-xs font-bold text-foreground">
-                                هیچ تیکتی ثبت نشده است
-                              </p>
-                              <p className="text-[11px] text-muted-foreground">
-                                اگر درباره محصولات یا سفارش خود سوالی دارید، می‌توانید اولین تیکت خود را ارسال کنید.
-                              </p>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => setViewMode("create")}
-                              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold hover:bg-primary-hover transition-colors cursor-pointer"
-                            >
-                              <Plus className="w-4 h-4" />
-                              <span>ایجاد تیکت جدید</span>
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                  <CustomerTicketList tickets={tickets} />
                 )}
               </div>
             )}
