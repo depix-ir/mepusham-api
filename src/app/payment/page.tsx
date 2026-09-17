@@ -10,6 +10,7 @@ import { accountService } from "@/lib/account/accountService";
 import { CheckoutPayload } from "@/types/checkout";
 import { formatPrice } from "@/lib/formatting/currency";
 import { TomanIcon } from "@/components/icons";
+import { CheckoutHeader } from "@/components/checkout/CheckoutHeader";
 import { ShieldCheck, CreditCard, Lock, AlertCircle, UserCheck } from "lucide-react";
 
 export default function PaymentPage() {
@@ -77,17 +78,7 @@ export default function PaymentPage() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="w-full    bg-background py-4 px-4 sm:px-6">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <Link href="/" className="text-base font-black text-foreground">
-            درگاه پرداخت امن (شبیه‌ساز)
-          </Link>
-          <div className="flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full">
-            <Lock className="w-3.5 h-3.5" />
-            <span>اتصال امن SSL</span>
-          </div>
-        </div>
-      </header>
+      <CheckoutHeader currentStep="payment" />
 
       <main className="flex-1 max-w-3xl w-full mx-auto px-4 py-8 flex flex-col gap-6">
         <div className="flex items-center justify-between pb-4   ">
