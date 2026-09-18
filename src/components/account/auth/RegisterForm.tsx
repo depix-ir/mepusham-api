@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { normalizeDigits, isValidIranianMobile } from "@/lib/checkout/validation";
-import { Phone, User as UserIcon } from "lucide-react";
+import { Phone, User as UserIcon, CheckCircle2, AlertCircle } from "lucide-react";
 
 interface RegisterFormProps {
   onSubmit: (data: { firstName: string; lastName: string; phone: string }) => Promise<void>;
@@ -27,12 +27,24 @@ export function RegisterForm({
     general?: string;
   }>({});
 
+  const normalizedPhone = normalizeDigits(phone).replace(/[\s-]/g, "");
+  const digitCount = normalizedPhone.length;
+  const isValidMobile = isValidIranianMobile(normalizedPhone);
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawVal = e.target.value;
+    const norm = normalizeDigits(rawVal).replace(/[\s-]/g, "");
+    if (norm.length <= 11) {
+      setPhone(rawVal);
+      if (errors.phone) setErrors((prev) => ({ ...prev, phone: undefined }));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
 
     const newErrors: typeof errors = {};
-    const normalizedPhone = normalizeDigits(phone).replace(/[\s-]/g, "");
 
     if (!firstName.trim()) {
       newErrors.firstName = "نام را وارد کنید";
@@ -44,7 +56,7 @@ export function RegisterForm({
 
     if (!normalizedPhone) {
       newErrors.phone = "شماره موبایل را وارد کنید";
-    } else if (!isValidIranianMobile(normalizedPhone)) {
+    } else if (!isValidMobile) {
       newErrors.phone = "شماره موبایل معتبر نیست (مثال: ۰۹۱۲۱۲۳۴۵۶۷)";
     }
 
@@ -66,6 +78,49 @@ export function RegisterForm({
         setErrors({ general: "خطایی در درخواست رخ داد. دوباره تلاش کنید." });
       }
     }
+  };
+
+  const renderLiveStatus = () => {
+    if (errors.phone) return null;
+
+    if (digitCount === 0) {
+      return (
+        <span className="text-[11px] text-muted-foreground">
+          شماره ۱۱ رقمی همراه با ۰۹ (مثال: ۰۹۱۲۱۲۳۴۵۶۷)
+        </span>
+      );
+    }
+
+    if (digitCount < 11) {
+      return (
+        <span className="text-[11px] text-amber-600 dark:text-amber-400 font-medium flex items-center gap-1">
+          <span>تعداد ارقام: {digitCount} از ۱۱</span>
+          {normalizedPhone.length >= 2 && !normalizedPhone.startsWith("09") && (
+            <span className="text-error font-normal"> - باید با ۰۹ شروع شود</span>
+          )}
+        </span>
+      );
+    }
+
+    if (digitCount === 11) {
+      if (isValidMobile) {
+        return (
+          <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1">
+            <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+            <span>شماره موبایل معتبر است (۱۱ رقم)</span>
+          </span>
+        );
+      } else {
+        return (
+          <span className="text-[11px] text-error font-medium flex items-center gap-1">
+            <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+            <span>فرمت شماره نامعتبر است (باید با ۰۹ شروع شود)</span>
+          </span>
+        );
+      }
+    }
+
+    return null;
   };
 
   return (
@@ -117,26 +172,29 @@ export function RegisterForm({
           />
         </div>
 
-        <Input
-          label="شماره موبایل"
-          type="tel"
-          dir="ltr"
-          placeholder="۰۹۱۲۱۲۳۴۵۶۷"
-          value={phone}
-          onChange={(e) => {
-            setPhone(e.target.value);
-            if (errors.phone) setErrors((prev) => ({ ...prev, phone: undefined }));
-          }}
-          error={errors.phone}
-          rightIcon={<Phone className="w-4 h-4 text-muted-foreground" />}
-          disabled={isLoading}
-        />
+        <div className="space-y-1.5">
+          <Input
+            label="شماره موبایل"
+            type="tel"
+            dir="ltr"
+            maxLength={11}
+            placeholder="۰۹۱۲۱۲۳۴۵۶۷"
+            value={phone}
+            onChange={handlePhoneChange}
+            error={errors.phone}
+            rightIcon={<Phone className="w-4 h-4 text-muted-foreground" />}
+            disabled={isLoading}
+          />
+          <div className="px-1 min-h-[18px]">
+            {renderLiveStatus()}
+          </div>
+        </div>
 
         <Button
           type="submit"
           fullWidth
           size="lg"
-          disabled={isLoading}
+          disabled={isLoading || (digitCount > 0 && !isValidMobile)}
           className="font-bold cursor-pointer"
         >
           {isLoading ? "در حال ارسال کد..." : "دریافت کد تأیید"}
