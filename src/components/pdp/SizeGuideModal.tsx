@@ -1,17 +1,22 @@
 "use client";
 
 import React from "react";
-import { SizeGuideData } from "@/types/product";
+import Image from "next/image";
+import { SizeGuideData, SizeGuide } from "@/types/product";
+import { normalizeSizeGuide } from "@/lib/sizeguide/sizeGuideService";
 import { X } from "lucide-react";
 
 export interface SizeGuideModalProps {
   isOpen: boolean;
   onClose: () => void;
-  data: SizeGuideData;
+  data: SizeGuideData | SizeGuide;
 }
 
 export function SizeGuideModal({ isOpen, onClose, data }: SizeGuideModalProps) {
-  if (!isOpen) return null;
+  if (!isOpen || !data) return null;
+
+  const normalizedData = normalizeSizeGuide(data);
+  if (!normalizedData) return null;
 
   return (
     <div
@@ -26,11 +31,11 @@ export function SizeGuideModal({ isOpen, onClose, data }: SizeGuideModalProps) {
         <div className="flex items-center justify-between pb-4 border-b border-border-product">
           <div>
             <h2 className="text-base sm:text-lg font-bold text-foreground">
-              {data.title}
+              {normalizedData.title}
             </h2>
-            {data.description && (
+            {normalizedData.description && (
               <p className="text-xs text-muted mt-1 leading-relaxed">
-                {data.description}
+                {normalizedData.description}
               </p>
             )}
           </div>
@@ -49,19 +54,19 @@ export function SizeGuideModal({ isOpen, onClose, data }: SizeGuideModalProps) {
           <table className="w-full text-xs sm:text-sm text-right border-collapse">
             <thead>
               <tr className="bg-surface-subtle text-foreground font-semibold border-b border-border-product">
-                {data.columns.map((col) => (
-                  <th key={col.key} className="py-2.5 px-3">
+                {normalizedData.columns.map((col) => (
+                  <th key={col.id} className="py-2.5 px-3">
                     {col.label}
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-border-product/60">
-              {data.rows.map((row, idx) => (
-                <tr key={idx} className="hover:bg-surface-subtle/50 transition-colors">
-                  {data.columns.map((col) => (
-                    <td key={col.key} className="py-2.5 px-3 font-medium text-foreground">
-                      {row[col.key] || "-"}
+              {normalizedData.rows.map((row) => (
+                <tr key={row.id} className="hover:bg-surface-subtle/50 transition-colors">
+                  {normalizedData.columns.map((col) => (
+                    <td key={col.id} className="py-2.5 px-3 font-medium text-foreground">
+                      {row.cells[col.id] || "-"}
                     </td>
                   ))}
                 </tr>
@@ -70,9 +75,25 @@ export function SizeGuideModal({ isOpen, onClose, data }: SizeGuideModalProps) {
           </table>
         </div>
 
+        {/* Optional Supplementary Image */}
+        {normalizedData.imageUrl && (
+          <div className="mb-4 p-3 border border-border-product rounded-xl bg-surface-subtle/30 flex flex-col items-center justify-center space-y-2">
+            <span className="text-xs font-semibold text-foreground">راهنمای تصویری:</span>
+            <div className="relative w-full h-40 rounded-lg overflow-hidden">
+              <Image
+                src={normalizedData.imageUrl}
+                alt="Diagram"
+                fill
+                className="object-contain"
+              />
+            </div>
+          </div>
+        )}
+
         {/* Tip / Footer */}
         <div className="pt-3 border-t border-border-product bg-surface-subtle/50 rounded-xl p-3 text-xs text-muted leading-relaxed">
-          💡 <span className="font-semibold text-foreground">نکته:</span> اگر بین دو سایز تردید دارید، پیشنهاد می‌کنیم برای راحتی بیشتر سایز بزرگ‌تر را انتخاب کنید.
+          💡 <span className="font-semibold text-foreground">نکته:</span>{" "}
+          {normalizedData.notes || "اگر بین دو سایز تردید دارید، پیشنهاد می‌کنیم برای راحتی بیشتر سایز بزرگ‌تر را انتخاب کنید."}
         </div>
       </div>
     </div>
