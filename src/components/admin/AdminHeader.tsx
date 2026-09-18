@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Menu,
   Bell,
@@ -12,6 +13,7 @@ import {
   X,
   CheckCircle2,
 } from "lucide-react";
+import { useAdminAuth } from "@/store/admin-auth/adminAuth.store";
 
 interface AdminHeaderProps {
   title?: string;
@@ -24,6 +26,9 @@ export function AdminHeader({
   onMobileMenuOpen,
   onSearch,
 }: AdminHeaderProps) {
+  const router = useRouter();
+  const { admin, logout } = useAdminAuth();
+
   const [searchQuery, setSearchQuery] = useState("");
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -40,6 +45,17 @@ export function AdminHeader({
       onSearch(searchQuery);
     }
   };
+
+  const handleLogout = async () => {
+    setUserMenuOpen(false);
+    await logout();
+    router.replace("/admin/login");
+  };
+
+  const adminDisplayName = admin?.name || "مدیر سیستم";
+  const adminSubTitle = admin?.role
+    ? `نقش: ${admin.role}`
+    : admin?.email || "admin@mepusham.ir";
 
   return (
     <header className="sticky top-0 z-20 bg-background/95 backdrop-blur-md border-b border-border h-16 px-4 md:px-6 flex items-center justify-between gap-4">
@@ -154,8 +170,8 @@ export function AdminHeader({
               <User className="w-4 h-4" />
             </div>
             <div className="hidden lg:flex flex-col text-right min-w-0">
-              <span className="text-xs font-bold text-foreground truncate">مدیر سیستم</span>
-              <span className="text-[10px] text-muted-foreground">admin@store.ir</span>
+              <span className="text-xs font-bold text-foreground truncate">{adminDisplayName}</span>
+              <span className="text-[10px] text-muted-foreground">{adminSubTitle}</span>
             </div>
             <ChevronDown className="w-3.5 h-3.5 text-muted-foreground hidden lg:block" />
           </button>
@@ -164,11 +180,14 @@ export function AdminHeader({
           {userMenuOpen && (
             <div className="absolute left-0 mt-2 w-48 bg-background border border-border rounded-md shadow-lg z-50 py-1 animate-in fade-in slide-in-from-top-2 duration-150">
               <div className="px-3 py-2 border-b border-border lg:hidden">
-                <p className="text-xs font-bold text-foreground">مدیر سیستم</p>
-                <p className="text-[10px] text-muted-foreground">admin@store.ir</p>
+                <p className="text-xs font-bold text-foreground">{adminDisplayName}</p>
+                <p className="text-[10px] text-muted-foreground">{adminSubTitle}</p>
               </div>
               <button
-                onClick={() => setUserMenuOpen(false)}
+                onClick={() => {
+                  setUserMenuOpen(false);
+                  router.push("/admin/settings");
+                }}
                 className="w-full flex items-center gap-2 px-3 py-2 text-xs text-foreground hover:bg-surface-subtle transition-colors"
               >
                 <Settings className="w-4 h-4 text-muted-foreground" />
@@ -176,7 +195,8 @@ export function AdminHeader({
               </button>
               <div className="my-1 border-t border-border" />
               <button
-                onClick={() => setUserMenuOpen(false)}
+                id="admin-logout-button"
+                onClick={handleLogout}
                 className="w-full flex items-center gap-2 px-3 py-2 text-xs text-error hover:bg-error/10 transition-colors"
               >
                 <LogOut className="w-4 h-4 text-error" />

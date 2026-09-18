@@ -21,7 +21,25 @@ export const MOCK_ADMIN_USER: User = {
   isActive: true,
 };
 
+class MemoryStorageFallback implements Storage {
+  private store = new Map<string, string>();
+  get length() { return this.store.size; }
+  clear() { this.store.clear(); }
+  getItem(key: string) { return this.store.get(key) ?? null; }
+  key(index: number) { return Array.from(this.store.keys())[index] ?? null; }
+  removeItem(key: string) { this.store.delete(key); }
+  setItem(key: string, value: string) { this.store.set(key, value); }
+}
+
+const fallbackStorage = new MemoryStorageFallback();
+
 class AuthService {
+  private getStorage(): Storage {
+    if (typeof localStorage !== "undefined") return localStorage;
+    if (typeof window !== "undefined" && window.localStorage) return window.localStorage;
+    return fallbackStorage;
+  }
+
   /**
    * Request OTP for login or registration.
    */
@@ -49,8 +67,7 @@ class AuthService {
       }
     }
 
-    // Simulate API network delay
-    await new Promise((resolve) => setTimeout(resolve, 600));
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
     return {
       success: true,
@@ -70,17 +87,15 @@ class AuthService {
       throw new Error("کد تأیید باید ۶ رقم باشد.");
     }
 
-    // For mock implementation: accept any 6 digits (or fail if code is 000000)
     if (normalizedCode === "000000") {
       throw new Error("کد واردشده صحیح نیست. لطفاً دوباره تلاش کنید.");
     }
 
-    await new Promise((resolve) => setTimeout(resolve, 700));
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
     let userFirstName = params.firstName?.trim() || mockDefaultUser.firstName;
     let userLastName = params.lastName?.trim() || mockDefaultUser.lastName;
 
-    // Check if there is an existing session or stored user
     const existing = this.getCurrentUser();
     if (existing && existing.phone === normalizedPhone) {
       userFirstName = existing.firstName || userFirstName;
@@ -103,24 +118,23 @@ class AuthService {
       expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     };
 
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session));
-      } catch (err) {
-        console.error("Failed to save auth session to localStorage:", err);
-      }
+    const storage = this.getStorage();
+    try {
+      storage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session));
+    } catch (err) {
+      console.error("Failed to save auth session to storage:", err);
     }
 
     return user;
   }
 
   /**
-   * Retrieve current authenticated user from localStorage safely.
+   * Retrieve current authenticated customer user safely.
    */
   getCurrentUser(): User | null {
-    if (typeof window === "undefined") return null;
+    const storage = this.getStorage();
     try {
-      const stored = localStorage.getItem(AUTH_STORAGE_KEY);
+      const stored = storage.getItem(AUTH_STORAGE_KEY);
       if (!stored) return null;
       const session: AuthSession = JSON.parse(stored);
       if (session && session.user && session.user.phone) {
@@ -133,7 +147,7 @@ class AuthService {
   }
 
   /**
-   * Update user profile (firstName, lastName).
+   * Update user profile.
    */
   async updateProfile(updates: { firstName: string; lastName: string }): Promise<User> {
     const user = this.getCurrentUser();
@@ -147,16 +161,15 @@ class AuthService {
       lastName: updates.lastName.trim() || user.lastName,
     };
 
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem(AUTH_STORAGE_KEY);
-      if (stored) {
-        try {
-          const session: AuthSession = JSON.parse(stored);
-          session.user = updatedUser;
-          localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session));
-        } catch (e) {
-          console.error("Failed to update user profile in localStorage", e);
-        }
+    const storage = this.getStorage();
+    const stored = storage.getItem(AUTH_STORAGE_KEY);
+    if (stored) {
+      try {
+        const session: AuthSession = JSON.parse(stored);
+        session.user = updatedUser;
+        storage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session));
+      } catch (e) {
+        console.error("Failed to update user profile in storage", e);
       }
     }
 
@@ -164,15 +177,14 @@ class AuthService {
   }
 
   /**
-   * Clear session.
+   * Clear customer session.
    */
   async logout(): Promise<void> {
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.removeItem(AUTH_STORAGE_KEY);
-      } catch (err) {
-        console.error("Failed to clear auth session:", err);
-      }
+    const storage = this.getStorage();
+    try {
+      storage.removeItem(AUTH_STORAGE_KEY);
+    } catch (err) {
+      console.error("Failed to clear auth session:", err);
     }
   }
 
@@ -182,9 +194,8 @@ class AuthService {
    * Authenticate admin with credentials or dev bypass.
    */
   async loginAdmin(username: string, password: string): Promise<User> {
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 200));
 
-    // Admin authentication check (mock implementation for API-readiness)
     if (
       (username === "admin" || username === "admin@mepusham.ir" || username === "09120000000") &&
       password === "admin123"
@@ -194,9 +205,8 @@ class AuthService {
         token: `admin-jwt-token-${Date.now()}`,
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
       };
-      if (typeof window !== "undefined") {
-        localStorage.setItem(ADMIN_AUTH_KEY, JSON.stringify(session));
-      }
+      const storage = this.getStorage();
+      storage.setItem(ADMIN_AUTH_KEY, JSON.stringify(session));
       return MOCK_ADMIN_USER;
     }
 
@@ -207,33 +217,29 @@ class AuthService {
    * Retrieve current admin session safely.
    */
   getCurrentAdmin(): User | null {
-    if (typeof window !== "undefined") {
-      try {
-        const stored = localStorage.getItem(ADMIN_AUTH_KEY);
-        if (stored) {
-          const session: AuthSession = JSON.parse(stored);
-          if (session && session.user && (session.user.role === "admin" || session.user.role === "super_admin")) {
-            return session.user;
-          }
-        }
-      } catch {
-        // Fallback or ignore
+    const storage = this.getStorage();
+    try {
+      const stored = storage.getItem(ADMIN_AUTH_KEY);
+      if (!stored) return null;
+      const session = JSON.parse(stored);
+      if (session && session.user && (session.user.role || session.role)) {
+        return session.user;
       }
+      return null;
+    } catch {
+      return null;
     }
-    // Return mock admin by default in client-side dev mode if no admin session stored
-    return MOCK_ADMIN_USER;
   }
 
   /**
    * Admin logout.
    */
   async logoutAdmin(): Promise<void> {
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.removeItem(ADMIN_AUTH_KEY);
-      } catch (err) {
-        console.error("Failed to clear admin session:", err);
-      }
+    const storage = this.getStorage();
+    try {
+      storage.removeItem(ADMIN_AUTH_KEY);
+    } catch (err) {
+      console.error("Failed to clear admin session:", err);
     }
   }
 
@@ -252,11 +258,21 @@ class AuthService {
 
     if (!resourceUserIdOrPhone) return true;
 
-    const resourceNorm = resourceUserIdOrPhone.replace(/[\s-]/g, "");
-    const userPhoneNorm = currentUser.phone.replace(/[\s-]/g, "");
-    const userIdNorm = currentUser.id;
+    const resourceNorm = resourceUserIdOrPhone.trim().toLowerCase();
+    const resourceNormDigits = resourceNorm.replace(/[\s-]/g, "");
 
-    return resourceNorm === userPhoneNorm || resourceNorm === userIdNorm;
+    const userPhoneNorm = currentUser.phone ? currentUser.phone.trim().toLowerCase() : "";
+    const userPhoneNormDigits = userPhoneNorm.replace(/[\s-]/g, "");
+
+    const userIdNorm = currentUser.id ? currentUser.id.trim().toLowerCase() : "";
+    const userIdNormDigits = userIdNorm.replace(/[\s-]/g, "");
+
+    return (
+      resourceNorm === userIdNorm ||
+      resourceNormDigits === userIdNormDigits ||
+      resourceNorm === userPhoneNorm ||
+      resourceNormDigits === userPhoneNormDigits
+    );
   }
 }
 

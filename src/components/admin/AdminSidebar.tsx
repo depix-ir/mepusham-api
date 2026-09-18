@@ -20,6 +20,7 @@ import {
   X,
   Store,
 } from "lucide-react";
+import { useAdminAuth } from "@/store/admin-auth/adminAuth.store";
 
 export interface NavItem {
   id: string;
@@ -58,6 +59,7 @@ export function AdminSidebar({
   onNavItemClick,
 }: AdminSidebarProps) {
   const pathname = usePathname();
+  const { canAccessRoute } = useAdminAuth();
 
   const handleLinkClick = (item: NavItem) => {
     if (onNavItemClick) {
@@ -65,6 +67,9 @@ export function AdminSidebar({
     }
     onMobileClose();
   };
+
+  // Filter navigation items based on current admin permissions
+  const visibleNavItems = ADMIN_NAV_ITEMS.filter((item) => canAccessRoute(item.href));
 
   const navContent = (
     <div className="flex flex-col h-full bg-background text-foreground border-l border-border select-none">
@@ -105,9 +110,11 @@ export function AdminSidebar({
 
       {/* Navigation List */}
       <div className="flex-1 overflow-y-auto py-3 px-2 space-y-1 no-scrollbar">
-        {ADMIN_NAV_ITEMS.map((item) => {
+        {visibleNavItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href || (pathname.startsWith(item.href) && item.href !== "/admin/dashboard");
+          const isActive =
+            pathname === item.href ||
+            (pathname.startsWith(item.href) && item.href !== "/admin/dashboard");
 
           return (
             <Link
@@ -123,7 +130,9 @@ export function AdminSidebar({
             >
               <Icon
                 className={`w-3.5 h-3.5 shrink-0 ${
-                  isActive ? "text-primary-foreground" : "text-muted-foreground group-hover:text-foreground"
+                  isActive
+                    ? "text-primary-foreground"
+                    : "text-muted-foreground group-hover:text-foreground"
                 }`}
               />
               {(!collapsed || mobileOpen) && (
