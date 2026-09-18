@@ -28,28 +28,41 @@ class AccountService {
 
   /* ================= ORDERS ================= */
 
-  getOrders(options?: { isHydrated?: boolean }): Order[] {
+  getOrders(options?: { isHydrated?: boolean; customerId?: string; customerPhone?: string }): Order[] {
     const isHydrated = options?.isHydrated ?? (typeof window !== "undefined");
+    let allOrders: Order[] = [];
     if (!isHydrated) {
-      return this.memoryOrders ?? mockInitialOrders;
-    }
-    try {
-      const stored = localStorage.getItem(ORDERS_KEY);
-      if (!stored) {
-        localStorage.setItem(ORDERS_KEY, JSON.stringify(mockInitialOrders));
-        this.memoryOrders = mockInitialOrders;
-        return mockInitialOrders;
+      allOrders = this.memoryOrders ?? mockInitialOrders;
+    } else {
+      try {
+        const stored = localStorage.getItem(ORDERS_KEY);
+        if (!stored) {
+          localStorage.setItem(ORDERS_KEY, JSON.stringify(mockInitialOrders));
+          this.memoryOrders = mockInitialOrders;
+          allOrders = mockInitialOrders;
+        } else {
+          const parsed = JSON.parse(stored);
+          this.memoryOrders = parsed;
+          allOrders = parsed;
+        }
+      } catch {
+        allOrders = this.memoryOrders ?? mockInitialOrders;
       }
-      const parsed = JSON.parse(stored);
-      this.memoryOrders = parsed;
-      return parsed;
-    } catch {
-      return this.memoryOrders ?? mockInitialOrders;
     }
+
+    if (options?.customerId || options?.customerPhone) {
+      return allOrders.filter((o) => {
+        if (options.customerId && o.customerId === options.customerId) return true;
+        if (options.customerPhone && o.shippingAddress?.phone === options.customerPhone) return true;
+        return false;
+      });
+    }
+
+    return allOrders;
   }
 
-  getOrderById(orderId: string): Order | undefined {
-    const orders = this.getOrders();
+  getOrderById(orderId: string, options?: { customerId?: string; customerPhone?: string }): Order | undefined {
+    const orders = this.getOrders(options);
     // Normalize comparison by stripping potential # or whitespace
     const cleanId = orderId.replace(/^#/, "").trim();
     return orders.find(

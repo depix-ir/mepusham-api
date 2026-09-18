@@ -12,12 +12,17 @@ export type OtpStatus =
   | "expired"
   | "error";
 
+export type UserRole = "customer" | "admin" | "super_admin";
+
 export interface User {
   id: string;
   phone: string;
   firstName: string;
   lastName: string;
   createdAt: string;
+  role?: UserRole;
+  email?: string;
+  isActive?: boolean;
 }
 
 export interface AuthSession {

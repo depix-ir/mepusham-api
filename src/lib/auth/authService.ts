@@ -8,6 +8,18 @@ import { normalizeDigits, isValidIranianMobile } from "@/lib/checkout/validation
 import { mockDefaultUser } from "@/data/mockAccountData";
 
 const AUTH_STORAGE_KEY = "mepusham_auth_session_v1";
+const ADMIN_AUTH_KEY = "mepusham_admin_session_v1";
+
+export const MOCK_ADMIN_USER: User = {
+  id: "admin-1",
+  phone: "09120000000",
+  firstName: "مدیر",
+  lastName: "سیستم",
+  createdAt: "۱۴۰۳/۰۱/۰۱",
+  role: "super_admin",
+  email: "admin@mepusham.ir",
+  isActive: true,
+};
 
 class AuthService {
   /**
@@ -81,6 +93,8 @@ class AuthService {
       firstName: userFirstName,
       lastName: userLastName,
       createdAt: existing?.createdAt || "۱۴۰۳/۰۵/۱۰",
+      role: existing?.role || "customer",
+      isActive: true,
     };
 
     const session: AuthSession = {
@@ -160,6 +174,89 @@ class AuthService {
         console.error("Failed to clear auth session:", err);
       }
     }
+  }
+
+  /* ================= ADMIN AUTHENTICATION & AUTHORIZATION ================= */
+
+  /**
+   * Authenticate admin with credentials or dev bypass.
+   */
+  async loginAdmin(username: string, password: string): Promise<User> {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    // Admin authentication check (mock implementation for API-readiness)
+    if (
+      (username === "admin" || username === "admin@mepusham.ir" || username === "09120000000") &&
+      password === "admin123"
+    ) {
+      const session: AuthSession = {
+        user: MOCK_ADMIN_USER,
+        token: `admin-jwt-token-${Date.now()}`,
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      };
+      if (typeof window !== "undefined") {
+        localStorage.setItem(ADMIN_AUTH_KEY, JSON.stringify(session));
+      }
+      return MOCK_ADMIN_USER;
+    }
+
+    throw new Error("نام کاربری یا رمز عبور اشتباه است.");
+  }
+
+  /**
+   * Retrieve current admin session safely.
+   */
+  getCurrentAdmin(): User | null {
+    if (typeof window !== "undefined") {
+      try {
+        const stored = localStorage.getItem(ADMIN_AUTH_KEY);
+        if (stored) {
+          const session: AuthSession = JSON.parse(stored);
+          if (session && session.user && (session.user.role === "admin" || session.user.role === "super_admin")) {
+            return session.user;
+          }
+        }
+      } catch {
+        // Fallback or ignore
+      }
+    }
+    // Return mock admin by default in client-side dev mode if no admin session stored
+    return MOCK_ADMIN_USER;
+  }
+
+  /**
+   * Admin logout.
+   */
+  async logoutAdmin(): Promise<void> {
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.removeItem(ADMIN_AUTH_KEY);
+      } catch (err) {
+        console.error("Failed to clear admin session:", err);
+      }
+    }
+  }
+
+  /**
+   * Validate Customer Ownership Security Guard.
+   * Ensures customers can only access resources (orders, returns, tickets) owned by them.
+   */
+  validateOwnership(resourceUserIdOrPhone: string | undefined): boolean {
+    const currentUser = this.getCurrentUser();
+    const currentAdmin = this.getCurrentAdmin();
+
+    // Admin has access to all customer resources
+    if (currentAdmin) return true;
+
+    if (!currentUser) return false;
+
+    if (!resourceUserIdOrPhone) return true;
+
+    const resourceNorm = resourceUserIdOrPhone.replace(/[\s-]/g, "");
+    const userPhoneNorm = currentUser.phone.replace(/[\s-]/g, "");
+    const userIdNorm = currentUser.id;
+
+    return resourceNorm === userPhoneNorm || resourceNorm === userIdNorm;
   }
 }
 

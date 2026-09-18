@@ -431,3 +431,18 @@ export function normalizeSizeGuide(
   }
   return convertSizeGuideDataToSizeGuide(sg as SizeGuideData, productId);
 }
+
+class SizeGuideService {
+  getSizeGuideForProduct(productId: string): SizeGuide | null {
+    if (typeof localStorage === "undefined") return null;
+    try {
+      const stored = localStorage.getItem(`product_sizeguide_${productId}`);
+      if (stored) return JSON.parse(stored);
+    } catch {
+      // Fallback
+    }
+    return null;
+  }
+}
+
+export const sizeGuideService = new SizeGuideService();

@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Product } from "@/types/product";
 import { getVariantDetails } from "@/lib/product/domain";
+import { sizeGuideService } from "@/lib/sizeguide/sizeGuideService";
 import { formatPrice } from "@/lib/formatting/currency";
 import { useCart } from "@/store/cart/cart.store";
 import { useWishlist } from "@/store/wishlist/wishlist.store";
@@ -309,11 +310,11 @@ export function ProductDetailPage({
       />
 
       {/* Size Guide Modal */}
-      {product.sizeGuide && (
+      {(product.sizeGuide || sizeGuideService.getSizeGuideForProduct(product.id)) && (
         <SizeGuideModal
           isOpen={isSizeGuideOpen}
           onClose={() => setIsSizeGuideOpen(false)}
-          data={product.sizeGuide}
+          data={product.sizeGuide || sizeGuideService.getSizeGuideForProduct(product.id)!}
         />
       )}
 

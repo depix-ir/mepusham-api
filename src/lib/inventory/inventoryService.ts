@@ -7,7 +7,95 @@ import {
 } from "./inventoryTypes";
 
 const HISTORY_STORAGE_KEY = "mepusham_inventory_history_v1";
+const PRODUCTS_STORAGE_KEY = "admin_store_products_v1";
 const DEFAULT_LOW_STOCK_THRESHOLD = 5;
+
+/**
+ * Decrements stock for purchased order items upon successful checkout / order placement.
+ */
+export function decrementStockForOrderItems(
+  items: Array<{ productId: string; variantId?: string; quantity: number }>,
+  actorName = "سیستم سفارشات"
+): void {
+  if (typeof window === "undefined") return;
+  try {
+    const storedProducts = localStorage.getItem(PRODUCTS_STORAGE_KEY);
+    if (!storedProducts) return;
+
+    const products: Product[] = JSON.parse(storedProducts);
+
+    const updatedProducts = products.map((product) => {
+      const orderItemsForProduct = items.filter((i) => i.productId === product.id);
+      if (orderItemsForProduct.length === 0) return product;
+
+      let updatedVariants = product.variants ? [...product.variants] : [];
+
+      for (const orderItem of orderItemsForProduct) {
+        if (orderItem.variantId && updatedVariants.length > 0) {
+          updatedVariants = updatedVariants.map((v) => {
+            if (v.id === orderItem.variantId) {
+              const previousStock = v.inventory?.stock ?? 0;
+              const newStock = Math.max(0, previousStock - orderItem.quantity);
+
+              addInventoryHistoryLog({
+                productId: product.id,
+                productTitle: product.title,
+                variantId: v.id,
+                variantDisplay: getVariantDisplayString(product, v),
+                sku: v.sku,
+                previousStock,
+                changeAmount: -orderItem.quantity,
+                newStock,
+                reason: "فروش آنلاین (تکمیل سفارش)",
+                actor: actorName,
+              });
+
+              return {
+                ...v,
+                inventory: { ...v.inventory, stock: newStock },
+              };
+            }
+            return v;
+          });
+        } else {
+          const previousStock = product.inventory?.totalStock ?? 0;
+          const newStock = Math.max(0, previousStock - orderItem.quantity);
+
+          addInventoryHistoryLog({
+            productId: product.id,
+            productTitle: product.title,
+            variantId: "default",
+            variantDisplay: "پیش‌فرض",
+            previousStock,
+            changeAmount: -orderItem.quantity,
+            newStock,
+            reason: "فروش آنلاین (تکمیل سفارش)",
+            actor: actorName,
+          });
+        }
+      }
+
+      const totalStock = updatedVariants.length > 0
+        ? updatedVariants.reduce((sum, v) => sum + (v.inventory?.stock || 0), 0)
+        : Math.max(0, (product.inventory?.totalStock ?? 0) - orderItemsForProduct.reduce((sum, i) => sum + i.quantity, 0));
+
+      return {
+        ...product,
+        variants: updatedVariants,
+        inventory: {
+          ...product.inventory,
+          totalStock,
+          hasAvailableVariants: totalStock > 0,
+        },
+        updatedAt: new Date().toISOString(),
+      };
+    });
+
+    localStorage.setItem(PRODUCTS_STORAGE_KEY, JSON.stringify(updatedProducts));
+  } catch (err) {
+    console.error("Failed to decrement inventory for order items:", err);
+  }
+}
 
 /**
  * Derives the inventory status based on stock level and threshold.
