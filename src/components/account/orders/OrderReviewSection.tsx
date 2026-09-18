@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Order } from "@/types/account";
 import { ProductReview } from "@/types/product";
 import { reviewService } from "@/lib/product/reviewService";
-import { uploadService } from "@/lib/media/uploadService";
+import { uploadMediaFile } from "@/lib/media/uploadService";
 import { useToast } from "@/components/ui/Toast";
 import {
   Star,
