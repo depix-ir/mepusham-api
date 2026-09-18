@@ -27,8 +27,8 @@ import {
   getSizeGuideTemplateById,
   saveSizeGuideAsTemplate,
 } from "@/lib/sizeguide/sizeGuideService";
-import { SizeGuideTemplatePickerModal } from "./SizeGuideTemplatePickerModal";
-import { SizeGuideBuilderModal } from "./SizeGuideBuilderModal";
+import { SizeGuideTemplatePickerView } from "./SizeGuideTemplatePickerModal";
+import { SizeGuideBuilderView } from "./SizeGuideBuilderModal";
 import { useToast } from "@/components/ui/Toast";
 
 export interface SizeGuideSectionProps {
@@ -318,16 +318,16 @@ export function SizeGuideSection({
         </div>
       )}
 
-      {/* TEMPLATE PICKER MODAL */}
-      <SizeGuideTemplatePickerModal
+      {/* FULL-SCREEN TEMPLATE PICKER VIEW */}
+      <SizeGuideTemplatePickerView
         isOpen={isTemplatePickerOpen}
         onClose={() => setIsTemplatePickerOpen(false)}
         onSelectTemplate={(snapshot) => onChange(snapshot)}
         onCreateNewTemplateClick={() => setIsBuilderOpen(true)}
       />
 
-      {/* TABLE BUILDER MODAL */}
-      <SizeGuideBuilderModal
+      {/* FULL-SCREEN TABLE BUILDER VIEW */}
+      <SizeGuideBuilderView
         isOpen={isBuilderOpen}
         onClose={() => setIsBuilderOpen(false)}
         initialSizeGuide={normalizedSg}
