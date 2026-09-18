@@ -17,6 +17,7 @@ import { TrustSignals } from "./TrustSignals";
 import { ProductDescription } from "./ProductDescription";
 import { ProductTabsAccordion } from "./ProductTabsAccordion";
 import { ProductReviews } from "./ProductReviews";
+import { reviewService } from "@/lib/product/reviewService";
 import { RelatedProductsSection } from "./RelatedProductsSection";
 import { StickyAddToCartBar } from "./StickyAddToCartBar";
 import { ShoppingCart, Bell, Plus, Minus, Trash2 } from "lucide-react";
@@ -118,6 +119,11 @@ export function ProductDetailPage({
     .join(" | ");
 
   const mainImageUrl = product.images.length > 0 ? product.images[0].url : undefined;
+
+  // Retrieve dynamic reviews merged with static defaults using reviewService
+  const dynamicReviewsData = React.useMemo(() => {
+    return reviewService.getProductReviews(product.id, product.title);
+  }, [product.id, product.title]);
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-24 md:pb-12 flex flex-col gap-10">
@@ -282,7 +288,10 @@ export function ProductDetailPage({
 
       {/* Customer Reviews Section */}
       <div className="max-w-4xl mx-auto w-full">
-        <ProductReviews rating={product.rating} reviews={product.reviews} />
+        <ProductReviews
+          rating={dynamicReviewsData.rating}
+          reviews={dynamicReviewsData.reviews}
+        />
       </div>
 
       {/* Related Products Section */}

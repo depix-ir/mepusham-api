@@ -1,15 +1,17 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { ProductRating, ProductReview } from "@/types/product";
-import { Star, Check } from "lucide-react";
+import { Star, Check, Camera, Image as ImageIcon } from "lucide-react";
 
 export interface ProductReviewsProps {
   rating?: ProductRating;
   reviews?: ProductReview[];
+  onOpenCustomerGallery?: () => void;
 }
 
-export function ProductReviews({ rating, reviews = [] }: ProductReviewsProps) {
+export function ProductReviews({ rating, reviews = [], onOpenCustomerGallery }: ProductReviewsProps) {
   if (!rating) return null;
 
   return (
@@ -114,6 +116,25 @@ export function ProductReviews({ rating, reviews = [] }: ProductReviewsProps) {
               <p className="text-xs text-foreground/85 leading-relaxed">
                 {rev.comment}
               </p>
+
+              {/* Review Attached Images */}
+              {rev.images && rev.images.length > 0 && (
+                <div className="flex items-center gap-2 pt-1">
+                  {rev.images.map((imgUrl, imgIdx) => (
+                    <div
+                      key={imgIdx}
+                      className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden border border-border shrink-0 bg-surface-muted"
+                    >
+                      <Image
+                        src={imgUrl}
+                        alt={`عکس ارسالی توسط ${rev.authorName}`}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
 
               {/* Store Response if present */}
               {rev.storeResponse && (
