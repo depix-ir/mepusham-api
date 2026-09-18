@@ -1,5 +1,5 @@
 import { CartItem, CartValidationResult, CartValidationError } from "./cart.types";
-import { products } from "@/data/products";
+import { catalogRepository } from "@/lib/repositories/catalogRepository";
 import { findVariant, isVariantAvailable } from "@/lib/product/domain";
 
 /**
@@ -25,7 +25,7 @@ export function validateCart(items: CartItem[]): CartValidationResult {
     }
 
     // 2. Check against product catalog if product exists
-    const catalogProduct = products.find((p) => p.id === item.productId);
+    const catalogProduct = catalogRepository.getProductById(item.productId);
 
     if (!catalogProduct) {
       // Product may have been removed or unavailable

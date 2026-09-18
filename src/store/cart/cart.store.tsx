@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { Product } from "@/types/product";
-import { products } from "@/data/products";
+import { catalogRepository } from "@/lib/repositories/catalogRepository";
 import { getVariantDetails, findVariant } from "@/lib/product/domain";
 import { CartItem, CartValidationResult, SelectedVariantAttribute } from "./cart.types";
 import { validateCart } from "./cart.validation";
@@ -161,7 +161,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       if (targetQuantity < 1) return prevItems; // Strictly enforce minimum quantity = 1
 
       // Validate max stock bounds
-      const catalogProduct = products.find((p) => p.id === existingItem.productId);
+      const catalogProduct = catalogRepository.getProductById(existingItem.productId);
       let maxStock = existingItem.availableStock;
 
       if (catalogProduct) {

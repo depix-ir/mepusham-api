@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import Image from "next/image";
-import { products as ALL_PRODUCTS } from "@/data/products";
+import { catalogRepository } from "@/lib/repositories/catalogRepository";
 import { Product } from "@/types/product";
 import { Search, X, Check, Filter } from "lucide-react";
 import { formatPrice } from "@/lib/formatting/currency";
@@ -22,6 +22,7 @@ export function ProductPickerModal({
 }: ProductPickerModalProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>(selectedProductIds);
   const [searchQuery, setSearchQuery] = useState("");
+  const catalogProducts = useMemo(() => catalogRepository.getProducts(), []);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
   // Sync selectedIds when modal opens
@@ -34,17 +35,17 @@ export function ProductPickerModal({
   // Derive unique categories from products list
   const categoriesList = useMemo(() => {
     const map = new Map<string, string>();
-    ALL_PRODUCTS.forEach((p) => {
+    catalogProducts.forEach((p) => {
       if (p.category) {
         map.set(p.category.id, p.category.name);
       }
     });
     return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
-  }, []);
+  }, [catalogProducts]);
 
   // Filter products by search query and category
   const filteredProducts = useMemo(() => {
-    return ALL_PRODUCTS.filter((p) => {
+    return catalogProducts.filter((p) => {
       const matchCat =
         selectedCategory === "all" || p.category?.id === selectedCategory;
       if (!matchCat) return false;
@@ -60,7 +61,7 @@ export function ProductPickerModal({
 
       return matchTitle || matchCategory || matchSku;
     });
-  }, [searchQuery, selectedCategory]);
+  }, [catalogProducts, searchQuery, selectedCategory]);
 
   const toggleSelectProduct = (id: string) => {
     setSelectedIds((prev) =>

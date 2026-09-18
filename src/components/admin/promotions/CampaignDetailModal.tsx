@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Campaign, getPromotionStatus } from "@/types/promotion";
 import { PromotionStatusBadge } from "./PromotionStatusBadge";
 import { PromotionUsageBar } from "./PromotionUsageBar";
-import { products as ALL_PRODUCTS } from "@/data/products";
+import { catalogRepository } from "@/lib/repositories/catalogRepository";
 import { formatPrice } from "@/lib/formatting/currency";
 import {
   X,
@@ -39,7 +39,8 @@ export function CampaignDetailModal({
 }: CampaignDetailModalProps) {
   const affectedProducts = useMemo(() => {
     if (!campaign) return [];
-    return ALL_PRODUCTS.filter((p) => campaign.productIds.includes(p.id));
+    const allProducts = catalogRepository.getProducts();
+    return allProducts.filter((p) => campaign.productIds.includes(p.id));
   }, [campaign]);
 
   if (!isOpen || !campaign) return null;

@@ -1,6 +1,5 @@
 import { Product } from "@/types/product";
-import { categories, brands } from "@/data/common";
-import { products } from "@/data/products";
+import { catalogRepository } from "@/lib/repositories/catalogRepository";
 import { normalizePersianText, tokenizePersianText } from "./normalization";
 
 export interface SearchSuggestion {
@@ -37,11 +36,13 @@ function extractCatalogCandidates(catalogProducts: Product[]): Candidate[] {
   };
 
   // 1. Categories (Weight: 10)
+  const categories = catalogRepository.getCategories();
   categories.forEach((cat) => {
     addCandidate(cat.name, "category", 10);
   });
 
   // 2. Brands (Weight: 6)
+  const brands = catalogRepository.getBrands();
   brands.forEach((brand) => {
     addCandidate(brand.name, "brand", 6);
   });
@@ -147,7 +148,7 @@ function scoreCandidate(candidate: Candidate, normQuery: string, queryTokens: st
  */
 export function getSearchSuggestions(
   query: string = "",
-  catalogProducts: Product[] = products,
+  catalogProducts: Product[] = catalogRepository.getProducts(),
   options: SuggestionOptions = {}
 ): SearchSuggestion[] {
   const limit = options.limit ?? 4;

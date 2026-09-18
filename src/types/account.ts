@@ -11,6 +11,7 @@ export type OrderStatus =
 export interface OrderItem {
   id: string;
   productId: string;
+  variantId?: string;
   title: string;
   image: string;
   quantity: number;
@@ -19,6 +20,7 @@ export interface OrderItem {
   variant?: {
     color?: string;
     size?: string;
+    sku?: string;
   };
 }
 
@@ -34,6 +36,7 @@ export interface OrderTimelineItem {
 export interface Order {
   id: string;
   orderNumber: string;
+  customerId?: string;
   createdAt: string;
   status: OrderStatus;
   items: OrderItem[];
