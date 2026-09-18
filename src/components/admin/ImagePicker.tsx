@@ -14,8 +14,6 @@ import {
   Loader2,
   AlertCircle,
   Plus,
-  RefreshCw,
-  Camera,
 } from "lucide-react";
 import { uploadMediaFile, revokeMediaObjectUrl } from "@/lib/media/uploadService";
 import { useToast } from "@/components/ui/Toast";
@@ -55,7 +53,6 @@ export type ImagePickerProps = ImagePickerSingleProps | ImagePickerMultipleProps
 export function ImagePicker(props: ImagePickerProps) {
   const { showToast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const [isUploading, setIsUploading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -183,14 +180,6 @@ export function ImagePicker(props: ImagePickerProps) {
         multiple={isMultiple}
         className="hidden"
       />
-      <input
-        type="file"
-        ref={cameraInputRef}
-        onChange={handleFileSelect}
-        accept="image/*"
-        capture="environment"
-        className="hidden"
-      />
 
       {/* SINGLE IMAGE MODE */}
       {!isMultiple && (
@@ -214,22 +203,23 @@ export function ImagePicker(props: ImagePickerProps) {
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isUploading}
-                  className="h-8 px-2.5 rounded-lg bg-background border border-border hover:border-primary text-primary font-bold text-[11px] flex items-center gap-1 transition-colors"
+                  className="h-8 px-2.5 rounded-lg bg-background border border-border hover:border-primary text-primary font-bold text-[11px] flex items-center gap-1 transition-colors cursor-pointer"
                 >
-                  <RefreshCw className="w-3 h-3" />
-                  <span>تعویض</span>
+                  <Upload className="w-3 h-3" />
+                  <span>فایل‌های دستگاه</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsGalleryModalOpen(true)}
-                  className="h-8 px-2.5 rounded-lg bg-background border border-border hover:border-primary text-foreground font-semibold text-[11px] transition-colors"
+                  className="h-8 px-2.5 rounded-lg bg-background border border-border hover:border-primary text-foreground font-semibold text-[11px] transition-colors cursor-pointer flex items-center gap-1"
                 >
-                  گالری
+                  <ImageIcon className="w-3 h-3 text-primary" />
+                  <span>عکس‌های سایت</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => handleRemoveImage(singleValue)}
-                  className="p-1.5 rounded-lg text-muted-foreground hover:text-error hover:bg-error/10 transition-colors"
+                  className="p-1.5 rounded-lg text-muted-foreground hover:text-error hover:bg-error/10 transition-colors cursor-pointer"
                   title="حذف"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -240,44 +230,34 @@ export function ImagePicker(props: ImagePickerProps) {
             <div className="border-2 border-dashed border-border hover:border-primary/60 rounded-xl p-5 text-center bg-surface-subtle/50 hover:bg-surface-subtle transition-colors flex flex-col items-center justify-center space-y-3">
               <div className="flex items-center justify-center gap-2">
                 <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
-                  <ImageIcon className="" />
+                  <ImageIcon className="w-5 h-5" />
                 </div>
               </div>
 
               <p className="font-bold text-xs text-foreground">انتخاب یا آپلود تصویر</p>
 
-              <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+              <div className="flex flex-wrap items-center justify-center gap-2.5 pt-1">
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isUploading}
-                  className="h-9 px-4 rounded-lg bg-primary text-primary-foreground font-bold hover:bg-primary-hover flex items-center gap-1.5 transition-colors shadow-xs"
+                  className="h-9 px-4 rounded-lg bg-primary text-primary-foreground font-bold hover:bg-primary-hover flex items-center gap-1.5 transition-colors shadow-xs cursor-pointer"
                 >
                   {isUploading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
                     <Upload className="w-4 h-4" />
                   )}
-                  <span>آپلود از دستگاه</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => cameraInputRef.current?.click()}
-                  disabled={isUploading}
-                  className="h-9 px-3 rounded-lg bg-surface-subtle border border-border hover:bg-surface-muted text-foreground font-semibold flex items-center gap-1.5 transition-colors"
-                  title="عکاسی با دوربین"
-                >
-                  <Camera className="w-4 h-4 text-primary" />
-                  <span className="hidden sm:inline">دوربین</span>
+                  <span>انتخاب از فایل‌های دستگاه</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setIsGalleryModalOpen(true)}
-                  className="h-9 px-4 rounded-lg bg-background border border-border hover:border-primary text-foreground font-bold transition-colors"
+                  className="h-9 px-4 rounded-lg bg-background border border-border hover:border-primary text-foreground font-bold transition-colors cursor-pointer flex items-center gap-1.5"
                 >
-                  انتخاب از گالری
+                  <ImageIcon className="w-4 h-4 text-primary" />
+                  <span>انتخاب از عکس‌های سایت</span>
                 </button>
               </div>
             </div>
@@ -289,37 +269,28 @@ export function ImagePicker(props: ImagePickerProps) {
       {isMultiple && (
         <div className="space-y-3">
           {/* Action buttons bar */}
-          <div className="flex flex-wrap items-center gap-2 p-3 bg-surface-subtle border border-border rounded-xl">
+          <div className="flex flex-wrap items-center gap-2.5 p-3 bg-surface-subtle border border-border rounded-xl">
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={isUploading}
-              className="h-9 px-4 rounded-lg bg-primary text-primary-foreground font-bold hover:bg-primary-hover flex items-center gap-1.5 transition-colors shadow-xs"
+              className="h-9 px-4 rounded-lg bg-primary text-primary-foreground font-bold hover:bg-primary-hover flex items-center gap-1.5 transition-colors shadow-xs cursor-pointer"
             >
               {isUploading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
-                <Plus className="w-4 h-4" />
+                <Upload className="w-4 h-4" />
               )}
-              <span>آپلود تصویر جدید از دستگاه</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => cameraInputRef.current?.click()}
-              disabled={isUploading}
-              className="h-9 px-3 rounded-lg bg-background border border-border hover:bg-surface-muted text-foreground font-semibold flex items-center gap-1.5 transition-colors"
-            >
-              <Camera className="w-4 h-4 text-primary" />
-              <span>دوربین</span>
+              <span>انتخاب از فایل‌های دستگاه</span>
             </button>
 
             <button
               type="button"
               onClick={() => setIsGalleryModalOpen(true)}
-              className="h-9 px-4 rounded-lg bg-background border border-border hover:border-primary text-foreground font-bold transition-colors"
+              className="h-9 px-4 rounded-lg bg-background border border-border hover:border-primary text-foreground font-bold transition-colors cursor-pointer flex items-center gap-1.5"
             >
-              انتخاب از گالری
+              <ImageIcon className="w-4 h-4 text-primary" />
+              <span>انتخاب از عکس‌های سایت</span>
             </button>
           </div>
 
