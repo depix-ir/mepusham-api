@@ -77,18 +77,42 @@ export function CheckoutCartItems({
                     </div>
                   )}
 
-                  {/* Unit Price */}
-                  <div className="flex items-center gap-1 text-xs font-bold text-foreground sm:hidden pt-0.5">
-                    <span>{formatPrice(item.unitPrice * item.quantity)}</span>
-                    <TomanIcon size={12} className="text-muted shrink-0" />
+                  {/* Mobile Unit Price / Discount */}
+                  <div className="flex flex-col items-start sm:hidden pt-0.5">
+                    {item.compareAtPrice && item.compareAtPrice > item.unitPrice && (
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] text-muted line-through font-medium">
+                          {formatPrice(item.compareAtPrice * item.quantity)}
+                        </span>
+                        <span className="text-[10px] font-bold text-red-600 bg-red-50 px-1 py-0.2 rounded">
+                          {Math.round(((item.compareAtPrice - item.unitPrice) / item.compareAtPrice) * 100)}٪ تخفیف
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-1 text-xs font-bold text-foreground">
+                      <span>{formatPrice(item.unitPrice * item.quantity)}</span>
+                      <TomanIcon size={12} className="text-muted shrink-0" />
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Desktop Price */}
-              <div className="hidden sm:flex items-center gap-1 text-sm font-bold text-foreground shrink-0 px-2">
-                <span>{formatPrice(item.unitPrice * item.quantity)}</span>
-                <TomanIcon size={13} className="text-muted shrink-0" />
+              {/* Desktop Price & Discount */}
+              <div className="hidden sm:flex flex-col items-end shrink-0 px-2">
+                {item.compareAtPrice && item.compareAtPrice > item.unitPrice && (
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[11px] text-muted line-through font-medium">
+                      {formatPrice(item.compareAtPrice * item.quantity)}
+                    </span>
+                    <span className="text-[10px] font-bold text-red-600 bg-red-50 px-1 py-0.2 rounded">
+                      {Math.round(((item.compareAtPrice - item.unitPrice) / item.compareAtPrice) * 100)}٪
+                    </span>
+                  </div>
+                )}
+                <div className="flex items-center gap-1 text-sm font-bold text-foreground">
+                  <span>{formatPrice(item.unitPrice * item.quantity)}</span>
+                  <TomanIcon size={13} className="text-muted shrink-0" />
+                </div>
               </div>
 
               {/* Quantity Controls & Remove */}

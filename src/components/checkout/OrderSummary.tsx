@@ -8,6 +8,7 @@ import { ShieldCheck, Loader2, ArrowLeft, ArrowRight } from "lucide-react";
 
 interface OrderSummaryProps {
   itemsSubtotal: number;
+  totalDiscount?: number;
   shippingOption: ShippingOption;
   payableTotal: number;
   onSubmit: () => void;
@@ -17,6 +18,7 @@ interface OrderSummaryProps {
 
 export function OrderSummary({
   itemsSubtotal,
+  totalDiscount = 0,
   shippingOption,
   payableTotal,
   onSubmit,
@@ -38,12 +40,22 @@ export function OrderSummary({
       {/* Breakdown */}
       <div className="flex flex-col gap-3 text-xs sm:text-sm">
         <div className="flex items-center justify-between text-muted">
-          <span>مجموع قیمت کالاها:</span>
+          <span>قیمت کالاها:</span>
           <div className="flex items-center gap-1 font-semibold text-foreground">
-            <span>{formatPrice(itemsSubtotal)}</span>
+            <span>{formatPrice(itemsSubtotal + totalDiscount)}</span>
             <TomanIcon size={14} className="text-muted shrink-0" />
           </div>
         </div>
+
+        {totalDiscount > 0 && (
+          <div className="flex items-center justify-between text-red-600 font-medium">
+            <span>تخفیف کالاها:</span>
+            <div className="flex items-center gap-1 font-bold">
+              <span>{formatPrice(totalDiscount)}-</span>
+              <TomanIcon size={14} className="text-red-600 shrink-0" />
+            </div>
+          </div>
+        )}
 
         <div className="flex items-center justify-between text-muted pb-3 border-b border-border-subtle">
           <span>هزینه ارسال ({shippingOption.title}):</span>
