@@ -147,7 +147,7 @@ describe("Size Guide & Size Guide Template Domain Logic", () => {
     // Delete Column and cleanup
     const deleteColId = "c2";
     sg.columns = sg.columns.filter((c) => c.id !== deleteColId);
-    sg.rows.forEach((r) => delete delete r.cells[deleteColId]);
+    sg.rows.forEach((r) => delete r.cells[deleteColId]);
 
     expect(sg.columns.length).toBe(1);
     expect(sg.rows[0].cells["c2"]).toBeUndefined();

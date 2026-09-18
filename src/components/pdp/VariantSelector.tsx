@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Product, ProductOption, SizeGuideData } from "@/types/product";
+import { Product, ProductOption, SizeGuideData, SizeGuide } from "@/types/product";
 import { isOptionValueAvailable } from "@/lib/product/domain";
 import { Check, Ruler } from "lucide-react";
 
@@ -9,7 +9,7 @@ export interface VariantSelectorProps {
   product: Product;
   selectedOptions: Record<string, string>;
   onSelectOption: (optionId: string, valueId: string) => void;
-  sizeGuide?: SizeGuideData;
+  sizeGuide?: SizeGuideData | SizeGuide;
   onOpenSizeGuide?: () => void;
 }
 

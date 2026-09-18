@@ -13,9 +13,9 @@ import {
   FileSpreadsheet,
   Save,
   BookmarkPlus,
-  Image as ImageIcon,
-  Check,
-  AlertCircle,
+  ArrowRight,
+  Sparkles,
+  Layers,
   HelpCircle,
 } from "lucide-react";
 import {
@@ -31,7 +31,7 @@ import {
 import { ImagePicker } from "@/components/admin/ImagePicker";
 import { useToast } from "@/components/ui/Toast";
 
-export interface SizeGuideBuilderModalProps {
+export interface SizeGuideBuilderViewProps {
   isOpen: boolean;
   onClose: () => void;
   initialSizeGuide?: SizeGuide | null;
@@ -39,13 +39,13 @@ export interface SizeGuideBuilderModalProps {
   onSaveAsTemplateSuccess?: (template: SizeGuideTemplate) => void;
 }
 
-export function SizeGuideBuilderModal({
+export function SizeGuideBuilderView({
   isOpen,
   onClose,
   initialSizeGuide,
   onSaveProductSizeGuide,
   onSaveAsTemplateSuccess,
-}: SizeGuideBuilderModalProps) {
+}: SizeGuideBuilderViewProps) {
   const { showToast } = useToast();
 
   // Builder State
@@ -57,7 +57,7 @@ export function SizeGuideBuilderModal({
   const [rows, setRows] = useState<SizeGuideDataRow[]>([]);
   const [sourceTemplateId, setSourceTemplateId] = useState<string | undefined>(undefined);
 
-  // Column Add Modal/Popover State
+  // Column Add State
   const [newColumnLabel, setNewColumnLabel] = useState("");
   const [isAddColumnOpen, setIsAddColumnOpen] = useState(false);
 
@@ -167,7 +167,6 @@ export function SizeGuideBuilderModal({
       return;
     }
     setColumns((prev) => prev.filter((c) => c.id !== colId));
-    // Clean orphan cells
     setRows((prev) =>
       prev.map((r) => {
         const newCells = { ...r.cells };
@@ -178,7 +177,6 @@ export function SizeGuideBuilderModal({
   };
 
   const handleMoveColumn = (index: number, direction: "left" | "right") => {
-    // In RTL layout: "left" means moving to the next index (+1), "right" means moving to previous index (-1)
     const targetIndex = direction === "right" ? index - 1 : index + 1;
     if (targetIndex < 0 || targetIndex >= columns.length) return;
 
@@ -297,373 +295,393 @@ export function SizeGuideBuilderModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 animate-fade-in">
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
-        onClick={onClose}
-      />
-
-      {/* Modal Box */}
-      <div className="relative bg-background border border-border rounded-2xl shadow-2xl w-full max-w-5xl max-h-[92vh] flex flex-col z-10 overflow-hidden text-xs">
-        {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-surface-subtle/60">
-          <div className="flex items-center gap-2">
-            <div className="p-2 rounded-lg bg-primary/10 text-primary">
-              <FileSpreadsheet className="w-4 h-4" />
-            </div>
-            <div>
-              <h2 className="text-sm font-bold text-foreground">
-                سازنده راهنمای سایز (Table Builder)
-              </h2>
-              <p className="text-[11px] text-muted-foreground mt-0.5">
-                جدول اندازه‌گیری و اطلاعات راهنمای سایز محصول را ویرایش و سفارشی‌سازی کنید.
-              </p>
-            </div>
-          </div>
-
+    <div className="fixed inset-0 z-50 bg-background flex flex-col w-full h-full overflow-hidden text-xs animate-fade-in">
+      {/* FULL-PAGE HEADER BAR */}
+      <header className="sticky top-0 z-20 bg-background border-b border-border px-4 sm:px-8 py-3 flex flex-wrap items-center justify-between gap-3 shadow-2xs">
+        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-surface-subtle transition-colors"
+            className="h-9 px-3 rounded-xl bg-surface-subtle hover:bg-surface-muted text-foreground border border-border flex items-center gap-1.5 transition-colors font-bold text-xs"
           >
-            <X className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4" />
+            <span>بازگشت</span>
           </button>
+
+          <div className="h-5 w-px bg-border hidden sm:block" />
+
+          <div>
+            <h1 className="text-xs sm:text-base font-black text-foreground tracking-tight flex items-center gap-1.5">
+              <FileSpreadsheet className="w-4 h-4 text-primary shrink-0" />
+              <span>جدول‌ساز راهنمای سایز</span>
+            </h1>
+          </div>
         </div>
 
-        {/* Modal Scrollable Body */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
-          {/* SECTION 1: METADATA & TITLE */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-surface-subtle/50 border border-border rounded-xl">
-            <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleOpenSaveTemplateModal}
+            className="h-9 sm:h-10 px-3.5 bg-surface-subtle border border-border hover:bg-surface-muted text-foreground font-bold rounded-xl flex items-center gap-1.5 transition-colors text-xs hidden sm:flex"
+          >
+            <BookmarkPlus className="w-3.5 h-3.5 text-primary" />
+            <span>ذخیره قالب</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleSaveForProduct}
+            className="h-9 sm:h-10 px-4 sm:px-5 bg-primary text-primary-foreground hover:bg-primary-hover font-extrabold rounded-xl shadow-xs flex items-center gap-1.5 transition-colors text-xs"
+          >
+            <Save className="w-3.5 h-3.5" />
+            <span>ذخیره روی محصول</span>
+          </button>
+        </div>
+      </header>
+
+      {/* SCROLLABLE BODY CONTENT */}
+      <div className="flex-1 overflow-y-auto p-4 sm:p-8 space-y-6 max-w-6xl mx-auto w-full">
+        {/* SECTION 1: METADATA INFORMATION */}
+        <div className="bg-background border border-border rounded-2xl p-4 sm:p-6 space-y-4 shadow-xs">
+          <h2 className="text-sm font-extrabold text-foreground border-b border-border pb-3 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-primary" />
+            <span>مشخصات و عنوان راهنمای سایز</span>
+          </h2>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+            <div className="lg:col-span-7 space-y-3.5">
               <div>
-                <label className="block font-bold text-foreground mb-1">
+                <label className="block font-bold text-foreground mb-1.5 text-xs">
                   عنوان راهنمای سایز *
                 </label>
                 <input
                   type="text"
-                  placeholder="مثلاً: راهنمای سایز لباس زنانه"
+                  placeholder="مثلاً: راهنمای سایز مانتو و سارافون زنانه"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full h-10 px-3 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:border-primary font-medium"
+                  className="w-full h-11 px-4 bg-surface-subtle border border-border rounded-xl text-foreground focus:outline-none focus:border-primary font-bold text-xs"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-foreground mb-1">
+                <label className="block font-bold text-foreground mb-1.5 text-xs">
                   توضیحات تکمیلی (اختیاری)
                 </label>
                 <input
                   type="text"
-                  placeholder="مثلاً: اندازه‌ها بر حسب سانتی‌متر می‌باشد."
+                  placeholder="مثلاً: تمامی اندازه‌ها بر حسب سانتی‌متر می‌باشد."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full h-9 px-3 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:border-primary"
+                  className="w-full h-10 px-3.5 bg-surface-subtle border border-border rounded-xl text-foreground focus:outline-none focus:border-primary font-medium text-xs"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-foreground mb-1">
-                  نکات راهنما / راهنمایی کاربر (اختیاری)
+                <label className="block font-bold text-foreground mb-1.5 text-xs">
+                  نکات راهنما / توصیه به مشتری (اختیاری)
                 </label>
                 <input
                   type="text"
-                  placeholder="مثلاً: اگر بین دو سایز تردید دارید سایز بزرگ‌تر را انتخاب کنید."
+                  placeholder="مثلاً: در صورت تردید بین دو سایز، سایز بزرگ‌تر توصیه می‌شود."
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  className="w-full h-9 px-3 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:border-primary"
+                  className="w-full h-10 px-3.5 bg-surface-subtle border border-border rounded-xl text-foreground focus:outline-none focus:border-primary font-medium text-xs"
                 />
               </div>
             </div>
 
-            {/* Optional Image Upload via shared ImagePicker */}
-            <div className="space-y-2">
-              <label className="block font-bold text-foreground mb-1">
-                تصویر راهنما (اختیاری)
-              </label>
+            {/* Diagram / Image Picker */}
+            <div className="lg:col-span-5 bg-surface-subtle/40 border border-border rounded-2xl p-4 space-y-2 flex flex-col justify-between">
+              <div>
+                <label className="block font-bold text-foreground mb-1 text-xs">
+                  تصویر نحوه اندازه‌گیری (اختیاری)
+                </label>
+                <p className="text-[11px] text-muted-foreground mb-3 leading-relaxed">
+                  می‌توانید دیاگرام یا نقشه راهنمای اندازه‌گیری را جهت راهنمایی دقیق‌تر مشتری آپلود کنید.
+                </p>
+              </div>
+
               <ImagePicker
                 multiple={false}
                 value={imageUrl}
                 onChange={setImageUrl}
-                label="تصویر نحوه اندازه‌گیری"
+                label="آپلود یا انتخاب دیاگرام اندازه‌گیری"
               />
             </div>
           </div>
+        </div>
 
-          {/* SECTION 2: TABLE BUILDER */}
-          <div className="space-y-3">
-            {/* Toolbar Header */}
-            <div className="flex flex-wrap items-center justify-between gap-3 pb-2 border-b border-border">
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-foreground text-sm">ساختار جدول</span>
-                <span className="px-2 py-0.5 rounded-full bg-surface-subtle border border-border text-[11px] font-semibold text-muted-foreground">
-                  {columns.length} ستون × {rows.length} ردیف
-                </span>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsAddColumnOpen(true)}
-                  className="h-8 px-3 bg-primary/10 text-primary hover:bg-primary/20 font-bold rounded-lg flex items-center gap-1 transition-colors"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>افزودن ستون</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleAddRow}
-                  className="h-8 px-3 bg-primary text-primary-foreground hover:bg-primary-hover font-bold rounded-lg flex items-center gap-1 transition-colors shadow-xs"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>افزودن ردیف</span>
-                </button>
-              </div>
+        {/* SECTION 2: EDITABLE TABLE BUILDER */}
+        <div className="bg-background border border-border rounded-2xl p-4 sm:p-6 space-y-4 shadow-xs">
+          {/* Toolbar Header */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-border">
+            <div>
+              <h2 className="text-sm font-extrabold text-foreground flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-primary" />
+                <span>ساختار جدول اندازه‌ها</span>
+              </h2>
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                تعداد {columns.length} ستون و {rows.length} ردیف فعال می‌باشد.
+              </p>
             </div>
 
-            {/* Add Column Popover/Box */}
-            {isAddColumnOpen && (
-              <div className="p-3 bg-surface-subtle border border-primary/40 rounded-xl flex items-center gap-2 animate-fade-in">
-                <input
-                  type="text"
-                  placeholder="نام ستون جدید (مثلاً: عرض شانه، طول آستین)..."
-                  value={newColumnLabel}
-                  onChange={(e) => setNewColumnLabel(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      handleAddColumn();
-                    }
-                  }}
-                  autoFocus
-                  className="flex-1 h-9 px-3 bg-background border border-border rounded-lg text-foreground text-xs"
-                />
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <button
+                type="button"
+                onClick={() => setIsAddColumnOpen(true)}
+                className="flex-1 sm:flex-none h-9 px-3.5 bg-primary/10 text-primary hover:bg-primary/20 font-bold rounded-xl flex items-center justify-center gap-1.5 transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                <span>افزودن ستون</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleAddRow}
+                className="flex-1 sm:flex-none h-9 px-4 bg-primary text-primary-foreground hover:bg-primary-hover font-bold rounded-xl flex items-center justify-center gap-1.5 transition-colors shadow-xs"
+              >
+                <Plus className="w-4 h-4" />
+                <span>افزودن ردیف</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Add Column Interactive Form */}
+          {isAddColumnOpen && (
+            <div className="p-3.5 bg-surface-subtle border border-primary/40 rounded-xl flex flex-col sm:flex-row items-center gap-2 animate-fade-in shadow-2xs">
+              <input
+                type="text"
+                placeholder="عنوان ستون جدید (مثلاً: قد لباس، عرض شانه)..."
+                value={newColumnLabel}
+                onChange={(e) => setNewColumnLabel(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleAddColumn();
+                  }
+                }}
+                autoFocus
+                className="w-full sm:flex-1 h-10 px-3.5 bg-background border border-border rounded-lg text-foreground font-bold text-xs"
+              />
+              <div className="flex items-center gap-2 w-full sm:w-auto">
                 <button
                   type="button"
                   onClick={handleAddColumn}
-                  className="h-9 px-4 bg-primary text-primary-foreground font-bold rounded-lg hover:bg-primary-hover"
+                  className="flex-1 sm:flex-none h-10 px-5 bg-primary text-primary-foreground font-bold rounded-lg hover:bg-primary-hover shadow-xs"
                 >
                   افزودن
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsAddColumnOpen(false)}
-                  className="h-9 px-3 bg-background border border-border font-bold rounded-lg text-muted-foreground hover:text-foreground"
+                  className="flex-1 sm:flex-none h-10 px-3.5 bg-background border border-border font-bold rounded-lg text-muted-foreground hover:text-foreground"
                 >
                   انصراف
                 </button>
               </div>
-            )}
+            </div>
+          )}
 
-            {/* Editable Spreadsheet Table Container */}
-            <div className="border border-border rounded-xl overflow-hidden bg-background shadow-xs">
-              <div className="overflow-x-auto max-w-full">
-                <table className="w-full min-w-[600px] text-right border-collapse">
-                  {/* Table Header (Columns Management) */}
-                  <thead>
-                    <tr className="bg-surface-subtle border-b border-border text-foreground">
-                      <th className="py-2 px-3 text-center text-muted-foreground w-12 border-l border-border font-bold">
-                        #
-                      </th>
-                      {columns.map((col, cIdx) => (
-                        <th
-                          key={col.id}
-                          className="py-2.5 px-3 border-l border-border min-w-[140px] group"
-                        >
-                          <div className="flex flex-col space-y-1">
-                            {/* Column Label Input */}
-                            <input
-                              type="text"
-                              value={col.label}
-                              onChange={(e) => handleRenameColumn(col.id, e.target.value)}
-                              className="w-full h-8 px-2 bg-background border border-border focus:border-primary rounded text-xs font-bold text-foreground"
-                              placeholder="نام ستون..."
-                            />
+          {/* Spreadsheet Responsive Table Container */}
+          <div className="border border-border rounded-xl overflow-hidden bg-background shadow-xs">
+            <div className="overflow-x-auto max-w-full">
+              <table className="w-full min-w-[650px] text-right border-collapse">
+                <thead>
+                  <tr className="bg-surface-subtle border-b border-border text-foreground">
+                    <th className="py-2.5 px-3 text-center text-muted-foreground w-12 border-l border-border font-bold text-xs">
+                      #
+                    </th>
+                    {columns.map((col, cIdx) => (
+                      <th
+                        key={col.id}
+                        className="py-3 px-3 border-l border-border min-w-[150px] group bg-surface-subtle/80"
+                      >
+                        <div className="flex flex-col space-y-1.5">
+                          <input
+                            type="text"
+                            value={col.label}
+                            onChange={(e) => handleRenameColumn(col.id, e.target.value)}
+                            className="w-full h-8 px-2.5 bg-background border border-border focus:border-primary rounded-md text-xs font-bold text-foreground"
+                            placeholder="نام ستون..."
+                          />
 
-                            {/* Column Controls (Move / Delete) */}
-                            <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-1 opacity-80 group-hover:opacity-100 transition-opacity">
-                              <div className="flex items-center gap-1">
-                                <button
-                                  type="button"
-                                  onClick={() => handleMoveColumn(cIdx, "right")}
-                                  disabled={cIdx === 0}
-                                  className="p-1 hover:text-foreground disabled:opacity-30"
-                                  title="انتقال به راست"
-                                >
-                                  <MoveRight className="w-3 h-3" />
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => handleMoveColumn(cIdx, "left")}
-                                  disabled={cIdx === columns.length - 1}
-                                  className="p-1 hover:text-foreground disabled:opacity-30"
-                                  title="انتقال به چپ"
-                                >
-                                  <MoveLeft className="w-3 h-3" />
-                                </button>
-                              </div>
-
+                          <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-0.5">
+                            <div className="flex items-center gap-1">
                               <button
                                 type="button"
-                                onClick={() => handleDeleteColumn(col.id)}
-                                className="p-1 hover:text-error text-muted-foreground transition-colors"
-                                title="حذف ستون"
+                                onClick={() => handleMoveColumn(cIdx, "right")}
+                                disabled={cIdx === 0}
+                                className="p-1 hover:text-foreground disabled:opacity-20"
+                                title="انتقال به راست"
                               >
-                                <Trash2 className="w-3 h-3" />
+                                <MoveRight className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleMoveColumn(cIdx, "left")}
+                                disabled={cIdx === columns.length - 1}
+                                className="p-1 hover:text-foreground disabled:opacity-20"
+                                title="انتقال به چپ"
+                              >
+                                <MoveLeft className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteColumn(col.id)}
+                              className="p-1 hover:text-error text-muted-foreground transition-colors"
+                              title="حذف ستون"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      </th>
+                    ))}
+                    <th className="py-2.5 px-3 text-center w-24 font-bold text-muted-foreground text-xs">
+                      عملیات
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody className="divide-y divide-border">
+                  {rows.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={columns.length + 2}
+                        className="py-12 text-center text-muted-foreground space-y-3"
+                      >
+                        <p className="font-bold text-xs">هیچ ردیفی در جدول وجود ندارد!</p>
+                        <button
+                          type="button"
+                          onClick={handleAddRow}
+                          className="px-4 py-2 rounded-lg bg-primary/10 text-primary font-bold hover:bg-primary/20 text-xs transition-colors inline-block"
+                        >
+                          + افزودن اولین ردیف
+                        </button>
+                      </td>
+                    </tr>
+                  ) : (
+                    rows.map((row, rIdx) => (
+                      <tr
+                        key={row.id}
+                        className="hover:bg-surface-subtle/30 transition-colors"
+                      >
+                        <td className="py-2.5 px-2 text-center text-muted-foreground border-l border-border font-medium">
+                          <div className="flex flex-col items-center justify-center gap-0.5">
+                            <span className="text-[11px] font-extrabold text-foreground">
+                              {rIdx + 1}
+                            </span>
+                            <div className="flex items-center gap-0.5 text-muted-foreground">
+                              <button
+                                type="button"
+                                onClick={() => handleMoveRow(rIdx, "up")}
+                                disabled={rIdx === 0}
+                                className="hover:text-foreground disabled:opacity-20 p-0.5"
+                                title="انتقال به بالا"
+                              >
+                                <MoveUp className="w-3 h-3" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleMoveRow(rIdx, "down")}
+                                disabled={rIdx === rows.length - 1}
+                                className="hover:text-foreground disabled:opacity-20 p-0.5"
+                                title="انتقال به پایین"
+                              >
+                                <MoveDown className="w-3 h-3" />
                               </button>
                             </div>
                           </div>
-                        </th>
-                      ))}
-                      <th className="py-2 px-3 text-center w-24 font-bold text-muted-foreground">
-                        عملیات
-                      </th>
-                    </tr>
-                  </thead>
+                        </td>
 
-                  {/* Table Body (Editable Cell Rows) */}
-                  <tbody className="divide-y divide-border">
-                    {rows.length === 0 ? (
-                      <tr>
-                        <td
-                          colSpan={columns.length + 2}
-                          className="py-8 text-center text-muted-foreground space-y-2"
-                        >
-                          <p className="font-bold">هنوز هیچ ردیفی وجود ندارد!</p>
-                          <button
-                            type="button"
-                            onClick={handleAddRow}
-                            className="text-primary font-bold hover:underline"
-                          >
-                            + افزودن اولین ردیف
-                          </button>
+                        {columns.map((col) => (
+                          <td key={col.id} className="p-1.5 border-l border-border">
+                            <input
+                              type="text"
+                              value={row.cells[col.id] || ""}
+                              onChange={(e) =>
+                                handleCellChange(row.id, col.id, e.target.value)
+                              }
+                              placeholder="—"
+                              className="w-full h-9 px-2.5 bg-background border border-border/70 focus:border-primary rounded-lg text-xs font-semibold text-foreground dir-auto"
+                            />
+                          </td>
+                        ))}
+
+                        <td className="p-1.5 text-center">
+                          <div className="flex items-center justify-center gap-1">
+                            <button
+                              type="button"
+                              onClick={() => handleDuplicateRow(rIdx)}
+                              className="p-1.5 rounded-lg hover:bg-surface-subtle text-muted-foreground hover:text-foreground transition-colors"
+                              title="تکثیر ردیف"
+                            >
+                              <Copy className="w-4 h-4" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteRow(rIdx)}
+                              className="p-1.5 rounded-lg hover:bg-error/10 text-muted-foreground hover:text-error transition-colors"
+                              title="حذف ردیف"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
                         </td>
                       </tr>
-                    ) : (
-                      rows.map((row, rIdx) => (
-                        <tr
-                          key={row.id}
-                          className="hover:bg-surface-subtle/30 transition-colors"
-                        >
-                          {/* Index & Reorder Row */}
-                          <td className="py-2 px-2 text-center text-muted-foreground border-l border-border font-medium">
-                            <div className="flex flex-col items-center justify-center gap-0.5">
-                              <span className="text-[11px] font-bold text-foreground">
-                                {rIdx + 1}
-                              </span>
-                              <div className="flex items-center gap-0.5 text-muted-foreground">
-                                <button
-                                  type="button"
-                                  onClick={() => handleMoveRow(rIdx, "up")}
-                                  disabled={rIdx === 0}
-                                  className="hover:text-foreground disabled:opacity-20"
-                                  title="انتقال به بالا"
-                                >
-                                  <MoveUp className="w-3 h-3" />
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => handleMoveRow(rIdx, "down")}
-                                  disabled={rIdx === rows.length - 1}
-                                  className="hover:text-foreground disabled:opacity-20"
-                                  title="انتقال به پایین"
-                                >
-                                  <MoveDown className="w-3 h-3" />
-                                </button>
-                              </div>
-                            </div>
-                          </td>
-
-                          {/* Editable Cells */}
-                          {columns.map((col) => (
-                            <td key={col.id} className="p-1.5 border-l border-border">
-                              <input
-                                type="text"
-                                value={row.cells[col.id] || ""}
-                                onChange={(e) =>
-                                  handleCellChange(row.id, col.id, e.target.value)
-                                }
-                                placeholder="—"
-                                className="w-full h-8 px-2 bg-background border border-border/70 focus:border-primary rounded text-xs font-medium text-foreground dir-auto"
-                              />
-                            </td>
-                          ))}
-
-                          {/* Row Actions */}
-                          <td className="p-1.5 text-center">
-                            <div className="flex items-center justify-center gap-1">
-                              <button
-                                type="button"
-                                onClick={() => handleDuplicateRow(rIdx)}
-                                className="p-1.5 rounded hover:bg-surface-subtle text-muted-foreground hover:text-foreground transition-colors"
-                                title="تکثیر ردیف"
-                              >
-                                <Copy className="w-3.5 h-3.5" />
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => handleDeleteRow(rIdx)}
-                                className="p-1.5 rounded hover:bg-error/10 text-muted-foreground hover:text-error transition-colors"
-                                title="حذف ردیف"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-1">
-              <span>💡 برای جابه‌جایی، تکثیر و ویرایش سلول‌ها از دکمه‌ها و کادرهای جدول استفاده کنید.</span>
-              <button
-                type="button"
-                onClick={handleAddRow}
-                className="font-bold text-primary hover:underline flex items-center gap-1"
-              >
-                <Plus className="w-3 h-3" />
-                <span>+ افزودن ردیف جدید</span>
-              </button>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
-        </div>
 
-        {/* Modal Footer Actions */}
-        <div className="p-4 border-t border-border bg-surface-subtle/60 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <button
-            type="button"
-            onClick={handleOpenSaveTemplateModal}
-            className="h-10 px-4 bg-background border border-border hover:border-primary text-foreground font-bold rounded-xl flex items-center gap-1.5 transition-colors w-full sm:w-auto justify-center"
-          >
-            <BookmarkPlus className="w-4 h-4 text-primary" />
-            <span>ذخیره به عنوان قالب آماده</span>
-          </button>
-
-          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-[11px] text-muted-foreground pt-1">
+            <span>💡 پس از تکمیل خانه سلول‌ها، دکمه ذخیره روی محصول را فشار دهید.</span>
             <button
               type="button"
-              onClick={onClose}
-              className="h-10 px-4 bg-background border border-border text-muted-foreground hover:text-foreground font-bold rounded-xl transition-colors"
+              onClick={handleAddRow}
+              className="font-bold text-primary hover:underline flex items-center gap-1"
             >
-              انصراف
-            </button>
-
-            <button
-              type="button"
-              onClick={handleSaveForProduct}
-              className="h-10 px-5 bg-primary text-primary-foreground hover:bg-primary-hover font-bold rounded-xl shadow-xs flex items-center gap-1.5 transition-colors"
-            >
-              <Save className="w-4 h-4" />
-              <span>ذخیره برای این محصول</span>
+              <Plus className="w-3.5 h-3.5" />
+              <span>+ افزودن ردیف جدید</span>
             </button>
           </div>
         </div>
       </div>
+
+      {/* FOOTER ACTIONS BAR FOR MOBILE & DESKTOP */}
+      <footer className="sticky bottom-0 z-20 bg-background border-t border-border px-4 sm:px-8 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-lg">
+        <button
+          type="button"
+          onClick={handleOpenSaveTemplateModal}
+          className="h-10 px-4 bg-surface-subtle border border-border hover:bg-surface-muted text-foreground font-bold rounded-xl flex items-center gap-2 transition-colors w-full sm:w-auto justify-center"
+        >
+          <BookmarkPlus className="w-4 h-4 text-primary" />
+          <span>ذخیره به عنوان قالب جدید</span>
+        </button>
+
+        <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
+          <button
+            type="button"
+            onClick={onClose}
+            className="h-10 px-5 bg-surface-subtle border border-border text-muted-foreground hover:text-foreground font-bold rounded-xl transition-colors flex-1 sm:flex-none"
+          >
+            انصراف
+          </button>
+
+          <button
+            type="button"
+            onClick={handleSaveForProduct}
+            className="h-10 px-6 bg-primary text-primary-foreground hover:bg-primary-hover font-extrabold rounded-xl shadow-xs flex items-center justify-center gap-2 transition-colors text-xs flex-1 sm:flex-none"
+          >
+            <Save className="w-4 h-4" />
+            <span>ثبت و ذخیره روی محصول</span>
+          </button>
+        </div>
+      </footer>
 
       {/* SAVE AS TEMPLATE MODAL */}
       {isSaveTemplateModalOpen && (
@@ -672,16 +690,16 @@ export function SizeGuideBuilderModal({
             className="fixed inset-0 bg-black/70 backdrop-blur-xs"
             onClick={() => setIsSaveTemplateModalOpen(false)}
           />
-          <div className="relative bg-background border border-border rounded-2xl shadow-2xl w-full max-w-md p-5 z-10 space-y-4 text-xs">
+          <div className="relative bg-background border border-border rounded-2xl shadow-2xl w-full max-w-md p-6 z-10 space-y-4 text-xs">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
                 <BookmarkPlus className="w-4 h-4 text-primary" />
-                <span>ذخیره راهنمای سایز به عنوان قالب</span>
+                <span>ذخیره جدول به عنوان قالب عمومی</span>
               </h3>
               <button
                 type="button"
                 onClick={() => setIsSaveTemplateModalOpen(false)}
-                className="text-muted-foreground hover:text-foreground"
+                className="text-muted-foreground hover:text-foreground p-1"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -689,42 +707,42 @@ export function SizeGuideBuilderModal({
 
             <div className="space-y-3">
               <div>
-                <label className="block font-bold text-foreground mb-1">
+                <label className="block font-bold text-foreground mb-1.5">
                   نام قالب جدید *
                 </label>
                 <input
                   type="text"
                   value={templateNameInput}
                   onChange={(e) => setTemplateNameInput(e.target.value)}
-                  className="w-full h-10 px-3 bg-surface-subtle border border-border rounded-lg text-foreground focus:outline-none focus:border-primary font-medium"
+                  className="w-full h-10 px-3.5 bg-surface-subtle border border-border rounded-xl text-foreground focus:outline-none focus:border-primary font-bold"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-foreground mb-1">
-                  توضیحات قالب
+                <label className="block font-bold text-foreground mb-1.5">
+                  توضیحات کوتاه قالب
                 </label>
                 <textarea
-                  rows={2}
+                  rows={3}
                   value={templateDescInput}
                   onChange={(e) => setTemplateDescInput(e.target.value)}
-                  className="w-full p-2.5 bg-surface-subtle border border-border rounded-lg text-foreground focus:outline-none focus:border-primary"
+                  className="w-full p-3 bg-surface-subtle border border-border rounded-xl text-foreground focus:outline-none focus:border-primary font-medium"
                 />
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 pt-2 border-t border-border">
+            <div className="flex justify-end gap-2 pt-3 border-t border-border">
               <button
                 type="button"
                 onClick={() => setIsSaveTemplateModalOpen(false)}
-                className="h-9 px-4 rounded-lg bg-surface-subtle border border-border font-bold text-muted-foreground hover:text-foreground"
+                className="h-9 px-4 rounded-xl bg-surface-subtle border border-border font-bold text-muted-foreground hover:text-foreground"
               >
                 انصراف
               </button>
               <button
                 type="button"
                 onClick={handleConfirmSaveAsTemplate}
-                className="h-9 px-5 rounded-lg bg-primary text-primary-foreground font-bold hover:bg-primary-hover shadow-xs"
+                className="h-9 px-5 rounded-xl bg-primary text-primary-foreground font-bold hover:bg-primary-hover shadow-xs"
               >
                 ذخیره قالب
               </button>
