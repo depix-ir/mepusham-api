@@ -1,14 +1,12 @@
 import { describe, it, expect, beforeEach } from "bun:test";
-import { authService, MOCK_ADMIN_USER } from "@/lib/auth/authService";
+import { authService } from "@/lib/auth/authService";
 import { shippingService } from "@/lib/shipping/shippingService";
 import { decrementStockForOrderItems } from "@/lib/inventory/inventoryService";
 
 describe("Production-Readiness Gaps Unit Tests", () => {
-  beforeEach(() => {
-    if (typeof window !== "undefined") {
-      localStorage.clear();
-      sessionStorage.clear();
-    }
+  beforeEach(async () => {
+    await authService.logoutAdmin();
+    await authService.logout();
   });
 
   describe("P0 - Admin Auth & Ownership Security Validation", () => {
@@ -20,28 +18,34 @@ describe("Production-Readiness Gaps Unit Tests", () => {
       expect(authService.loginAdmin("wrong", "wrong")).rejects.toThrow();
     });
 
-    it("validateOwnership enforces resource isolation for customers and allows admins", () => {
-      // Mock current customer
-      const currentUser = {
-        id: "user-123",
+    it("validateOwnership enforces resource isolation for customers and allows admins", async () => {
+      // Login customer A
+      const customerA = await authService.verifyOtp({
         phone: "09129998877",
+        code: "123456",
+        mode: "login",
         firstName: "علی",
         lastName: "رضایی",
-        createdAt: "1403/01/01",
-      };
-      if (typeof window !== "undefined") {
-        localStorage.setItem(
-          "mepusham_auth_session_v1",
-          JSON.stringify({ user: currentUser, token: "token", expiresAt: "2025" })
-        );
-      }
+      });
 
-      // Customer accessing their own resource
+      expect(customerA.phone).toBe("09129998877");
+
+      // Customer A accessing Customer A's order/return/ticket resource -> PASS
       expect(authService.validateOwnership("09129998877")).toBe(true);
-      expect(authService.validateOwnership("user-123")).toBe(true);
+      expect(authService.validateOwnership(customerA.id)).toBe(true);
 
-      // Customer accessing another customer's resource
-      expect(authService.validateOwnership("09121111111")).toBe(true); // Default mock admin session bypasses in dev fallback if set
+      // Customer A accessing Customer B's order/return/ticket resource -> BLOCK
+      expect(authService.validateOwnership("09121111111")).toBe(false);
+      expect(authService.validateOwnership("user-other-456")).toBe(false);
+    });
+
+    it("validateOwnership permits Admin to view any customer resource", async () => {
+      // Login admin
+      await authService.loginAdmin("admin", "admin123");
+
+      // Admin accessing any customer resource -> PASS
+      expect(authService.validateOwnership("09121111111")).toBe(true);
+      expect(authService.validateOwnership("user-999")).toBe(true);
     });
   });
 
