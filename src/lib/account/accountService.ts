@@ -14,7 +14,7 @@ import {
   mockInitialAddresses,
   mockInitialTickets,
 } from "@/data/mockAccountData";
-import { products as catalogProducts } from "@/data/products";
+import { catalogRepository } from "@/lib/repositories/catalogRepository";
 import { Product, ProductOption, ProductOptionValue, ProductVariant } from "@/types/product";
 
 const ORDERS_KEY = "mepusham_orders_v1";
@@ -22,20 +22,29 @@ const ADDRESSES_KEY = "mepusham_addresses_v1";
 const TICKETS_KEY = "mepusham_tickets_v1";
 
 class AccountService {
+  private memoryOrders: Order[] | null = null;
+  private memoryAddresses: UserAddress[] | null = null;
+  private memoryTickets: SupportTicket[] | null = null;
+
   /* ================= ORDERS ================= */
 
   getOrders(options?: { isHydrated?: boolean }): Order[] {
     const isHydrated = options?.isHydrated ?? (typeof window !== "undefined");
-    if (!isHydrated) return mockInitialOrders;
+    if (!isHydrated) {
+      return this.memoryOrders ?? mockInitialOrders;
+    }
     try {
       const stored = localStorage.getItem(ORDERS_KEY);
       if (!stored) {
         localStorage.setItem(ORDERS_KEY, JSON.stringify(mockInitialOrders));
+        this.memoryOrders = mockInitialOrders;
         return mockInitialOrders;
       }
-      return JSON.parse(stored);
+      const parsed = JSON.parse(stored);
+      this.memoryOrders = parsed;
+      return parsed;
     } catch {
-      return mockInitialOrders;
+      return this.memoryOrders ?? mockInitialOrders;
     }
   }
 
@@ -219,6 +228,7 @@ class AccountService {
   }
 
   createOrder(payload: {
+    customerId?: string;
     customer: {
       firstName: string;
       lastName: string;
@@ -252,27 +262,30 @@ class AccountService {
     const newOrderId = `order-${newOrderNumber}`;
 
     const orderItems: Order["items"] = payload.items.map((item, index) => {
-      const product = catalogProducts.find((p: Product) => p.id === item.productId);
+      const product = catalogRepository.getProductById(item.productId);
       const title = product ? product.title : "محصول خریداری شده";
       const image = product?.images?.[0]?.url || "/images/bag-1.webp";
 
-      let variantInfo: { color?: string; size?: string } | undefined;
+      let variantInfo: { color?: string; size?: string; sku?: string } | undefined;
       if (product && item.variantId) {
         const variantObj = product.variants?.find((v: ProductVariant) => v.id === item.variantId);
-        if (variantObj && variantObj.optionValues) {
-          variantInfo = {};
-          variantObj.optionValues.forEach((optVal: { optionId: string; valueId: string }) => {
-            const opt = product.options?.find((o: ProductOption) => o.id === optVal.optionId);
-            const val = opt?.values?.find((v: ProductOptionValue) => v.id === optVal.valueId);
-            if (opt?.type === "color" && val) variantInfo!.color = val.label;
-            if (opt?.type === "size" && val) variantInfo!.size = val.label;
-          });
+        if (variantObj) {
+          variantInfo = { sku: variantObj.sku };
+          if (variantObj.optionValues) {
+            variantObj.optionValues.forEach((optVal: { optionId: string; valueId: string }) => {
+              const opt = product.options?.find((o: ProductOption) => o.id === optVal.optionId);
+              const val = opt?.values?.find((v: ProductOptionValue) => v.id === optVal.valueId);
+              if (opt?.type === "color" && val) variantInfo!.color = val.label;
+              if (opt?.type === "size" && val) variantInfo!.size = val.label;
+            });
+          }
         }
       }
 
       return {
         id: `item-${Date.now()}-${index}`,
         productId: item.productId,
+        variantId: item.variantId,
         title,
         image,
         quantity: item.quantity,
@@ -287,6 +300,7 @@ class AccountService {
     const newOrder: Order = {
       id: newOrderId,
       orderNumber: newOrderNumber,
+      customerId: payload.customerId || "c_1",
       createdAt: nowFa,
       status: "pending",
       itemsSubtotal: payload.pricing.itemsSubtotal,
@@ -351,6 +365,7 @@ class AccountService {
   }
 
   private persistOrders(orders: Order[]): void {
+    this.memoryOrders = orders;
     if (typeof window === "undefined") return;
     try {
       localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));

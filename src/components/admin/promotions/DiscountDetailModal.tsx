@@ -4,7 +4,7 @@ import React from "react";
 import { ProductDiscount, getPromotionStatus } from "@/types/promotion";
 import { PromotionStatusBadge } from "./PromotionStatusBadge";
 import { PromotionUsageBar } from "./PromotionUsageBar";
-import { products as ALL_PRODUCTS } from "@/data/products";
+import { catalogRepository } from "@/lib/repositories/catalogRepository";
 import { formatPrice } from "@/lib/formatting/currency";
 import { X, Calendar, Percent, Package, Tag, Edit, Trash2, Power } from "lucide-react";
 
@@ -34,7 +34,7 @@ export function DiscountDetailModal({
   );
 
   // Representative affected products calculation
-  const affectedProducts = ALL_PRODUCTS.filter((p) =>
+  const affectedProducts = catalogRepository.getProducts().filter((p) =>
     discount.productIds?.includes(p.id)
   ).slice(0, 4);
 

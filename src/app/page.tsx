@@ -1,6 +1,6 @@
 import React from "react";
-import { products } from "@/data/products";
-import { categories, banners, secondaryBanners } from "@/data/common";
+import { catalogRepository } from "@/lib/repositories/catalogRepository";
+import { banners, secondaryBanners } from "@/data/common";
 import { HeroSection } from "@/components/sections/HeroSection";
 import { CategorySection } from "@/components/sections/CategorySection";
 import { OfferSection } from "@/components/sections/OfferSection";
@@ -8,6 +8,9 @@ import { ProductGridSection } from "@/components/sections/ProductGridSection";
 import { CategoryCarouselSection } from "@/components/sections/CategoryCarouselSection";
 
 export default function HomePage() {
+  const products = catalogRepository.getProducts({ isHydrated: false });
+  const categories = catalogRepository.getCategories({ isHydrated: false });
+
   const discountedProducts = products.filter((p) => p.pricing.hasDiscount);
   const newArrivals = products.slice(0, 4);
   const topCategories = categories.slice(0, 4);

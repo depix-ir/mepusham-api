@@ -4,7 +4,7 @@ import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import { useWishlist } from "@/store/wishlist/wishlist.store";
 import { useCart } from "@/store/cart/cart.store";
-import { products as catalogProducts } from "@/data/products";
+import { catalogRepository } from "@/lib/repositories/catalogRepository";
 import { Product } from "@/types/product";
 import { getProductCardPricing } from "@/lib/product/domain";
 import { formatPrice } from "@/lib/formatting/currency";
@@ -27,6 +27,7 @@ export function WishlistClientPage() {
 
   // Map wishlist product IDs to current catalog product objects, filtering out invalid or deleted IDs safely
   const likedProducts = useMemo(() => {
+    const catalogProducts = catalogRepository.getProducts();
     const productMap = new Map<string, Product>();
     catalogProducts.forEach((p) => productMap.set(p.id, p));
 

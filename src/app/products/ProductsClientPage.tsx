@@ -2,8 +2,8 @@
 
 import React, { useState, useTransition, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { products as initialProducts } from "@/data/products";
-import { banners, categories } from "@/data/common";
+import { catalogRepository } from "@/lib/repositories/catalogRepository";
+import { banners } from "@/data/common";
 import { ProductBannerSlider } from "@/components/commerce/ProductBannerSlider";
 import { ProductFilterPanel, FilterState } from "@/components/commerce/ProductFilterPanel";
 import { ProductFilterModal } from "@/components/commerce/ProductFilterModal";
@@ -116,6 +116,9 @@ export function ProductsClientPage() {
     updateUrlFilters(filters, e.target.value);
   };
 
+  const allCatalogProducts = useMemo(() => catalogRepository.getProducts(), []);
+  const categories = useMemo(() => catalogRepository.getCategories(), []);
+
   // Active Category Name
   const activeCategoryObj = categories.find((c) => c.slug === filters.category);
   const activeCategoryName = activeCategoryObj ? activeCategoryObj.name : "همه محصولات";
@@ -180,7 +183,7 @@ export function ProductsClientPage() {
               filters={filters}
               onFilterChange={updateUrlFilters}
               onClearFilters={handleClearFilters}
-              allProducts={initialProducts}
+              allProducts={allCatalogProducts}
             />
           </div>
 
@@ -289,7 +292,7 @@ export function ProductsClientPage() {
         filters={filters}
         onFilterChange={updateUrlFilters}
         onClearFilters={handleClearFilters}
-        allProducts={initialProducts}
+        allProducts={allCatalogProducts}
         matchingCount={total}
       />
     </div>

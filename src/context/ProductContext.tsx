@@ -10,12 +10,7 @@ import {
   ProductSpecification,
   ProductStatus,
 } from "@/types/product";
-import { products as initialProducts } from "@/data/products";
-import { categories as initialCategories, brands as initialBrands } from "@/data/common";
-
-const STORAGE_KEY_PRODUCTS = "admin_store_products_v1";
-const STORAGE_KEY_CATEGORIES = "admin_store_categories_v1";
-const STORAGE_KEY_BRANDS = "admin_store_brands_v1";
+import { catalogRepository } from "@/lib/repositories/catalogRepository";
 
 interface ProductContextType {
   products: Product[];
@@ -54,60 +49,38 @@ interface ProductContextType {
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
 
 export function ProductProvider({ children }: { children: React.ReactNode }) {
-  const [products, setProducts] = useState<Product[]>(initialProducts);
-  const [categories, setCategories] = useState<ProductCategory[]>(initialCategories);
-  const [brands, setBrands] = useState<ProductBrand[]>(initialBrands);
+  const [products, setProducts] = useState<Product[]>(() => catalogRepository.getProducts({ isHydrated: false }));
+  const [categories, setCategories] = useState<ProductCategory[]>(() => catalogRepository.getCategories({ isHydrated: false }));
+  const [brands, setBrands] = useState<ProductBrand[]>(() => catalogRepository.getBrands({ isHydrated: false }));
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Safely load from localStorage after hydration
+  // Safely load from repository after hydration
   useEffect(() => {
     try {
-      const storedProducts = localStorage.getItem(STORAGE_KEY_PRODUCTS);
-      const storedCategories = localStorage.getItem(STORAGE_KEY_CATEGORIES);
-      const storedBrands = localStorage.getItem(STORAGE_KEY_BRANDS);
-
-      if (storedProducts) {
-        setProducts(JSON.parse(storedProducts));
-      }
-      if (storedCategories) {
-        setCategories(JSON.parse(storedCategories));
-      }
-      if (storedBrands) {
-        setBrands(JSON.parse(storedBrands));
-      }
+      setProducts(catalogRepository.getProducts({ isHydrated: true }));
+      setCategories(catalogRepository.getCategories({ isHydrated: true }));
+      setBrands(catalogRepository.getBrands({ isHydrated: true }));
     } catch (e) {
-      console.error("Failed to load products state from localStorage:", e);
+      console.error("Failed to load products state from repository:", e);
     } finally {
       setIsLoaded(true);
     }
   }, []);
 
-  // Save to localStorage whenever state changes after initial load
+  // Save to repository whenever state changes after initial load
   useEffect(() => {
     if (!isLoaded) return;
-    try {
-      localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(products));
-    } catch (e) {
-      console.error("Failed to save products to localStorage:", e);
-    }
+    catalogRepository.saveProducts(products);
   }, [products, isLoaded]);
 
   useEffect(() => {
     if (!isLoaded) return;
-    try {
-      localStorage.setItem(STORAGE_KEY_CATEGORIES, JSON.stringify(categories));
-    } catch (e) {
-      console.error("Failed to save categories to localStorage:", e);
-    }
+    catalogRepository.saveCategories(categories);
   }, [categories, isLoaded]);
 
   useEffect(() => {
     if (!isLoaded) return;
-    try {
-      localStorage.setItem(STORAGE_KEY_BRANDS, JSON.stringify(brands));
-    } catch (e) {
-      console.error("Failed to save brands to localStorage:", e);
-    }
+    catalogRepository.saveBrands(brands);
   }, [brands, isLoaded]);
 
   // Actions
@@ -372,16 +345,10 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const resetToDefaults = useCallback(() => {
-    setProducts(initialProducts);
-    setCategories(initialCategories);
-    setBrands(initialBrands);
-    try {
-      localStorage.removeItem(STORAGE_KEY_PRODUCTS);
-      localStorage.removeItem(STORAGE_KEY_CATEGORIES);
-      localStorage.removeItem(STORAGE_KEY_BRANDS);
-    } catch (e) {
-      console.error("Failed to reset localStorage:", e);
-    }
+    catalogRepository.resetToDefaults();
+    setProducts(catalogRepository.getProducts({ isHydrated: false }));
+    setCategories(catalogRepository.getCategories({ isHydrated: false }));
+    setBrands(catalogRepository.getBrands({ isHydrated: false }));
   }, []);
 
   return (

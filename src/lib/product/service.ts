@@ -1,5 +1,5 @@
 import { Product, ProductQueryFilter, PaginatedProductsResponse } from "@/types/product";
-import { products } from "@/data/products";
+import { catalogRepository } from "@/lib/repositories/catalogRepository";
 import {
   FOOTWEAR_SIZE_GUIDE,
   CLOTHING_SIZE_GUIDE,
@@ -64,8 +64,17 @@ export function enrichProduct(product: Product): Product {
 /**
  * Finds a product by slug and returns its enriched version.
  */
-export function getProductBySlug(slug: string): Product | null {
-  const found = products.find((p) => p.slug === slug);
+export function getProductBySlug(slug: string, options?: { isHydrated?: boolean }): Product | null {
+  const found = catalogRepository.getProductBySlug(slug, options);
+  if (!found) return null;
+  return enrichProduct(found);
+}
+
+/**
+ * Finds a product by id and returns its enriched version.
+ */
+export function getProductById(id: string, options?: { isHydrated?: boolean }): Product | null {
+  const found = catalogRepository.getProductById(id, options);
   if (!found) return null;
   return enrichProduct(found);
 }
@@ -75,15 +84,17 @@ export function getProductBySlug(slug: string): Product | null {
  */
 export function getRelatedProducts(
   product: Product,
-  limit: number = 8
+  limit: number = 8,
+  options?: { isHydrated?: boolean }
 ): Product[] {
-  const sameCategory = products.filter(
+  const allProducts = catalogRepository.getProducts(options);
+  const sameCategory = allProducts.filter(
     (p) => p.id !== product.id && p.category.id === product.category.id
   );
   if (sameCategory.length >= limit) {
     return sameCategory.slice(0, limit);
   }
-  const others = products.filter(
+  const others = allProducts.filter(
     (p) => p.id !== product.id && p.category.id !== product.category.id
   );
   return [...sameCategory, ...others].slice(0, limit);
@@ -98,9 +109,10 @@ export async function getPaginatedProducts(
   filters: ProductQueryFilter = {},
   page: number = 1,
   pageSize: number = PRODUCT_PAGE_SIZE,
-  delayMs: number = 80
+  delayMs: number = 80,
+  options?: { isHydrated?: boolean }
 ): Promise<PaginatedProductsResponse> {
-  let list = [...products];
+  let list = [...catalogRepository.getProducts(options)];
 
   // Filter by category
   if (filters.category) {

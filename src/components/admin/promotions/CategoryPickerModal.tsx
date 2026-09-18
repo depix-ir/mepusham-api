@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { categories as ALL_CATEGORIES } from "@/data/common";
+import { catalogRepository } from "@/lib/repositories/catalogRepository";
 import { Search, X, Check } from "lucide-react";
 
 interface CategoryPickerModalProps {
@@ -27,9 +27,10 @@ export function CategoryPickerModal({
   }, [isOpen, selectedCategoryIds]);
 
   const filteredCategories = useMemo(() => {
-    if (!searchQuery.trim()) return ALL_CATEGORIES;
+    const allCategories = catalogRepository.getCategories();
+    if (!searchQuery.trim()) return allCategories;
     const q = searchQuery.toLowerCase().trim();
-    return ALL_CATEGORIES.filter((c) => c.name.toLowerCase().includes(q));
+    return allCategories.filter((c) => c.name.toLowerCase().includes(q));
   }, [searchQuery]);
 
   const toggleCategory = (id: string) => {

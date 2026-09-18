@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { categories, brands } from "@/data/common";
+import React, { useMemo } from "react";
+import { catalogRepository } from "@/lib/repositories/catalogRepository";
 import { Product } from "@/types/product";
 import { TrashIcon, CheckIcon } from "@/components/icons";
 
@@ -32,6 +32,8 @@ export function ProductFilterPanel({
   className = "",
   hideHeader = false,
 }: ProductFilterPanelProps) {
+  const categories = useMemo(() => catalogRepository.getCategories(), []);
+  const brands = useMemo(() => catalogRepository.getBrands(), []);
   const activeFilterCount =
     (filters.category ? 1 : 0) +
     filters.brands.length +

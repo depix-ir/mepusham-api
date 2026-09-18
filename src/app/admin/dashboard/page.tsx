@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 
 import { mockInitialOrders, mockInitialTickets } from "@/data/mockAccountData";
-import { products } from "@/data/products";
+import { catalogRepository } from "@/lib/repositories/catalogRepository";
 import { formatPrice } from "@/lib/formatting/currency";
 import { Badge } from "@/components/ui/Badge";
 
@@ -56,6 +56,7 @@ export default function AdminDashboardPage() {
 
   // 2. Calculate Products Stats & Low-stock items
   const productStats = useMemo(() => {
+    const products = catalogRepository.getProducts();
     const totalProducts = products.length;
     // Find products where totalStock <= 5 or has available variants with stock <= 5
     const lowStockProducts = products.filter(

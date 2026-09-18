@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Campaign } from "@/types/promotion";
 import { ProductPickerModal } from "./ProductPickerModal";
 import { PromotionDateRangeField } from "./PromotionDateRangeField";
-import { products as ALL_PRODUCTS } from "@/data/products";
+import { catalogRepository } from "@/lib/repositories/catalogRepository";
 import { formatPrice } from "@/lib/formatting/currency";
 import {
   X,
@@ -119,7 +119,8 @@ export function CampaignFormModal({
 
   // Selected products details
   const selectedProducts = useMemo(() => {
-    return ALL_PRODUCTS.filter((p) => productIds.includes(p.id));
+    const allProducts = catalogRepository.getProducts();
+    return allProducts.filter((p) => productIds.includes(p.id));
   }, [productIds]);
 
   if (!isOpen) return null;
