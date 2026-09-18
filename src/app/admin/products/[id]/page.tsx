@@ -31,6 +31,9 @@ import { CreateCategoryModal } from "@/components/admin/CreateCategoryModal";
 import { CreateBrandModal } from "@/components/admin/CreateBrandModal";
 import { ImagePicker } from "@/components/admin/ImagePicker";
 import { ProductVariantBuilder } from "@/components/admin/ProductVariantBuilder";
+import { SizeGuideSection } from "@/components/admin/sizeguide/SizeGuideSection";
+import { SizeGuide } from "@/types/product";
+import { normalizeSizeGuide } from "@/lib/sizeguide/sizeGuideService";
 
 export default function EditProductPage() {
   const router = useRouter();
@@ -62,6 +65,8 @@ export default function EditProductPage() {
   const [options, setOptions] = useState<ProductOption[]>([]);
   const [variants, setVariants] = useState<ProductVariant[]>([]);
 
+  const [sizeGuide, setSizeGuide] = useState<SizeGuide | null>(null);
+
   const [specifications, setSpecifications] = useState<ProductSpecification[]>([]);
   const [newSpecLabel, setNewSpecLabel] = useState("");
   const [newSpecValue, setNewSpecValue] = useState("");
@@ -75,6 +80,7 @@ export default function EditProductPage() {
     basic: true,
     images: true,
     variants: true,
+    sizeguide: true,
     specs: true,
   });
 
@@ -98,6 +104,7 @@ export default function EditProductPage() {
       setOptions(targetProduct.options || []);
       setVariants(targetProduct.variants || []);
       setSpecifications(targetProduct.specifications || []);
+      setSizeGuide(normalizeSizeGuide(targetProduct.sizeGuide));
     }
   }, [targetProduct, categories, brands]);
 
@@ -207,6 +214,7 @@ export default function EditProductPage() {
         hasAvailableVariants: totalStock > 0,
       },
       specifications,
+      sizeGuide: sizeGuide || undefined,
       tags: tagsArr,
       status: targetStatus || status,
     });
@@ -483,7 +491,15 @@ export default function EditProductPage() {
         )}
       </div>
 
-      {/* SECTION 4: SPECIFICATIONS */}
+      {/* SECTION 4: SIZE GUIDE */}
+      <SizeGuideSection
+        sizeGuide={sizeGuide}
+        onChange={setSizeGuide}
+        isOpen={openSections.sizeguide}
+        onToggle={() => toggleSection("sizeguide")}
+      />
+
+      {/* SECTION 5: SPECIFICATIONS */}
       <div className="bg-background border border-border rounded-xl overflow-hidden shadow-xs">
         <button
           onClick={() => toggleSection("specs")}

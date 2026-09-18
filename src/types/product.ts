@@ -137,6 +137,46 @@ export type SizeGuideData = {
   rows: SizeGuideRow[];
 };
 
+export interface SizeGuideColumn {
+  id: string;
+  label: string;
+  key?: string;
+  order: number;
+}
+
+export interface SizeGuideDataRow {
+  id: string;
+  cells: Record<string, string>;
+  order: number;
+}
+
+export interface SizeGuideTemplate {
+  id: string;
+  name: string;
+  description?: string;
+  columns: SizeGuideColumn[];
+  rows: SizeGuideDataRow[];
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+  isActive: boolean;
+}
+
+export interface SizeGuide {
+  id: string;
+  productId?: string;
+  title: string;
+  description?: string;
+  columns: SizeGuideColumn[];
+  rows: SizeGuideDataRow[];
+  notes?: string;
+  sourceTemplateId?: string;
+  imageId?: string;
+  imageUrl?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export type ProductSpecification = {
   label: string;
   value: string;
@@ -162,7 +202,7 @@ export type Product = {
   reviews?: ProductReview[];
   specifications?: ProductSpecification[];
   careInstructions?: string[];
-  sizeGuide?: SizeGuideData;
+  sizeGuide?: SizeGuide | SizeGuideData;
   shippingReturns?: string;
 };
 
