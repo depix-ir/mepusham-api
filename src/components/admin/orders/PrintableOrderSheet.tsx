@@ -12,9 +12,13 @@ export function PrintableOrderSheet({ orders }: PrintableOrderSheetProps) {
   if (!orders || orders.length === 0) return null;
 
   return (
-    <div className="hidden print:block print:fixed print:inset-0 print:z-[9999] print:bg-white print:p-6 print:text-black dir-rtl font-sans">
+    <div className="hidden print:block print:bg-white print:text-black dir-rtl font-sans">
       <style jsx global>{`
         @media print {
+          @page {
+            size: A4;
+            margin: 10mm;
+          }
           body * {
             visibility: hidden;
           }
@@ -22,14 +26,18 @@ export function PrintableOrderSheet({ orders }: PrintableOrderSheetProps) {
             visibility: visible;
           }
           #printable-area {
-            position: absolute;
-            left: 0;
-            top: 0;
+            position: static !important;
             width: 100%;
+            margin: 0;
+            padding: 0;
+          }
+          .order-print-sheet {
+            page-break-inside: avoid;
+            break-inside: avoid;
           }
           .page-break {
-            page-break-after: always;
-            break-after: page;
+            page-break-after: always !important;
+            break-after: page !important;
           }
         }
       `}</style>
@@ -38,7 +46,7 @@ export function PrintableOrderSheet({ orders }: PrintableOrderSheetProps) {
         {orders.map((order, index) => (
           <div
             key={order.id}
-            className={`p-6 border border-gray-300 rounded-lg max-w-3xl mx-auto mb-8 bg-white ${
+            className={`order-print-sheet p-6 border border-gray-300 rounded-lg max-w-3xl mx-auto mb-8 bg-white ${
               index < orders.length - 1 ? "page-break" : ""
             }`}
           >

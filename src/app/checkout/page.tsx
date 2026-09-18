@@ -70,6 +70,12 @@ export default function CheckoutPage() {
 
   // Single Source of Truth Price Calculations
   const itemsSubtotal = getTotal();
+  const totalDiscount = items.reduce((sum, item) => {
+    if (item.compareAtPrice && item.compareAtPrice > item.unitPrice) {
+      return sum + (item.compareAtPrice - item.unitPrice) * item.quantity;
+    }
+    return sum;
+  }, 0);
   const shippingCost = selectedShipping.price;
   const payableTotal = itemsSubtotal + shippingCost;
 
@@ -311,6 +317,7 @@ export default function CheckoutPage() {
           <div className="lg:col-span-4 sticky top-[20px]">
             <OrderSummary
               itemsSubtotal={itemsSubtotal}
+              totalDiscount={totalDiscount}
               shippingOption={selectedShipping}
               payableTotal={payableTotal}
               onSubmit={handleSubmitCheckout}
