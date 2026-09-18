@@ -12,7 +12,9 @@ import {
   Users,
   Headphones,
   Percent,
+  Truck,
   ShieldCheck,
+  Settings,
   ChevronRight,
   ChevronLeft,
   X,
@@ -35,7 +37,9 @@ export const ADMIN_NAV_ITEMS: NavItem[] = [
   { id: "customers", title: "مشتریان", href: "/admin/customers", icon: Users },
   { id: "support", title: "پشتیبانی", href: "/admin/support", icon: Headphones },
   { id: "discounts", title: "تخفیف‌ها", href: "/admin/discounts", icon: Percent },
+  { id: "shipping", title: "روش‌های ارسال", href: "/admin/shipping", icon: Truck },
   { id: "users-roles", title: "کاربران و دسترسی‌ها", href: "/admin/users", icon: ShieldCheck },
+  { id: "settings", title: "تنظیمات", href: "/admin/settings", icon: Settings },
 ];
 
 interface AdminSidebarProps {

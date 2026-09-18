@@ -7,6 +7,7 @@ import { useCart } from "@/store/cart/cart.store";
 import { useAuth } from "@/store/auth/auth.store";
 import { useToast } from "@/components/ui/Toast";
 import { accountService } from "@/lib/account/accountService";
+import { decrementStockForOrderItems } from "@/lib/inventory/inventoryService";
 import { CheckoutPayload } from "@/types/checkout";
 import { formatPrice } from "@/lib/formatting/currency";
 import { TomanIcon } from "@/components/icons";
@@ -51,6 +52,9 @@ export default function PaymentPage() {
     setTimeout(() => {
       // Create new Order snapshot in accountService single source of truth
       const createdOrder = accountService.createOrder(payload);
+
+      // CRITICAL: Decrement inventory stock upon successful payment/order placement
+      decrementStockForOrderItems(payload.items);
 
       // Clear cart & clear temporary checkout payload
       clearCart();
