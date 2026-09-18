@@ -364,7 +364,7 @@ export default function AdminUsersPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="bg-background border border-border rounded-2xl w-full max-w-md p-6 space-y-4 shadow-xl dir-rtl animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center gap-2 border-b border-border pb-3">
-              <ShieldCheck className="w-5 h-5 text-primary" />
+              <ShieldCheck className="w-4 h-4 text-primary" />
               <h3 className="font-bold text-base text-foreground">
                 {editingUser ? `ویرایش کاربر: ${editingUser.name}` : "افزودن کاربر ادمین جدید"}
               </h3>

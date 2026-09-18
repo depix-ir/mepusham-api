@@ -57,7 +57,7 @@ export function EditCustomerModal({
       >
         <div className="flex items-center justify-between border-b border-border pb-3">
           <div className="flex items-center gap-2 font-bold text-base text-foreground" id="edit-customer-modal-title">
-            <User className="w-5 h-5 text-primary" />
+            <User className="w-4 h-4 text-primary" />
             <span>ویرایش اطلاعات مشتری</span>
           </div>
           <button

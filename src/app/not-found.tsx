@@ -44,15 +44,15 @@ export default function NotFound() {
             onClick={() => router.handleBack()}
             className="rounded-xl px-6 font-bold gap-2"
           >
-            <ArrowRight className="w-4 h-4 rtl:rotate-180" />
             <span>بازگشت به صفحه قبل</span>
+            <ArrowRight className="w-4 h-4 rtl:rotate-180" />
           </Button>
 
           <Link href={routes.home}>
             <Button
               variant="outline"
               size="md"
-              className="rounded-xl px-6 font-bold gap-2"
+              className="rounded-xl px-6 font-bold gap-2 w-full"
             >
               <Home className="w-4 h-4" />
               <span>صفحه اصلی</span>

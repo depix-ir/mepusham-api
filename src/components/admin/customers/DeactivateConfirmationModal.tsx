@@ -34,7 +34,7 @@ export function DeactivateConfirmationModal({
       >
         <div className="flex items-center justify-between border-b border-border pb-3">
           <div className="flex items-center gap-2 text-foreground font-bold text-base" id="deactivate-modal-title">
-            <AlertTriangle className={`w-5 h-5 ${isDeactivating ? "text-amber-500" : "text-emerald-500"}`} />
+            <AlertTriangle className={`w-4 h-4 ${isDeactivating ? "text-amber-500" : "text-emerald-500"}`} />
             <span>{actionTitle}</span>
           </div>
           <button

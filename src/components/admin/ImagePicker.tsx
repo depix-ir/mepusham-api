@@ -230,7 +230,7 @@ export function ImagePicker(props: ImagePickerProps) {
             <div className="border-2 border-dashed border-border hover:border-primary/60 rounded-xl p-5 text-center bg-surface-subtle/50 hover:bg-surface-subtle transition-colors flex flex-col items-center justify-center space-y-3">
               <div className="flex items-center justify-center gap-2">
                 <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
-                  <ImageIcon className="w-5 h-5" />
+                  <ImageIcon className="w-4 h-4" />
                 </div>
               </div>
 

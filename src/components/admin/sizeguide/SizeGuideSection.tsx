@@ -343,7 +343,7 @@ export function SizeGuideSection({
           />
           <div className="relative bg-background border border-border rounded-2xl shadow-2xl w-full max-w-sm p-5 z-10 space-y-4 text-xs">
             <div className="flex items-center gap-2.5 text-error font-bold text-sm">
-              <AlertCircle className="w-5 h-5 shrink-0" />
+              <AlertCircle className="w-4 h-4 shrink-0" />
               <span>حذف راهنمای سایز</span>
             </div>
 

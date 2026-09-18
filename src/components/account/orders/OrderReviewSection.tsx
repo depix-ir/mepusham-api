@@ -117,7 +117,7 @@ export function OrderReviewSection({ order }: OrderReviewSectionProps) {
       <div className="flex items-center justify-between cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
         <div className="flex items-center gap-2.5">
           <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center shrink-0">
-            <MessageSquarePlus className="w-5 h-5" />
+            <MessageSquarePlus className="w-4 h-4" />
           </div>
           <div>
             <h2 className="text-xs sm:text-sm font-bold text-foreground flex items-center gap-2">
@@ -139,7 +139,7 @@ export function OrderReviewSection({ order }: OrderReviewSectionProps) {
           className="text-muted-foreground hover:text-foreground p-1"
           aria-label={isExpanded ? "بستن" : "باز کردن"}
         >
-          {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+          {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
         </button>
       </div>
 
@@ -179,7 +179,7 @@ export function OrderReviewSection({ order }: OrderReviewSectionProps) {
                           : "bg-surface-subtle text-foreground border-border-subtle hover:border-primary/50"
                       }`}
                     >
-                      <div className="relative w-5 h-5 rounded overflow-hidden shrink-0 bg-surface-muted">
+                      <div className="relative w-4 h-4 rounded overflow-hidden shrink-0 bg-surface-muted">
                         <Image src={item.image} alt={item.title} fill className="object-cover" />
                       </div>
                       <span className="max-w-[120px] truncate">{item.title}</span>
@@ -297,7 +297,7 @@ export function OrderReviewSection({ order }: OrderReviewSectionProps) {
                     <button
                       type="button"
                       onClick={() => handleRemoveImage(idx)}
-                      className="absolute top-1 right-1 w-5 h-5 rounded-full bg-rose-600 text-white flex items-center justify-center cursor-pointer shadow-xs"
+                      className="absolute top-1 right-1 w-4 h-4 rounded-full bg-rose-600 text-white flex items-center justify-center cursor-pointer shadow-xs"
                     >
                       <X className="w-3 h-3" />
                     </button>
@@ -307,7 +307,7 @@ export function OrderReviewSection({ order }: OrderReviewSectionProps) {
                 {/* Upload Button */}
                 {images.length < 3 && (
                   <label className="w-14 h-14 rounded-xl border border-dashed border-primary/40 bg-primary/5 hover:bg-primary/10 transition-colors flex flex-col items-center justify-center text-primary cursor-pointer shrink-0">
-                    <Camera className="w-5 h-5" />
+                    <Camera className="w-4 h-4" />
                     <span className="text-[9px] font-bold mt-0.5">افزودن عکس</span>
                     <input
                       type="file"

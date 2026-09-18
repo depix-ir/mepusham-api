@@ -318,7 +318,7 @@ export function ProductGallery({
               aria-label="تصویر قبلی"
               className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-background/80 hover:bg-background text-foreground flex items-center justify-center shadow-xs backdrop-blur-xs transition-all active:scale-90 opacity-0 group-hover:opacity-100 focus:opacity-100 cursor-pointer z-10"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               type="button"
@@ -329,7 +329,7 @@ export function ProductGallery({
               aria-label="تصویر بعدی"
               className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-background/80 hover:bg-background text-foreground flex items-center justify-center shadow-xs backdrop-blur-xs transition-all active:scale-90 opacity-0 group-hover:opacity-100 focus:opacity-100 cursor-pointer z-10"
             >
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-4 h-4" />
             </button>
           </>
         )}
@@ -484,7 +484,7 @@ export function ProductGallery({
               aria-label="بستن گالری"
               className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-white"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
 
