@@ -132,9 +132,11 @@ export function ProductDetailPage({
         {/* Gallery Column */}
         <div className="lg:col-span-7 xl:col-span-6 w-full">
           <ProductGallery
+            product={product}
             productId={product.id}
             images={product.images}
             title={product.title}
+            selectedVariantId={variantDetails.selectedVariant?.id}
             hasDiscount={variantDetails.hasDiscount}
             discountPercent={variantDetails.discountPercent}
             isOutOfStock={!variantDetails.isAvailable}
