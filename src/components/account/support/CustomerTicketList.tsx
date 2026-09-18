@@ -8,6 +8,8 @@ import {
   supportCategoryLabels,
   supportStatusLabelsCustomer,
 } from "@/types/support";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { routes } from "@/lib/routes";
 import {
   Plus,
   MessageSquare,
@@ -69,6 +71,18 @@ export function CustomerTicketList({ tickets }: CustomerTicketListProps) {
     }
   };
 
+  if (totalCount === 0) {
+    return (
+      <EmptyState
+        title="درخواست پشتیبانی ندارید"
+        description="اگر درباره محصولات، سفارش یا مرجوعی سوالی دارید، می‌توانید تیکت جدید ثبت کنید."
+        actionLabel="ایجاد تیکت"
+        href={routes.account.support.new()}
+        icon={<MessageSquare className="w-7 h-7 text-muted-foreground" />}
+      />
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Top Header & New Ticket CTA */}
@@ -84,7 +98,7 @@ export function CustomerTicketList({ tickets }: CustomerTicketListProps) {
         </div>
 
         <Link
-          href="/account/support/new"
+          href={routes.account.support.new()}
           className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-bold hover:bg-primary-hover transition-colors shadow-2xs cursor-pointer shrink-0 w-full sm:w-auto"
         >
           <Plus className="w-4 h-4" />
@@ -193,7 +207,7 @@ export function CustomerTicketList({ tickets }: CustomerTicketListProps) {
           {filteredTickets.map((t) => (
             <Link
               key={t.id}
-              href={`/account/support/${t.id}`}
+              href={routes.account.support.detail(t.id)}
               className="group bg-surface border border-border rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 hover:border-primary/50 transition-all shadow-2xs"
             >
               <div className="space-y-1.5 min-w-0 flex-1">
@@ -252,26 +266,16 @@ export function CustomerTicketList({ tickets }: CustomerTicketListProps) {
           ))}
         </div>
       ) : (
-        <div className="p-10 border border-dashed border-border rounded-2xl text-center space-y-3 bg-surface-subtle/30">
-          <div className="w-12 h-12 rounded-full bg-surface-subtle text-muted-foreground mx-auto flex items-center justify-center">
-            <MessageSquare className="w-6 h-6" />
-          </div>
-          <div className="space-y-1">
-            <p className="text-sm font-bold text-foreground">هیچ تیکتی پیدا نشد</p>
-            <p className="text-xs text-muted-foreground">
-              {searchQuery || selectedStatus !== "all"
-                ? "با فیلترهای انتخاب شده تیکتی وجود ندارد."
-                : "اگر درباره محصولات، سفارش یا مرجوعی سوالی دارید، می‌توانید تیکت جدید ثبت کنید."}
-            </p>
-          </div>
-          <Link
-            href="/account/support/new"
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold hover:bg-primary-hover transition-colors cursor-pointer"
-          >
-            <Plus className="w-4 h-4" />
-            <span>ثبت تیکت جدید</span>
-          </Link>
-        </div>
+        <EmptyState
+          title="تیکتی با این مشخصات یافت نشد"
+          description="می‌توانید عبارات جستجو را تغییر داده یا فیلتر وضعیت را بازنشانی کنید."
+          actionLabel="بازنشانی فیلترها"
+          onAction={() => {
+            setSearchQuery("");
+            setSelectedStatus("all");
+          }}
+          icon={<MessageSquare className="w-7 h-7 text-muted-foreground" />}
+        />
       )}
     </div>
   );

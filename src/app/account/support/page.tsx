@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useAuth } from "@/store/auth/auth.store";
 import { supportService } from "@/lib/support/supportService";
@@ -8,21 +8,40 @@ import { SupportTicket } from "@/types/support";
 import { CustomerTicketList } from "@/components/account/support/CustomerTicketList";
 import { AccountPageHeader } from "@/components/account/AccountPageHeader";
 import { Container } from "@/components/ui/Container";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { routes } from "@/lib/routes";
 import { MessageSquare, LogIn, ChevronLeft } from "lucide-react";
 
 export default function AccountSupportPage() {
   const { user, isAuthenticated, isAuthLoading } = useAuth();
   const [tickets, setTickets] = useState<SupportTicket[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isError, setIsError] = useState<boolean>(false);
+
+  const loadTickets = useCallback(() => {
+    setIsLoading(true);
+    setIsError(false);
+    try {
+      const data = supportService.getTickets();
+      setTickets(data);
+    } catch {
+      setIsError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (isAuthenticated) {
-      setTickets(supportService.getTickets());
+      loadTickets();
+    } else {
+      setIsLoading(false);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, loadTickets]);
 
-  if (isAuthLoading) {
+  if (isAuthLoading || isLoading) {
     return (
-      <div className="py-20 flex justify-center items-center">
+      <div className="py-20 flex justify-center items-center min-h-[60vh]">
         <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
       </div>
     );
@@ -45,7 +64,7 @@ export default function AccountSupportPage() {
               </p>
             </div>
             <Link
-              href="/account"
+              href={routes.account.root}
               className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-bold hover:bg-primary-hover transition-colors shadow-2xs"
             >
               <span>ورود به حساب کاربری</span>
@@ -65,11 +84,20 @@ export default function AccountSupportPage() {
             title="پشتیبانی و تیکت‌ها"
             description="مشاهده و مدیریت تیکت‌های پشتیبانی"
             icon={MessageSquare}
-            backUrl="/account"
+            backUrl={routes.account.root}
             backLabel="بازگشت به حساب کاربری"
           />
 
-          <CustomerTicketList tickets={tickets} />
+          {isError ? (
+            <ErrorState
+              title="دریافت اطلاعات تیکت‌ها با خطا مواجه شد"
+              description="مشکلی در بارگیری درخواست‌های پشتیبانی پیش آمده است. لطفاً دوباره تلاش کنید."
+              onAction={loadTickets}
+              actionLabel="تلاش دوباره"
+            />
+          ) : (
+            <CustomerTicketList tickets={tickets} />
+          )}
         </div>
       </div>
     </div>

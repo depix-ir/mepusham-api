@@ -1,20 +1,9 @@
 $ next dev
-▲ Next.js Resolved, downloaded and extracted [162]
-Saved lockfile
-⨯ Failed to start server
-Error: listen EADDRINUSE: address already in use :::3000
-    at <unknown> (Error: listen EADDRINUSE: address already in use :::3000)
-    at new Promise (<anonymous>) {
-  code: 'EADDRINUSE',
-  errno: -98,
-  syscall: 'listen',
-  address: '::',
-  port: 3000
-}
-[?25h
- opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
-https://nextjs.org/telemetry
-
+▲ Next.js 16.3.4 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+✓ Ready in 536ms
+✓ Running next.config.ts took 42ms
 ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead.
 
   To migrate automatically, run:
@@ -22,15 +11,11 @@ https://nextjs.org/telemetry
 
   Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
 
-○ Compiling /products/[slug] ...
-⚠ metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:3000". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
- GET /products/classic-leather-handbag-01 200 in 4.8s (next.js: 4.0s, application-code: 751ms)
- GET /images/placeholders/product-placeholder.webp 404 in 1665ms (next.js: 1482ms, application-code: 183ms)
-⨯ The requested resource isn't a valid image for /images/placeholders/product-placeholder.webp received null
- GET /images/placeholders/product-placeholder.webp 404 in 1683ms (next.js: 1503ms, application-code: 180ms)
-⨯ The requested resource isn't a valid image for /images/placeholders/product-placeholder.webp received null
- GET /images/placeholders/product-placeholder.webp 404 in 90ms (next.js: 9ms, application-code: 81ms)
-⨯ The requested resource isn't a valid image for /images/placeholders/product-placeholder.webp received null
-[browser] Image with src "/images/placeholders/product-placeholder.webp" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
- GET /images/placeholders/product-placeholder.webp 404 in 95ms (next.js: 7ms, application-code: 88ms)
-⨯ The requested resource isn't a valid image for /images/placeholders/product-placeholder.webp received null
+○ Compiling / ...
+ GET / 200 in 4.9s (next.js: 4.1s, application-code: 830ms)
+ GET /account/orders 200 in 1179ms (next.js: 1085ms, application-code: 94ms)
+ GET /account/support 200 in 556ms (next.js: 469ms, application-code: 87ms)
+ GET /account/returns 200 in 477ms (next.js: 403ms, application-code: 74ms)
+ GET /account/addresses 200 in 415ms (next.js: 342ms, application-code: 73ms)
+ GET /some-non-existent-page-404 404 in 564ms (next.js: 437ms, application-code: 128ms)
+ GET /some-non-existent-page-404 404 in 114ms (next.js: 10ms, application-code: 104ms)
