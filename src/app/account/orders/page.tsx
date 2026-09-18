@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useAuth } from "@/store/auth/auth.store";
 import { accountService } from "@/lib/account/accountService";
@@ -8,6 +8,8 @@ import { Order, OrderStatus } from "@/types/account";
 import { OrderCard } from "@/components/account/orders/OrderCard";
 import { Container } from "@/components/ui/Container";
 import { AccountPageHeader } from "@/components/account/AccountPageHeader";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { routes } from "@/lib/routes";
 import { ShoppingBag, PackageX } from "lucide-react";
 
@@ -25,12 +27,31 @@ export default function AccountOrdersListPage() {
   const { isAuthLoading, isAuthenticated } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [activeFilter, setActiveFilter] = useState<OrderFilter>("all");
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isError, setIsError] = useState<boolean>(false);
 
-  useEffect(() => {
-    setOrders(accountService.getOrders());
+  const loadOrders = useCallback(() => {
+    setIsLoading(true);
+    setIsError(false);
+    try {
+      const data = accountService.getOrders();
+      setOrders(data);
+    } catch {
+      setIsError(true);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
-  if (isAuthLoading) {
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadOrders();
+    } else {
+      setIsLoading(false);
+    }
+  }, [isAuthenticated, loadOrders]);
+
+  if (isAuthLoading || isLoading) {
     return (
       <div className="py-20 text-center min-h-[60vh] flex items-center justify-center">
         <Container>
@@ -80,75 +101,78 @@ export default function AccountOrdersListPage() {
           badgeText={orders.length > 0 ? `${orders.length} سفارش` : undefined}
         />
 
-        {/* Minimal Tab Filters */}
-        {orders.length > 0 && (
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
-            {filterTabs.map((tab) => {
-              const isActive = activeFilter === tab.id;
-              const count =
-                tab.id === "all"
-                  ? orders.length
-                  : orders.filter((o) => o.status === tab.id).length;
-
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => setActiveFilter(tab.id)}
-                  className={`px-3.5 py-1.5 text-xs font-bold rounded-xl whitespace-nowrap transition-colors cursor-pointer border ${
-                    isActive
-                      ? "bg-primary text-primary-foreground border-primary shadow-2xs"
-                      : "bg-surface-subtle text-muted-foreground border-transparent hover:text-foreground hover:bg-surface-muted"
-                  }`}
-                >
-                  {tab.label} ({count})
-                </button>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Orders List */}
-        {filteredOrders.length > 0 ? (
-          <div className="space-y-4">
-            {filteredOrders.map((order) => (
-              <OrderCard
-                key={order.id}
-                order={order}
-                onViewDetails={(ord) => {
-                  window.location.href = routes.account.orders.detail(ord.id);
-                }}
-                onOpenSupport={(ord) => {
-                  window.location.href = routes.account.support.new({ orderId: ord.id });
-                }}
-              />
-            ))}
-          </div>
+        {/* Error State */}
+        {isError ? (
+          <ErrorState
+            title="دریافت اطلاعات سفارش‌ها با خطا مواجه شد"
+            description="مشکلی در بارگیری لیست سفارش‌ها به وجود آمد. لطفاً دوباره تلاش کنید."
+            onAction={loadOrders}
+            actionLabel="تلاش دوباره"
+          />
         ) : (
-          /* Empty State */
-          <div className="py-16 px-4 border border-dashed border-border-subtle rounded-2xl text-center space-y-4 bg-surface-subtle/20">
-            <div className="w-12 h-12 rounded-full bg-surface-muted text-muted-foreground mx-auto flex items-center justify-center">
-              <PackageX className="w-6 h-6" />
-            </div>
-            <div className="space-y-1">
-              <h2 className="text-sm font-bold text-foreground">
-                {activeFilter === "all"
-                  ? "هنوز سفارشی ثبت نکرده‌اید"
-                  : "سفارشی در این وضعیت یافت نشد"}
-              </h2>
-              <p className="text-xs text-muted-foreground max-w-sm mx-auto">
-                {activeFilter === "all"
-                  ? "وقتی سفارشی ثبت کنید، اطلاعات آن در این صفحه نمایش داده می‌شود."
-                  : "می‌توانید سایر فیلترها را برای پیدا کردن سفارش موردنظرتان انتخاب کنید."}
-              </p>
-            </div>
-            <Link
-              href={routes.products.list}
-              className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-bold hover:bg-primary-hover transition-colors shadow-xs"
-            >
-              مشاهده محصولات
-            </Link>
-          </div>
+          <>
+            {/* Minimal Tab Filters */}
+            {orders.length > 0 && (
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+                {filterTabs.map((tab) => {
+                  const isActive = activeFilter === tab.id;
+                  const count =
+                    tab.id === "all"
+                      ? orders.length
+                      : orders.filter((o) => o.status === tab.id).length;
+
+                  return (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => setActiveFilter(tab.id)}
+                      className={`px-3.5 py-1.5 text-xs font-bold rounded-xl whitespace-nowrap transition-colors cursor-pointer border ${
+                        isActive
+                          ? "bg-primary text-primary-foreground border-primary shadow-2xs"
+                          : "bg-surface-subtle text-muted-foreground border-transparent hover:text-foreground hover:bg-surface-muted"
+                      }`}
+                    >
+                      {tab.label} ({count})
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Orders List / Empty State */}
+            {orders.length === 0 ? (
+              <EmptyState
+                title="هنوز سفارشی ثبت نکرده‌اید"
+                description="وقتی سفارشی ثبت کنید، اطلاعات آن در این صفحه نمایش داده می‌شود."
+                actionLabel="ایجاد سفارش"
+                href={routes.products.list}
+                icon={<PackageX className="w-7 h-7 text-muted-foreground" />}
+              />
+            ) : filteredOrders.length === 0 ? (
+              <EmptyState
+                title="سفارشی در این وضعیت یافت نشد"
+                description="می‌توانید سایر فیلترها را برای پیدا کردن سفارش موردنظرتان انتخاب کنید."
+                actionLabel="مشاهده همه سفارش‌ها"
+                onAction={() => setActiveFilter("all")}
+                icon={<PackageX className="w-7 h-7 text-muted-foreground" />}
+              />
+            ) : (
+              <div className="space-y-4">
+                {filteredOrders.map((order) => (
+                  <OrderCard
+                    key={order.id}
+                    order={order}
+                    onViewDetails={(ord) => {
+                      window.location.href = routes.account.orders.detail(ord.id);
+                    }}
+                    onOpenSupport={(ord) => {
+                      window.location.href = routes.account.support.new({ orderId: ord.id });
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+          </>
         )}
       </Container>
     </div>

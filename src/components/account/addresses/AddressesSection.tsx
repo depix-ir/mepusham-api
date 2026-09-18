@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { UserAddress } from "@/types/account";
 import { AddressModal } from "./AddressModal";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { toPersianDigits } from "@/lib/formatting/currency";
 import { MapPin, Plus, Edit2, Trash2, CheckCircle2 } from "lucide-react";
 
@@ -37,7 +38,7 @@ export function AddressesSection({
       {/* Section Header Bar */}
       <div className="flex items-center justify-between pb-3 border-b border-border-subtle">
         <div className="flex items-center gap-2">
-          <MapPin className=" text-primary shrink-0" />
+          <MapPin className="text-primary shrink-0" />
           <h2 className="text-sm sm:text-base font-bold text-foreground">
             فهرست آدرس‌ها
           </h2>
@@ -65,7 +66,7 @@ export function AddressesSection({
                   : "bg-background border-border/80 hover:border-border"
               }`}
             >
-              <div className="flex items-center justify-between gap-2  pb-3 mb-3">
+              <div className="flex items-center justify-between gap-2 pb-3 mb-3 border-b border-border-subtle/60">
                 <div className="flex items-center gap-2">
                   <span className="text-xs sm:text-sm font-bold text-foreground">
                     {addr.title}
@@ -129,27 +130,13 @@ export function AddressesSection({
           ))}
         </div>
       ) : (
-        <div className="py-12 px-4 border border-dashed border-border rounded-2xl text-center space-y-3 bg-surface-subtle/30">
-          <div className="w-12 h-12 rounded-full bg-surface-muted text-muted-foreground mx-auto flex items-center justify-center">
-            <MapPin className="w-6 h-6" />
-          </div>
-          <div className="space-y-1">
-            <h3 className="text-xs sm:text-sm font-bold text-foreground">
-              هنوز آدرسی ثبت نکرده‌اید
-            </h3>
-            <p className="text-xs text-muted-foreground max-w-sm mx-auto">
-              برای ثبت سفارش و تحویل سریع‌تر، آدرس خود را وارد کنید.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={handleOpenAdd}
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-bold hover:bg-primary-hover transition-colors cursor-pointer shadow-xs"
-          >
-            <Plus className="w-4 h-4" />
-            <span>ثبت اولین آدرس</span>
-          </button>
-        </div>
+        <EmptyState
+          title="هنوز آدرسی ثبت نکرده‌اید"
+          description="برای ثبت سفارش و تحویل سریع‌تر، آدرس خود را وارد کنید."
+          actionLabel="افزودن آدرس جدید"
+          onAction={handleOpenAdd}
+          icon={<MapPin className="w-7 h-7 text-muted-foreground" />}
+        />
       )}
 
       {/* Address Edit/Add Modal */}

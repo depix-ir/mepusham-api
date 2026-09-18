@@ -8,17 +8,38 @@ import { UserAddress } from "@/types/account";
 import { Container } from "@/components/ui/Container";
 import { AccountPageHeader } from "@/components/account/AccountPageHeader";
 import { AddressesSection } from "@/components/account/addresses/AddressesSection";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { useToast } from "@/components/ui/Toast";
+import { routes } from "@/lib/routes";
 import { MapPin } from "lucide-react";
 
 export default function AccountAddressesPage() {
   const { isAuthLoading, isAuthenticated } = useAuth();
   const [addresses, setAddresses] = useState<UserAddress[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isError, setIsError] = useState<boolean>(false);
   const { showToast } = useToast();
 
-  useEffect(() => {
-    setAddresses(accountService.getAddresses());
+  const loadAddresses = useCallback(() => {
+    setIsLoading(true);
+    setIsError(false);
+    try {
+      const data = accountService.getAddresses();
+      setAddresses(data);
+    } catch {
+      setIsError(true);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadAddresses();
+    } else {
+      setIsLoading(false);
+    }
+  }, [isAuthenticated, loadAddresses]);
 
   const handleSaveAddress = useCallback(
     (addrData: Omit<UserAddress, "id"> & { id?: string }) => {
@@ -51,7 +72,7 @@ export default function AccountAddressesPage() {
     [showToast]
   );
 
-  if (isAuthLoading) {
+  if (isAuthLoading || isLoading) {
     return (
       <div className="py-20 text-center min-h-[60vh] flex items-center justify-center">
         <Container>
@@ -73,7 +94,7 @@ export default function AccountAddressesPage() {
             لطفاً ابتدا با شماره موبایل خود وارد حساب کاربری شوید.
           </p>
           <Link
-            href="/account"
+            href={routes.account.root}
             className="inline-flex items-center justify-center px-6 py-2.5 bg-primary text-primary-foreground font-bold text-xs rounded-xl hover:bg-primary-hover transition-colors shadow-xs"
           >
             ورود به حساب کاربری
@@ -86,25 +107,32 @@ export default function AccountAddressesPage() {
   return (
     <div className="py-6 sm:py-10 max-w-[800px] mx-auto bg-background min-h-screen pb-24 md:pb-12">
       <Container className="max-w-3xl space-y-6">
-        {/* Page Header matching orders, returns, support */}
         <AccountPageHeader
           title="آدرس‌های من"
           description="مدیریت و ویرایش آدرس‌های ارسال و دریافت سفارش‌ها"
           icon={MapPin}
-          backUrl="/account"
+          backUrl={routes.account.root}
           backLabel="بازگشت به حساب کاربری"
           badgeText={addresses.length > 0 ? `${addresses.length} آدرس` : undefined}
         />
 
-        {/* Addresses Section Body */}
-        <div className="bg-background border border-border/70 rounded-2xl p-4 sm:p-6 shadow-2xs">
-          <AddressesSection
-            addresses={addresses}
-            onSaveAddress={handleSaveAddress}
-            onDeleteAddress={handleDeleteAddress}
-            onSetDefault={handleSetDefaultAddress}
+        {isError ? (
+          <ErrorState
+            title="دریافت لیست آدرس‌ها با خطا مواجه شد"
+            description="مشکلی در بارگیری آدرس‌های شما به وجود آمد. لطفاً دوباره تلاش کنید."
+            onAction={loadAddresses}
+            actionLabel="تلاش دوباره"
           />
-        </div>
+        ) : (
+          <div className="bg-background border border-border/70 rounded-2xl p-4 sm:p-6 shadow-2xs">
+            <AddressesSection
+              addresses={addresses}
+              onSaveAddress={handleSaveAddress}
+              onDeleteAddress={handleDeleteAddress}
+              onSetDefault={handleSetDefaultAddress}
+            />
+          </div>
+        )}
       </Container>
     </div>
   );

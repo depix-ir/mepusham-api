@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { Order } from "@/types/account";
-import { ProductReview } from "@/types/product";
 import { reviewService } from "@/lib/product/reviewService";
 import { uploadMediaFile } from "@/lib/media/uploadService";
 import { useToast } from "@/components/ui/Toast";
@@ -34,14 +33,12 @@ export function OrderReviewSection({ order }: OrderReviewSectionProps) {
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
-  const [reviewsVersion, setReviewsVersion] = useState<number>(0);
 
   // If order is not delivered, do not show review section
   if (order.status !== "delivered") {
     return null;
   }
 
-  const existingReviews = reviewService.getReviewsForOrder(order.id);
   const selectedItem = order.items.find((i) => i.productId === selectedProductId) || order.items[0];
   const existingReviewForSelected = selectedProductId
     ? reviewService.getReviewForOrderItem(order.id, selectedProductId)
@@ -61,16 +58,15 @@ export function OrderReviewSection({ order }: OrderReviewSectionProps) {
       const newImageUrls: string[] = [];
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        const result = await uploadService.uploadProductImage(file);
-        if (result.success && result.url) {
+        const result = await uploadMediaFile(file);
+        if (result.url) {
           newImageUrls.push(result.url);
-        } else {
-          showToast(result.error || "خطا در بارگذاری تصویر.", "error");
         }
       }
       setImages((prev) => [...prev, ...newImageUrls]);
-    } catch {
-      showToast("خطا در بارگذاری تصویر.", "error");
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "خطا در بارگذاری تصویر.";
+      showToast(errorMessage, "error");
     } finally {
       setIsUploading(false);
       e.target.value = "";
@@ -104,7 +100,6 @@ export function OrderReviewSection({ order }: OrderReviewSectionProps) {
       setComment("");
       setImages([]);
       setRating(5);
-      setReviewsVersion((v) => v + 1);
     } catch {
       showToast("خطا در ثبت نظر.", "error");
     } finally {
@@ -185,9 +180,9 @@ export function OrderReviewSection({ order }: OrderReviewSectionProps) {
                       }`}
                     >
                       <div className="relative w-5 h-5 rounded overflow-hidden shrink-0 bg-surface-muted">
-                        <Image src={item.imageUrl} alt={item.productTitle} fill className="object-cover" />
+                        <Image src={item.image} alt={item.title} fill className="object-cover" />
                       </div>
-                      <span className="max-w-[120px] truncate">{item.productTitle}</span>
+                      <span className="max-w-[120px] truncate">{item.title}</span>
                       {hasRev && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />}
                     </button>
                   );
@@ -238,7 +233,6 @@ export function OrderReviewSection({ order }: OrderReviewSectionProps) {
                   setComment(existingReviewForSelected.comment);
                   setRating(existingReviewForSelected.rating);
                   setImages(existingReviewForSelected.images || []);
-                  // We clear from reviewService memory for re-editing
                 }}
                 className="text-[11px] font-bold text-primary hover:underline block pt-1"
               >
@@ -249,12 +243,14 @@ export function OrderReviewSection({ order }: OrderReviewSectionProps) {
             /* Review Submission Form */
             <form onSubmit={handleSubmit} className="space-y-3">
               {/* Product Info Indicator */}
-              <div className="flex items-center gap-2 text-xs text-foreground font-bold bg-background p-2.5 rounded-xl border border-border-subtle">
-                <div className="relative w-8 h-8 rounded-lg overflow-hidden shrink-0 bg-surface-muted">
-                  <Image src={selectedItem.imageUrl} alt={selectedItem.productTitle} fill className="object-cover" />
+              {selectedItem && (
+                <div className="flex items-center gap-2 text-xs text-foreground font-bold bg-background p-2.5 rounded-xl border border-border-subtle">
+                  <div className="relative w-8 h-8 rounded-lg overflow-hidden shrink-0 bg-surface-muted">
+                    <Image src={selectedItem.image} alt={selectedItem.title} fill className="object-cover" />
+                  </div>
+                  <span className="truncate">{selectedItem.title}</span>
                 </div>
-                <span className="truncate">{selectedItem.productTitle}</span>
-              </div>
+              )}
 
               {/* Star Rating Select */}
               <div className="flex items-center justify-between bg-background p-3 rounded-xl border border-border-subtle">
