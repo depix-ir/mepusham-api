@@ -57,7 +57,19 @@ export interface Order {
     address: string;
     postalCode: string;
   };
+  originAddress?: StoreAddressSnapshot;
   timeline: OrderTimelineItem[];
+}
+
+export interface StoreAddressSnapshot {
+  recipientName: string;
+  phone: string;
+  province: string;
+  city: string;
+  address: string;
+  plaque?: string;
+  floor?: string;
+  postalCode: string;
 }
 
 export interface UserAddress {

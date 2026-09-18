@@ -20,6 +20,7 @@ import {
 import { useToast } from "@/components/ui/Toast";
 import { formatToman } from "@/lib/formatting/currency";
 import { getReturnPolicy } from "@/lib/returns/policy";
+import { storeSettingsService } from "@/lib/store-settings/storeSettingsService";
 import {
   ArrowRight,
   Package,
@@ -36,6 +37,8 @@ import {
   ShieldCheck,
   Send,
   FileText,
+  Building2,
+  AlertTriangle,
 } from "lucide-react";
 
 export default function AdminReturnDetailPage({
@@ -393,11 +396,11 @@ export default function AdminReturnDetailPage({
             </div>
           </div>
 
-          {/* Return Shipment Panel */}
+          {/* Return Shipment & Destination Address Panel */}
           <div className="bg-background border border-border rounded-lg p-4 space-y-3">
             <h2 className="font-bold text-sm text-foreground flex items-center gap-2 border-b border-border pb-3">
               <Truck className="w-4 h-4 text-primary" />
-              <span>وضعیت ارسال و مرسوله مرجوعی</span>
+              <span>وضعیت ارسال و مقصد مرجوعی (انبار فروشگاه)</span>
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
@@ -422,6 +425,42 @@ export default function AdminReturnDetailPage({
                 </span>
               </div>
             </div>
+
+            {/* Destination Return Address */}
+            {(() => {
+              const returnAddr = request.storeReturnAddress || storeSettingsService.getDefaultReturnAddress();
+              if (returnAddr) {
+                return (
+                  <div className="pt-2 border-t border-border/60 space-y-1">
+                    <div className="flex items-center gap-1.5 text-muted-foreground font-semibold text-[11px]">
+                      <Building2 className="w-3.5 h-3.5 text-primary" />
+                      <span>آدرس مقصد مرجوعی (انبار فروشگاه جهت ارسال مشتری):</span>
+                    </div>
+                    <p className="text-foreground leading-relaxed text-xs">
+                      {returnAddr.recipientName} - {returnAddr.province}، {returnAddr.city}، {returnAddr.address}
+                      {returnAddr.plaque ? `، پلاک ${returnAddr.plaque}` : ""}
+                    </p>
+                    <p className="text-[11px] text-muted-foreground font-mono">
+                      کد پستی: {returnAddr.postalCode} | همراه: {returnAddr.phone}
+                    </p>
+                  </div>
+                );
+              }
+              return (
+                <div className="pt-2 border-t border-border/60 p-2.5 bg-warning/10 border border-warning/30 rounded-lg flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 text-warning text-[11px]">
+                    <AlertTriangle className="w-4 h-4 shrink-0" />
+                    <span>آدرس مقصد مرجوعی در تنظیمات فروشگاه ثبت نشده است.</span>
+                  </div>
+                  <Link
+                    href="/admin/settings"
+                    className="px-2.5 py-1 bg-warning text-warning-foreground font-bold text-[10px] rounded-md shrink-0 hover:opacity-90"
+                  >
+                    ثبت آدرس مقصد
+                  </Link>
+                </div>
+              );
+            })()}
 
             {/* Form to enter return tracking code if in progress */}
             {request.status === "approved" && !request.shipment?.trackingCode && (

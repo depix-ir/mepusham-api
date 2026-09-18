@@ -1,3 +1,5 @@
+import { StoreAddressSnapshot } from "./account";
+
 export type ReturnReason =
   | "size_issue"
   | "color_mismatch"
@@ -179,6 +181,8 @@ export type ReturnRequest = {
   exchange?: ExchangeDetails;
 
   timeline: ReturnTimelineEvent[];
+
+  storeReturnAddress?: StoreAddressSnapshot;
 
   createdAt: string;
   updatedAt: string;

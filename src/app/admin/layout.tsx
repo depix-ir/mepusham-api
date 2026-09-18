@@ -67,21 +67,9 @@ function AdminLayoutGuard({ children }: { children: React.ReactNode }) {
   // Authorization check for the current route
   const isAuthorized = canAccessRoute(pathname);
 
-  const handleNavItemClick = (item: NavItem) => {
-    if (
-      item.href !== "/admin/dashboard" &&
-      !item.href.startsWith("/admin/products") &&
-      !item.href.startsWith("/admin/inventory") &&
-      !item.href.startsWith("/admin/returns") &&
-      !item.href.startsWith("/admin/discounts") &&
-      !item.href.startsWith("/admin/shipping") &&
-      !item.href.startsWith("/admin/support") &&
-      !item.href.startsWith("/admin/customers") &&
-      !item.href.startsWith("/admin/users") &&
-      !item.href.startsWith("/admin/settings")
-    ) {
-      showToast(`بخش «${item.title}» به زودی اضافه خواهد شد.`, "info");
-    }
+  const handleNavItemClick = (_item: NavItem) => {
+    // All navigation items in ADMIN_NAV_ITEMS correspond to implemented pages.
+    // No false "coming soon" toasts should be triggered on valid routes.
   };
 
   return (

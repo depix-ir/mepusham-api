@@ -19,6 +19,7 @@ import {
 import { isValidStateTransition, isActionRequiredByAdmin } from "./stateMachine";
 import { mockInitialReturnRequests } from "@/data/mockReturnData";
 import { addInventoryHistoryLog } from "@/lib/inventory/inventoryService";
+import { storeSettingsService } from "@/lib/store-settings/storeSettingsService";
 
 const RETURNS_STORAGE_KEY = "mepusham_returns_v1";
 const PRODUCTS_STORAGE_KEY = "admin_store_products_v1";
@@ -199,6 +200,8 @@ export class ReturnService {
     const reqNum = `RET-${count}`;
     const reqId = `ret-${count}`;
 
+    const storeReturnAddr = storeSettingsService.getDefaultReturnAddress();
+
     const newRequest: ReturnRequest = {
       id: reqId,
       requestNumber: reqNum,
@@ -235,6 +238,16 @@ export class ReturnService {
           createdAt: nowIso,
         },
       ],
+      storeReturnAddress: storeReturnAddr ? {
+        recipientName: storeReturnAddr.recipientName,
+        phone: storeReturnAddr.phone,
+        province: storeReturnAddr.province,
+        city: storeReturnAddr.city,
+        address: storeReturnAddr.address,
+        plaque: storeReturnAddr.plaque,
+        floor: storeReturnAddr.floor,
+        postalCode: storeReturnAddr.postalCode,
+      } : undefined,
       createdAt: nowIso,
       updatedAt: nowIso,
     };
@@ -309,6 +322,8 @@ export class ReturnService {
     const reqNum = `EXC-${count}`;
     const reqId = `exc-${count}`;
 
+    const storeReturnAddr = storeSettingsService.getDefaultReturnAddress();
+
     const returnItem: ReturnItem = {
       id: `exc-item-${Date.now()}`,
       orderItemId: orderItem.id,
@@ -368,6 +383,16 @@ export class ReturnService {
           createdAt: nowIso,
         },
       ],
+      storeReturnAddress: storeReturnAddr ? {
+        recipientName: storeReturnAddr.recipientName,
+        phone: storeReturnAddr.phone,
+        province: storeReturnAddr.province,
+        city: storeReturnAddr.city,
+        address: storeReturnAddr.address,
+        plaque: storeReturnAddr.plaque,
+        floor: storeReturnAddr.floor,
+        postalCode: storeReturnAddr.postalCode,
+      } : undefined,
       createdAt: nowIso,
       updatedAt: nowIso,
     };

@@ -1,26 +1,42 @@
-
-> mepusham@0.1.0 dev
-> next dev
-
+$ next dev
 ▲ Next.js 16.3.4 (Turbopack)
 - Local:         http://localhost:3000
 - Network:       http://192.168.0.2:3000
-✓ Ready in 962ms
-✓ Running next.config.ts took 82ms
+✓ Ready in 559ms
+✓ Running next.config.ts took 45ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead.
 
-○ Compiling /admin/products/new ...
- GET /admin/products/new 200 in 6.2s (next.js: 5.5s, application-code: 742ms)
+  To migrate automatically, run:
+  npx @next/codemod@canary middleware-to-proxy .
+
+  Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+○ Compiling /admin/login ...
+ GET /admin/login 200 in 4.6s (next.js: 4.1s, proxy.ts: 153ms, application-code: 381ms)
+ GET /admin/login 200 in 92ms (next.js: 12ms, proxy.ts: 11ms, application-code: 69ms)
+ GET /admin/dashboard 200 in 965ms (next.js: 840ms, proxy.ts: 11ms, application-code: 115ms)
+ GET /admin/dashboard 200 in 87ms (next.js: 23ms, proxy.ts: 14ms, application-code: 50ms)
+ GET /admin/settings 200 in 775ms (next.js: 696ms, proxy.ts: 6ms, application-code: 73ms)
+ GET /admin/orders 200 in 1069ms (next.js: 955ms, proxy.ts: 6ms, application-code: 107ms)
+ GET /admin/returns 200 in 544ms (next.js: 406ms, proxy.ts: 5ms, application-code: 132ms)
 [browser] Image with src "/images/bag-1.webp" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
 [browser] Image with src "/images/bag-2.webp" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
- GET /admin/products/new 200 in 130ms (next.js: 9ms, application-code: 122ms)
+ GET /images/shoes-1.webp 404 in 527ms (next.js: 365ms, application-code: 161ms)
+⨯ The requested resource isn't a valid image for /images/shoes-1.webp received null
+ GET /images/jacket-1.webp 404 in 527ms (next.js: 368ms, application-code: 159ms)
+⨯ The requested resource isn't a valid image for /images/jacket-1.webp received null
+ GET /admin/returns/ret-1001 200 in 1463ms (next.js: 1382ms, proxy.ts: 6ms, application-code: 75ms)
+ GET /admin/login 200 in 82ms (next.js: 6ms, proxy.ts: 8ms, application-code: 67ms)
+ GET /admin/dashboard 200 in 64ms (next.js: 6ms, proxy.ts: 10ms, application-code: 48ms)
+ GET /admin/dashboard 200 in 50ms (next.js: 12ms, proxy.ts: 5ms, application-code: 33ms)
+ GET /admin/settings 200 in 73ms (next.js: 5ms, proxy.ts: 4ms, application-code: 63ms)
+ GET /admin/orders 200 in 69ms (next.js: 7ms, proxy.ts: 6ms, application-code: 56ms)
+ GET /admin/returns 200 in 59ms (next.js: 8ms, proxy.ts: 4ms, application-code: 47ms)
 [browser] Image with src "/images/bag-1.webp" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
 [browser] Image with src "/images/bag-2.webp" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
- GET /admin/products/new 200 in 119ms (next.js: 4ms, application-code: 115ms)
+ GET /images/shoes-1.webp 404 in 203ms (next.js: 9ms, application-code: 194ms)
+⨯ The requested resource isn't a valid image for /images/shoes-1.webp received null
+ GET /images/jacket-1.webp 404 in 210ms (next.js: 42ms, application-code: 168ms)
+⨯ The requested resource isn't a valid image for /images/jacket-1.webp received null
+ GET /admin/returns/ret-1024 200 in 90ms (next.js: 23ms, proxy.ts: 4ms, application-code: 62ms)
 [browser] Image with src "/images/bag-1.webp" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
-[browser] Image with src "/images/bag-2.webp" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
- GET /admin/products/new 200 in 117ms (next.js: 9ms, application-code: 108ms)
-[browser] Image with src "/images/bag-1.webp" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
-[browser] Image with src "/images/bag-2.webp" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
- GET /admin/products/new 200 in 99ms (next.js: 3ms, application-code: 96ms)
-[browser] Image with src "/images/bag-1.webp" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
-[browser] Image with src "/images/bag-2.webp" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes

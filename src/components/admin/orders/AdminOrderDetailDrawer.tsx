@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { Order, getNextAdminStatus, canAdminCancelOrder, orderStatusLabels } from "@/types/account";
 import { formatPrice } from "@/lib/formatting/currency";
+import { storeSettingsService } from "@/lib/store-settings/storeSettingsService";
 import { OrderStatusBadge } from "./OrderStatusBadge";
 import {
   X,
@@ -17,7 +18,9 @@ import {
   Printer,
   Ban,
   ArrowRight,
-  CheckCircle2
+  CheckCircle2,
+  AlertTriangle,
+  Building2,
 } from "lucide-react";
 
 interface AdminOrderDetailDrawerProps {
@@ -117,12 +120,12 @@ export function AdminOrderDetailDrawer({
             </div>
           </div>
 
-          {/* Shipping Info */}
+          {/* Shipping Info & Origin Address */}
           <div className="space-y-2">
             <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-              اطلاعات ارسال
+              اطلاعات ارسال و مبدا
             </h3>
-            <div className="bg-background border border-border rounded-xl p-3.5 space-y-2 text-xs">
+            <div className="bg-background border border-border rounded-xl p-3.5 space-y-3 text-xs">
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground flex items-center gap-2">
                   <Truck className="w-4 h-4 text-primary" />
@@ -138,6 +141,43 @@ export function AdminOrderDetailDrawer({
                   </span>
                 </div>
               )}
+
+              {/* Origin Address Section */}
+              {(() => {
+                const origin = order.originAddress || storeSettingsService.getDefaultShippingAddress();
+                if (origin) {
+                  return (
+                    <div className="pt-2 border-t border-border/60 space-y-1">
+                      <div className="flex items-center gap-1.5 text-muted-foreground font-semibold">
+                        <Building2 className="w-3.5 h-3.5 text-primary" />
+                        <span>مبدا ارسال (فروشگاه):</span>
+                      </div>
+                      <p className="text-foreground leading-relaxed pr-5">
+                        {origin.recipientName} - {origin.province}، {origin.city}، {origin.address}
+                        {origin.plaque ? `، پلاک ${origin.plaque}` : ""}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground pr-5 font-mono">
+                        کد پستی: {origin.postalCode} | همراه: {origin.phone}
+                      </p>
+                    </div>
+                  );
+                }
+                return (
+                  <div className="pt-2 border-t border-border/60 p-2.5 bg-warning/10 border border-warning/30 rounded-lg flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 text-warning text-[11px]">
+                      <AlertTriangle className="w-4 h-4 shrink-0" />
+                      <span>آدرس مبدا ارسال در تنظیمات فروشگاه ثبت نشده است.</span>
+                    </div>
+                    <Link
+                      href="/admin/settings"
+                      onClick={onClose}
+                      className="px-2.5 py-1 bg-warning text-warning-foreground font-bold text-[10px] rounded-md shrink-0 hover:opacity-90"
+                    >
+                      ثبت آدرس مبدا
+                    </Link>
+                  </div>
+                );
+              })()}
             </div>
           </div>
 
