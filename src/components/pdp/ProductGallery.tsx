@@ -336,17 +336,7 @@ export function ProductGallery({
 
         {/* Top Overlay Actions: Wishlist, Fullscreen, Share */}
         <div className="absolute top-3 left-3 z-10 flex items-center gap-2">
-          {/* Wishlist Button */}
-          <button
-            type="button"
-            onClick={handleToggleWishlist}
-            aria-label={isLiked ? "حذف از علاقه‌مندی‌ها" : "افزودن به علاقه‌مندی‌ها"}
-            className={`w-9 h-9 rounded-full bg-background/90 hover:bg-background flex items-center justify-center shadow-2xs backdrop-blur-xs transition-all active:scale-90 cursor-pointer ${
-              isLiked ? "text-rose-500" : "text-foreground/70 hover:text-foreground"
-            }`}
-          >
-            <Heart className={`w-4 h-4 ${isLiked ? "fill-rose-500" : ""}`} />
-          </button>
+
 
           {/* Fullscreen Expand Button */}
           <button

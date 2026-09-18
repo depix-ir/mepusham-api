@@ -53,7 +53,7 @@ export function ActiveOrderCard({
 
       <div className="flex flex-col gap-4">
         {/* Header Row */}
-        <div className="flex items-center justify-between gap-2 border-b border-border-subtle pb-3">
+        <div className="flex items-center justify-between gap-2  pb-3">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
               <PackageCheck className="w-4 h-4" />

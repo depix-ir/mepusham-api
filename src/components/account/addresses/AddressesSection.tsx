@@ -65,7 +65,7 @@ export function AddressesSection({
                   : "bg-background border-border/80 hover:border-border"
               }`}
             >
-              <div className="flex items-center justify-between gap-2 border-b border-border-subtle pb-3 mb-3">
+              <div className="flex items-center justify-between gap-2  pb-3 mb-3">
                 <div className="flex items-center gap-2">
                   <span className="text-xs sm:text-sm font-bold text-foreground">
                     {addr.title}

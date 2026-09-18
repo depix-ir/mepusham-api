@@ -117,7 +117,7 @@ export default function CustomerReturnsListPage() {
                   className="bg-background border border-border rounded-2xl p-4 sm:p-5 space-y-4 shadow-2xs hover:border-primary/40 transition-colors"
                 >
                   {/* Card Header */}
-                  <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-border-subtle text-xs">
+                  <div className="flex flex-wrap items-center justify-between gap-2 pb-3  text-xs">
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-foreground">
                         کد درخواست: <span dir="ltr" className="font-mono text-primary">{req.requestNumber}</span>
@@ -170,7 +170,7 @@ export default function CustomerReturnsListPage() {
                   </div>
 
                   {/* Card Footer */}
-                  <div className="flex items-center justify-between pt-3 border-t border-border-subtle text-xs">
+                  <div className="flex items-center justify-between pt-3  text-xs">
                     {req.type === "return" ? (
                       <div className="flex items-center gap-1">
                         <span className="text-muted-foreground">مبلغ استرداد:</span>

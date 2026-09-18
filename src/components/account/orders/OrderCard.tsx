@@ -50,7 +50,7 @@ export function OrderCard({
   return (
     <div className="w-full bg-background border border-border/80 rounded-2xl p-4 sm:p-5 shadow-2xs space-y-4 hover:border-border transition-colors">
       {/* Top Bar */}
-      <div className="flex items-center justify-between gap-2 border-b border-border-subtle pb-3">
+      <div className="flex items-center justify-between gap-2  pb-3">
         <div className="space-y-0.5">
           <div className="flex items-center gap-2">
             <span className="text-xs sm:text-sm font-bold text-foreground" dir="ltr">
@@ -129,7 +129,7 @@ export function OrderCard({
       )}
 
       {/* Actions Row */}
-      <div className="flex items-center justify-between gap-2 pt-1 border-t border-border-subtle/60">
+      <div className="flex items-center justify-between gap-2 pt-1 ">
         {onOpenSupport ? (
           <button
             type="button"

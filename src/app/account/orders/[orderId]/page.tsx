@@ -256,7 +256,7 @@ export default function AccountOrderDetailPage({
 
           {/* Financial Payment Summary Card */}
           <div className="bg-background border border-border rounded-2xl p-4 sm:p-5 space-y-3 shadow-2xs">
-            <h2 className="text-xs sm:text-sm font-bold text-foreground flex items-center gap-2 pb-2 border-b border-border-subtle">
+            <h2 className="text-xs sm:text-sm font-bold text-foreground flex items-center gap-2 pb-2 ">
               <Receipt className="w-4 h-4 text-primary" />
               <span>خلاصه پرداخت</span>
             </h2>
@@ -284,7 +284,7 @@ export default function AccountOrderDetailPage({
                 </div>
               </div>
 
-              <div className="pt-2.5 border-t border-border-subtle flex justify-between font-bold text-xs sm:text-sm text-foreground">
+              <div className="pt-2.5  flex justify-between font-bold text-xs sm:text-sm text-foreground">
                 <span>مبلغ کل پرداخت شده</span>
                 <div className="flex items-center gap-1 text-primary">
                   <span>{formatPrice(order.payableTotal)}</span>
@@ -296,7 +296,7 @@ export default function AccountOrderDetailPage({
 
           {/* Delivery Address Details Card */}
           <div className="bg-background border border-border rounded-2xl p-4 sm:p-5 space-y-3 shadow-2xs">
-            <h2 className="text-xs sm:text-sm font-bold text-foreground flex items-center gap-2 pb-2 border-b border-border-subtle">
+            <h2 className="text-xs sm:text-sm font-bold text-foreground flex items-center gap-2 pb-2 ">
               <MapPin className="w-4 h-4 text-primary" />
               <span>آدرس و تحویل گیرنده</span>
             </h2>
@@ -312,7 +312,7 @@ export default function AccountOrderDetailPage({
                 <span dir="ltr" className="font-mono text-xs">{order.shippingAddress.phone}</span>
               </div>
 
-              <div className="pt-1.5 text-muted-foreground leading-relaxed border-t border-border-subtle/60 space-y-1">
+              <div className="pt-1.5 text-muted-foreground leading-relaxed  space-y-1">
                 <p>
                   {order.shippingAddress.province}، {order.shippingAddress.city}، {order.shippingAddress.address}
                 </p>
@@ -354,7 +354,7 @@ export default function AccountOrderDetailPage({
             }
 
             return (
-              <div className="bg-surface-subtle/60 border border-border-subtle/80 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-muted-foreground">
+              <div className="bg-surface-subtle/60  rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-muted-foreground">
                 <div className="flex items-center gap-2">
                   <RotateCcw className="w-4 h-4 text-muted-foreground/70 shrink-0" />
                   <span>

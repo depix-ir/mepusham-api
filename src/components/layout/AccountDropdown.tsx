@@ -190,7 +190,7 @@ export function AccountDropdown() {
               <Link
                 href={routes.account.root}
                 onClick={() => setIsOpen(false)}
-                className="flex items-center justify-between p-2.5 border-b border-border-subtle mb-1.5 hover:bg-surface-subtle rounded-xl transition-colors group cursor-pointer"
+                className="flex items-center justify-between p-2.5  mb-1.5 hover:bg-surface-subtle rounded-xl transition-colors group cursor-pointer"
               >
                 <div className="flex items-center gap-2.5 overflow-hidden">
                   <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0">
@@ -256,7 +256,7 @@ export function AccountDropdown() {
                 </Link>
 
                 {/* Divider */}
-                <div className="my-1 border-t border-border-subtle" />
+                <div className="my-1 " />
 
                 {/* 3. خروج از حساب */}
                 <button

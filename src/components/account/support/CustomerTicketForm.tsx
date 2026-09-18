@@ -108,7 +108,7 @@ export function CustomerTicketForm({
   };
 
   return (
-    <div className="bg-surface border border-border rounded-2xl p-4 sm:p-6 space-y-6 shadow-2xs max-w-2xl mx-auto">
+    <div className="bg-surface border border-border rounded-2xl p-4 sm:p-6 space-y-6 shadow-2xs  mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between pb-4 border-b border-border">
         <div className="flex items-center gap-2.5">

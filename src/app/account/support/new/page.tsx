@@ -39,7 +39,7 @@ function NewTicketContent() {
   if (!isAuthenticated || !user) {
     return (
       <div className="py-12 bg-background min-h-[60vh]">
-        <Container>
+        <div  >
           <div className="bg-surface border border-border rounded-2xl p-6 sm:p-10 text-center max-w-lg mx-auto space-y-4 shadow-2xs">
             <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary mx-auto flex items-center justify-center">
               <LogIn className="w-6 h-6" />
@@ -60,14 +60,14 @@ function NewTicketContent() {
               <ChevronLeft className="w-4 h-4" />
             </Link>
           </div>
-        </Container>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="py-6 sm:py-10 bg-background min-h-screen pb-24 md:pb-12">
-      <Container className="max-w-[800px] mx-auto">
+      <div className="max-w-[800px] mx-auto">
         <div className="space-y-6">
           <AccountPageHeader
             title="ایجاد تیکت جدید"
@@ -84,7 +84,7 @@ function NewTicketContent() {
             defaultCategory={categoryParam}
           />
         </div>
-      </Container>
+      </div>
     </div>
   );
 }
