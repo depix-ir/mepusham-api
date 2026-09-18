@@ -4,6 +4,7 @@ import React, { useState, useRef } from "react";
 import Image from "next/image";
 import { ProductImage, ProductRating } from "@/types/product";
 import { useWishlist } from "@/store/wishlist/wishlist.store";
+import { reviewService } from "@/lib/product/reviewService";
 import {
   Heart,
   Share2,
@@ -11,6 +12,10 @@ import {
   ChevronRight,
   ZoomIn,
   ZoomOut,
+  Camera,
+  Star,
+  X,
+  MessageSquare,
 } from "lucide-react";
 
 export interface ProductGalleryProps {
@@ -38,6 +43,19 @@ export function ProductGallery({
 
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [showShareToast, setShowShareToast] = useState(false);
+  const [activeTab, setActiveTab] = useState<"product" | "customer">("product");
+  const [selectedCustomerPhoto, setSelectedCustomerPhoto] = useState<{
+    url: string;
+    authorName: string;
+    rating: number;
+    comment: string;
+    date: string;
+  } | null>(null);
+
+  // Retrieve customer photos for this product
+  const customerPhotos = productId
+    ? reviewService.getCustomerImages(productId, title)
+    : [];
 
   // Zoom State
   const [isHovered, setIsHovered] = useState(false);
@@ -232,29 +250,163 @@ export function ProductGallery({
         )}
       </div>
 
-      {/* Thumbnails Row */}
-      {galleryImages.length > 1 && (
-        <div className="flex items-center gap-2 overflow-x-auto p-0.5 scrollbar-none">
-          {galleryImages.map((img, idx) => (
-            <button
-              key={img.id || idx}
-              type="button"
-              onClick={() => setSelectedIndex(idx)}
-              className={`relative w-14 h-14 sm:w-16 sm:h-16 shrink-0 rounded-lg overflow-hidden border transition-all cursor-pointer ${
-                selectedIndex === idx
-                  ? "border-primary ring-1 ring-primary"
-                  : "border-border-product opacity-70 hover:opacity-100"
-              }`}
-            >
+      {/* Gallery Selector Tabs (Product Photos vs Customer Photos) */}
+      <div className="flex items-center justify-between border-b border-border-subtle pb-1.5">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setActiveTab("product")}
+            className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
+              activeTab === "product"
+                ? "bg-primary text-primary-foreground shadow-2xs"
+                : "bg-surface-subtle text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            تصاویر محصول ({galleryImages.length})
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab("customer")}
+            className={`inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
+              activeTab === "customer"
+                ? "bg-amber-500 text-white shadow-2xs"
+                : "bg-amber-500/10 text-amber-700 hover:bg-amber-500/20"
+            }`}
+          >
+            <Camera className="w-3.5 h-3.5" />
+            <span>ارسالی‌های مشتریان ({customerPhotos.length})</span>
+          </button>
+        </div>
+
+        <a
+          href="#reviews-section"
+          className="inline-flex items-center gap-1 text-[11px] font-bold text-primary hover:underline"
+        >
+          <MessageSquare className="w-3.5 h-3.5" />
+          <span>مشاهده همه دیدگاه‌ها</span>
+        </a>
+      </div>
+
+      {/* Thumbnails / Customer Photos Grid Row */}
+      {activeTab === "product" ? (
+        galleryImages.length > 1 && (
+          <div className="flex items-center gap-2 overflow-x-auto p-0.5 scrollbar-none">
+            {galleryImages.map((img, idx) => (
+              <button
+                key={img.id || idx}
+                type="button"
+                onClick={() => setSelectedIndex(idx)}
+                className={`relative w-14 h-14 sm:w-16 sm:h-16 shrink-0 rounded-lg overflow-hidden border transition-all cursor-pointer ${
+                  selectedIndex === idx
+                    ? "border-primary ring-1 ring-primary"
+                    : "border-border-product opacity-70 hover:opacity-100"
+                }`}
+              >
+                <Image
+                  src={img.url}
+                  alt={img.alt || `${title} - تصویر ${idx + 1}`}
+                  fill
+                  sizes="64px"
+                  className="object-cover object-center"
+                />
+              </button>
+            ))}
+          </div>
+        )
+      ) : (
+        /* Customer Photos Grid */
+        customerPhotos.length > 0 ? (
+          <div className="flex items-center gap-2 overflow-x-auto p-0.5 scrollbar-none">
+            {customerPhotos.map((photo) => (
+              <button
+                key={photo.id}
+                type="button"
+                onClick={() => setSelectedCustomerPhoto(photo)}
+                className="relative w-14 h-14 sm:w-16 sm:h-16 shrink-0 rounded-lg overflow-hidden border border-amber-500/40 hover:border-amber-500 transition-all cursor-pointer group"
+              >
+                <Image
+                  src={photo.url}
+                  alt={`عکس ارسالی توسط ${photo.authorName}`}
+                  fill
+                  sizes="64px"
+                  className="object-cover object-center group-hover:scale-105 transition-transform"
+                />
+                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                  <ZoomIn className="w-4 h-4" />
+                </div>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div className="p-3 text-center text-xs text-muted-foreground bg-surface-subtle/50 rounded-xl border border-dashed border-border-subtle">
+            هنوز عکسی توسط خریداران ارسال نشده است. شما می‌توانید در صفحه سفارش خود اولین عکس را ارسال کنید!
+          </div>
+        )
+      )}
+
+      {/* Customer Photo Modal Lightbox */}
+      {selectedCustomerPhoto && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200"
+          onClick={() => setSelectedCustomerPhoto(null)}
+        >
+          <div
+            className="relative w-full max-w-lg bg-background rounded-2xl overflow-hidden shadow-2xl border border-border space-y-3 p-4 animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-border-subtle pb-2">
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-xs sm:text-sm text-foreground">
+                  عکس ارسالی توسط {selectedCustomerPhoto.authorName}
+                </span>
+                <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md font-bold">
+                  خریدار واقعی
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedCustomerPhoto(null)}
+                className="w-7 h-7 rounded-full bg-surface-subtle hover:bg-surface-muted flex items-center justify-center text-foreground cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Modal Image */}
+            <div className="relative w-full aspect-square bg-surface-subtle rounded-xl overflow-hidden">
               <Image
-                src={img.url}
-                alt={img.alt || `${title} - تصویر ${idx + 1}`}
+                src={selectedCustomerPhoto.url}
+                alt={selectedCustomerPhoto.comment}
                 fill
-                sizes="64px"
-                className="object-cover object-center"
+                className="object-contain"
               />
-            </button>
-          ))}
+            </div>
+
+            {/* Rating & Comment */}
+            <div className="space-y-1.5 pt-1 text-xs">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-0.5 text-amber-400">
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <Star
+                      key={s}
+                      className={`w-3.5 h-3.5 ${
+                        s <= selectedCustomerPhoto.rating
+                          ? "fill-amber-400 text-amber-400"
+                          : "text-muted/30 fill-muted/20"
+                      }`}
+                    />
+                  ))}
+                </div>
+                <span className="text-[10px] text-muted-foreground font-mono">
+                  {selectedCustomerPhoto.date}
+                </span>
+              </div>
+              <p className="text-foreground/90 leading-relaxed text-xs">
+                &ldquo;{selectedCustomerPhoto.comment}&rdquo;
+              </p>
+            </div>
+          </div>
         </div>
       )}
     </div>

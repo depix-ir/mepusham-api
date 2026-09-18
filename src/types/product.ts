@@ -101,6 +101,9 @@ export type ProductReview = {
   date: string;
   comment: string;
   verifiedPurchase: boolean;
+  orderId?: string;
+  productId?: string;
+  images?: string[];
   storeResponse?: {
     author: string;
     date: string;
