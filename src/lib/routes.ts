@@ -69,5 +69,8 @@ export const routes = {
     supportDetail: (id: string) => `/admin/support/${id}`,
     customers: "/admin/customers",
     customerDetail: (id: string) => `/admin/customers/${id}`,
+    users: "/admin/users",
+    settings: "/admin/settings",
+    login: "/admin/login",
   },
 } as const;

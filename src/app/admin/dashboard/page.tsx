@@ -102,7 +102,7 @@ export default function AdminDashboardPage() {
     {
       id: "tickets",
       title: "تیکت‌های پشتیبانی",
-      href: "/admin/tickets",
+      href: "/admin/support",
       icon: Ticket,
       count: `${mockInitialTickets.length} تیکت`,
     },
@@ -432,7 +432,7 @@ export default function AdminDashboardPage() {
             <h3 className="text-sm font-bold text-foreground">تیکت‌های پشتیبانی جدید</h3>
           </div>
           <Link
-            href="/admin/tickets"
+            href="/admin/support"
             className="text-xs text-primary hover:underline font-medium"
           >
             مدیریت تیکت‌ها

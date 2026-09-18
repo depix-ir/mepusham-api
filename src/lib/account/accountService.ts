@@ -15,6 +15,7 @@ import {
   mockInitialTickets,
 } from "@/data/mockAccountData";
 import { catalogRepository } from "@/lib/repositories/catalogRepository";
+import { storeSettingsService } from "@/lib/store-settings/storeSettingsService";
 import { Product, ProductOption, ProductOptionValue, ProductVariant } from "@/types/product";
 
 const ORDERS_KEY = "mepusham_orders_v1";
@@ -309,6 +310,7 @@ class AccountService {
     });
 
     const nowFa = new Date().toLocaleDateString("fa-IR");
+    const storeOrigin = storeSettingsService.getDefaultShippingAddress();
 
     const newOrder: Order = {
       id: newOrderId,
@@ -332,6 +334,16 @@ class AccountService {
         address: payload.customer.address,
         postalCode: payload.customer.postalCode,
       },
+      originAddress: storeOrigin ? {
+        recipientName: storeOrigin.recipientName,
+        phone: storeOrigin.phone,
+        province: storeOrigin.province,
+        city: storeOrigin.city,
+        address: storeOrigin.address,
+        plaque: storeOrigin.plaque,
+        floor: storeOrigin.floor,
+        postalCode: storeOrigin.postalCode,
+      } : undefined,
       items: orderItems,
       timeline: [
         {
