@@ -93,6 +93,9 @@ export function getDefaultRatingAndReviews(productTitle: string): { rating: Prod
         date: "۱۴۰۳/۱۱/۰۲",
         comment: "رنگ و جنسش دقیقاً مثل تصویره، خیلی شیکه و تنخور/ظاهر عالی داره.",
         verifiedPurchase: true,
+        images: [
+          "/images/placeholders/product-placeholder.webp",
+        ],
       },
     ],
   };

@@ -23,6 +23,28 @@ export type ProductImage = {
   sortOrder: number;
 };
 
+export type ProductMediaType = "product" | "customer";
+
+export interface CustomerMediaContext {
+  reviewId?: string;
+  authorName?: string;
+  rating?: number;
+  comment?: string;
+  date?: string;
+  verifiedPurchase?: boolean;
+}
+
+export interface ProductMediaItem {
+  id: string;
+  type: ProductMediaType;
+  url: string;
+  alt: string;
+  productId: string;
+  variantId?: string;
+  sortOrder: number;
+  customerContext?: CustomerMediaContext;
+}
+
 export type ProductOptionType =
   | "color"
   | "size"

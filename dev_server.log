@@ -1,12 +1,18 @@
 $ next dev
-▲ Next.js 16.3.4 (Turbopack)
-- Local:         http://localhost:3000
-- Network:       http://192.168.0.2:3000
-✓ Ready in 593ms
-✓ Running next.config.ts took 53ms
-Attention: Next.js now collects completely anonymous telemetry regarding usage.
-This information is used to shape Next.js' roadmap and prioritize features.
-You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+▲ Next.js Resolved, downloaded and extracted [162]
+Saved lockfile
+⨯ Failed to start server
+Error: listen EADDRINUSE: address already in use :::3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use :::3000)
+    at new Promise (<anonymous>) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '::',
+  port: 3000
+}
+[?25h
+ opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
 https://nextjs.org/telemetry
 
 ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead.
@@ -16,29 +22,15 @@ https://nextjs.org/telemetry
 
   Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
 
-○ Compiling /account ...
- GET /account 200 in 6.5s (next.js: 5.8s, application-code: 735ms)
- GET / 200 in 2.2s (next.js: 1227ms, application-code: 963ms)
-[browser] Image with src "/images/banner-2.webp" has "fill" prop and "sizes" prop of "100vw", but image is not rendered at full viewport width. Please adjust "sizes" to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
-[browser] Image with src "/images/banner-1.webp" has "fill" prop and "sizes" prop of "100vw", but image is not rendered at full viewport width. Please adjust "sizes" to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
- GET /admin/login?redirect=%2Fadmin%2Fproducts%2Fnew 200 in 1046ms (next.js: 935ms, proxy.ts: 7ms, application-code: 104ms)
- GET /account 200 in 78ms (next.js: 6ms, application-code: 72ms)
- GET / 200 in 424ms (next.js: 4ms, application-code: 420ms)
-[browser] Image with src "/images/banner-2.webp" has "fill" prop and "sizes" prop of "100vw", but image is not rendered at full viewport width. Please adjust "sizes" to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
-[browser] Image with src "/images/banner-1.webp" has "fill" prop and "sizes" prop of "100vw", but image is not rendered at full viewport width. Please adjust "sizes" to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
- GET /admin/login 200 in 68ms (next.js: 4ms, proxy.ts: 5ms, application-code: 59ms)
- GET /admin/dashboard 200 in 587ms (next.js: 507ms, proxy.ts: 9ms, application-code: 72ms)
- GET /admin/dashboard 200 in 40ms (next.js: 10ms, proxy.ts: 5ms, application-code: 25ms)
- GET /admin/products/new 200 in 781ms (next.js: 669ms, proxy.ts: 4ms, application-code: 108ms)
-[browser] Image with src "/images/bag-2.webp" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
-[browser] Image with src "/images/bag-1.webp" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
- GET /account 200 in 65ms (next.js: 8ms, application-code: 57ms)
- GET / 200 in 490ms (next.js: 6ms, application-code: 484ms)
-[browser] Image with src "/images/banner-2.webp" has "fill" prop and "sizes" prop of "100vw", but image is not rendered at full viewport width. Please adjust "sizes" to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
-[browser] Image with src "/images/banner-1.webp" has "fill" prop and "sizes" prop of "100vw", but image is not rendered at full viewport width. Please adjust "sizes" to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
- GET /admin/login 200 in 73ms (next.js: 9ms, proxy.ts: 6ms, application-code: 58ms)
- GET /admin/dashboard 200 in 43ms (next.js: 8ms, proxy.ts: 5ms, application-code: 30ms)
- GET /admin/dashboard 200 in 41ms (next.js: 6ms, proxy.ts: 5ms, application-code: 29ms)
- GET /admin/products/new 200 in 52ms (next.js: 8ms, proxy.ts: 4ms, application-code: 40ms)
-[browser] Image with src "/images/bag-1.webp" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
-[browser] Image with src "/images/bag-2.webp" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+○ Compiling /products/[slug] ...
+⚠ metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:3000". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+ GET /products/classic-leather-handbag-01 200 in 4.8s (next.js: 4.0s, application-code: 751ms)
+ GET /images/placeholders/product-placeholder.webp 404 in 1665ms (next.js: 1482ms, application-code: 183ms)
+⨯ The requested resource isn't a valid image for /images/placeholders/product-placeholder.webp received null
+ GET /images/placeholders/product-placeholder.webp 404 in 1683ms (next.js: 1503ms, application-code: 180ms)
+⨯ The requested resource isn't a valid image for /images/placeholders/product-placeholder.webp received null
+ GET /images/placeholders/product-placeholder.webp 404 in 90ms (next.js: 9ms, application-code: 81ms)
+⨯ The requested resource isn't a valid image for /images/placeholders/product-placeholder.webp received null
+[browser] Image with src "/images/placeholders/product-placeholder.webp" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+ GET /images/placeholders/product-placeholder.webp 404 in 95ms (next.js: 7ms, application-code: 88ms)
+⨯ The requested resource isn't a valid image for /images/placeholders/product-placeholder.webp received null
