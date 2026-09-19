@@ -6,6 +6,8 @@ export const STORAGE_KEY_PRODUCTS = "admin_store_products_v1";
 export const STORAGE_KEY_CATEGORIES = "admin_store_categories_v1";
 export const STORAGE_KEY_BRANDS = "admin_store_brands_v1";
 
+export type CatalogListener = () => void;
+
 export interface ICatalogRepository {
   getProducts(options?: { isHydrated?: boolean }): Product[];
   getProductById(id: string, options?: { isHydrated?: boolean }): Product | null;
@@ -15,6 +17,7 @@ export interface ICatalogRepository {
   saveCategories(categories: ProductCategory[]): void;
   getBrands(options?: { isHydrated?: boolean }): ProductBrand[];
   saveBrands(brands: ProductBrand[]): void;
+  subscribe(listener: CatalogListener): () => void;
   resetToDefaults(): void;
 }
 
@@ -22,6 +25,24 @@ class MockCatalogRepository implements ICatalogRepository {
   private memoryProducts: Product[] | null = null;
   private memoryCategories: ProductCategory[] | null = null;
   private memoryBrands: ProductBrand[] | null = null;
+  private listeners: Set<CatalogListener> = new Set();
+
+  subscribe(listener: CatalogListener): () => void {
+    this.listeners.add(listener);
+    return () => {
+      this.listeners.delete(listener);
+    };
+  }
+
+  private notifyListeners(): void {
+    this.listeners.forEach((listener) => {
+      try {
+        listener();
+      } catch (err) {
+        console.error("CatalogListener error:", err);
+      }
+    });
+  }
 
   getProducts(options?: { isHydrated?: boolean }): Product[] {
     const isHydrated = options?.isHydrated ?? (typeof window !== "undefined");
@@ -56,12 +77,14 @@ class MockCatalogRepository implements ICatalogRepository {
 
   saveProducts(products: Product[]): void {
     this.memoryProducts = products;
-    if (typeof window === "undefined") return;
-    try {
-      localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(products));
-    } catch (e) {
-      console.error("MockCatalogRepository: Failed to save products:", e);
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(products));
+      } catch (e) {
+        console.error("MockCatalogRepository: Failed to save products:", e);
+      }
     }
+    this.notifyListeners();
   }
 
   getCategories(options?: { isHydrated?: boolean }): ProductCategory[] {
@@ -87,12 +110,14 @@ class MockCatalogRepository implements ICatalogRepository {
 
   saveCategories(categories: ProductCategory[]): void {
     this.memoryCategories = categories;
-    if (typeof window === "undefined") return;
-    try {
-      localStorage.setItem(STORAGE_KEY_CATEGORIES, JSON.stringify(categories));
-    } catch (e) {
-      console.error("MockCatalogRepository: Failed to save categories:", e);
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem(STORAGE_KEY_CATEGORIES, JSON.stringify(categories));
+      } catch (e) {
+        console.error("MockCatalogRepository: Failed to save categories:", e);
+      }
     }
+    this.notifyListeners();
   }
 
   getBrands(options?: { isHydrated?: boolean }): ProductBrand[] {
@@ -118,26 +143,30 @@ class MockCatalogRepository implements ICatalogRepository {
 
   saveBrands(brands: ProductBrand[]): void {
     this.memoryBrands = brands;
-    if (typeof window === "undefined") return;
-    try {
-      localStorage.setItem(STORAGE_KEY_BRANDS, JSON.stringify(brands));
-    } catch (e) {
-      console.error("MockCatalogRepository: Failed to save brands:", e);
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem(STORAGE_KEY_BRANDS, JSON.stringify(brands));
+      } catch (e) {
+        console.error("MockCatalogRepository: Failed to save brands:", e);
+      }
     }
+    this.notifyListeners();
   }
 
   resetToDefaults(): void {
     this.memoryProducts = initialProducts;
     this.memoryCategories = initialCategories;
     this.memoryBrands = initialBrands;
-    if (typeof window === "undefined") return;
-    try {
-      localStorage.removeItem(STORAGE_KEY_PRODUCTS);
-      localStorage.removeItem(STORAGE_KEY_CATEGORIES);
-      localStorage.removeItem(STORAGE_KEY_BRANDS);
-    } catch (e) {
-      console.error("MockCatalogRepository: Failed to reset defaults:", e);
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.removeItem(STORAGE_KEY_PRODUCTS);
+        localStorage.removeItem(STORAGE_KEY_CATEGORIES);
+        localStorage.removeItem(STORAGE_KEY_BRANDS);
+      } catch (e) {
+        console.error("MockCatalogRepository: Failed to reset defaults:", e);
+      }
     }
+    this.notifyListeners();
   }
 }
 

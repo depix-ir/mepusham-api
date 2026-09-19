@@ -51,7 +51,7 @@ export default function AccountOrderDetailPage({
 
   useEffect(() => {
     if (resolvedParams.orderId) {
-      const found = accountService.getOrderById(resolvedParams.orderId);
+      const found = accountService.getOrderByIdForCustomer(resolvedParams.orderId);
       if (found) setOrder(found);
     }
   }, [resolvedParams.orderId]);

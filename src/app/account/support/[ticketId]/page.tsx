@@ -25,14 +25,14 @@ export default function CustomerTicketDetailPage() {
 
   useEffect(() => {
     if (ticketId) {
-      const found = supportService.getTicketById(ticketId);
+      const found = supportService.getTicketByIdForCustomer(ticketId);
       if (found) {
         setTicket(found);
         // Mark as read for customer
         supportService.markAsReadForCustomer(found.id);
 
         if (found.orderId || found.orderNumber) {
-          const ord = accountService.getOrderById(found.orderId || found.orderNumber!);
+          const ord = accountService.getOrderByIdForCustomer(found.orderId || found.orderNumber!);
           setOrder(ord);
         }
       } else {

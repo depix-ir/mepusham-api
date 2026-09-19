@@ -7,6 +7,16 @@ export function toPersianDigits(numStr: string | number): string {
 }
 
 /**
+ * Formats a number with Persian digit formatting.
+ */
+export function formatPersianNumber(num: number | string): string {
+  if (typeof num === "number") {
+    return num.toLocaleString("fa-IR");
+  }
+  return toPersianDigits(num);
+}
+
+/**
  * Formats a raw number price into Persian formatted string without currency suffix (e.g., 1890000 -> ۱,۸۹۰,۰۰۰)
  */
 export function formatPrice(

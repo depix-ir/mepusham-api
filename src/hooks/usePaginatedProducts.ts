@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Product, ProductQueryFilter, PaginatedProductsResponse } from "@/types/product";
 import { getPaginatedProducts, PRODUCT_PAGE_SIZE } from "@/lib/product/service";
+import { catalogRepository } from "@/lib/repositories/catalogRepository";
 
 export type PaginationStatus =
   | "initial_loading"
@@ -126,8 +127,15 @@ export function usePaginatedProducts(
 
     loadInitial();
 
+    const unsubscribe = catalogRepository.subscribe(() => {
+      if (!isCancelled) {
+        loadInitial();
+      }
+    });
+
     return () => {
       isCancelled = true;
+      unsubscribe();
     };
   }, [serializedQueryKey, retryCounter]);
 

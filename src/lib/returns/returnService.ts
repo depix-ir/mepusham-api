@@ -18,6 +18,7 @@ import {
 } from "./eligibility";
 import { isValidStateTransition, isActionRequiredByAdmin } from "./stateMachine";
 import { mockInitialReturnRequests } from "@/data/mockReturnData";
+import { authService } from "@/lib/auth/authService";
 import { addInventoryHistoryLog } from "@/lib/inventory/inventoryService";
 import { storeSettingsService } from "@/lib/store-settings/storeSettingsService";
 
@@ -130,6 +131,19 @@ export class ReturnService {
         r.requestNumber.toLowerCase() === clean ||
         r.id.toLowerCase() === `ret-${clean}`
     );
+  }
+
+  /**
+   * Secure customer return lookup enforcing service-level ownership checks (IDOR protection).
+   */
+  getReturnRequestByIdForCustomer(id: string): ReturnRequest | undefined {
+    const request = this.getReturnRequestById(id);
+    if (!request) return undefined;
+    const isOwner =
+      authService.validateOwnership(request.customerId) ||
+      authService.validateOwnership(request.customerPhone);
+    if (!isOwner) return undefined;
+    return request;
   }
 
   /* ================= CREATE RETURN REQUEST ================= */

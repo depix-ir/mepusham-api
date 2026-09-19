@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useTransition, useMemo } from "react";
+import React, { useState, useEffect, useTransition, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { catalogRepository } from "@/lib/repositories/catalogRepository";
 import { banners } from "@/data/common";
@@ -116,8 +116,17 @@ export function ProductsClientPage() {
     updateUrlFilters(filters, e.target.value);
   };
 
-  const allCatalogProducts = useMemo(() => catalogRepository.getProducts(), []);
-  const categories = useMemo(() => catalogRepository.getCategories(), []);
+  const [allCatalogProducts, setAllCatalogProducts] = useState(() => catalogRepository.getProducts());
+  const [categories, setCategories] = useState(() => catalogRepository.getCategories());
+
+  useEffect(() => {
+    const sync = () => {
+      setAllCatalogProducts(catalogRepository.getProducts());
+      setCategories(catalogRepository.getCategories());
+    };
+    sync();
+    return catalogRepository.subscribe(sync);
+  }, []);
 
   // Active Category Name
   const activeCategoryObj = categories.find((c) => c.slug === filters.category);

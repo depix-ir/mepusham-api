@@ -43,7 +43,7 @@ export default function ReturnDetailPage({
 
   useEffect(() => {
     if (resolvedParams.id) {
-      const found = returnService.getReturnRequestById(resolvedParams.id);
+      const found = returnService.getReturnRequestByIdForCustomer(resolvedParams.id);
       if (found) setRequest(found);
     }
   }, [resolvedParams.id]);
