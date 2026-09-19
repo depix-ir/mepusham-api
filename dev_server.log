@@ -2,8 +2,13 @@ $ next dev
 ▲ Next.js 16.3.4 (Turbopack)
 - Local:         http://localhost:3000
 - Network:       http://192.168.0.2:3000
-✓ Ready in 536ms
-✓ Running next.config.ts took 42ms
+✓ Ready in 601ms
+✓ Running next.config.ts took 49ms
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
 ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead.
 
   To migrate automatically, run:
@@ -11,11 +16,67 @@ $ next dev
 
   Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
 
-○ Compiling / ...
- GET / 200 in 4.9s (next.js: 4.1s, application-code: 830ms)
- GET /account/orders 200 in 1179ms (next.js: 1085ms, application-code: 94ms)
- GET /account/support 200 in 556ms (next.js: 469ms, application-code: 87ms)
- GET /account/returns 200 in 477ms (next.js: 403ms, application-code: 74ms)
- GET /account/addresses 200 in 415ms (next.js: 342ms, application-code: 73ms)
- GET /some-non-existent-page-404 404 in 564ms (next.js: 437ms, application-code: 128ms)
- GET /some-non-existent-page-404 404 in 114ms (next.js: 10ms, application-code: 104ms)
+○ Compiling /blog ...
+ GET /blog 200 in 5.7s (next.js: 5.0s, application-code: 668ms)
+[browser] Image with src "/images/sandal-1.webp" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
+ GET /blog/how-to-choose-women-watch 200 in 1986ms (next.js: 1836ms, application-code: 150ms)
+[browser] Image with src "/images/watch-1.webp" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
+ GET /admin/login?redirect=%2Fadmin%2Fblog 200 in 912ms (next.js: 800ms, proxy.ts: 20ms, application-code: 92ms)
+[browser] Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one of the dependencies changes on every render.
+    at ProductProvider.useEffect.syncFromRepo (src/context/ProductContext.tsx:61:9)
+    at <unknown> (src/lib/repositories/catalogRepository.ts:40:9)
+    at Set.forEach (<anonymous>)
+    at MockCatalogRepository.notifyListeners (src/lib/repositories/catalogRepository.ts:38:20)
+    at MockCatalogRepository.saveProducts (src/lib/repositories/catalogRepository.ts:87:10)
+    at ProductProvider.useEffect (src/context/ProductContext.tsx:79:23)
+  59 |     const syncFromRepo = () => {
+  60 |       try {
+> 61 |         setProducts(catalogRepository.getProducts({ isHydrated: true }));
+     |         ^
+  62 |         setCategories(catalogRepository.getCategories({ isHydrated: true }));
+  63 |         setBrands(catalogRepository.getBrands({ isHydrated: true }));
+  64 |       } catch (e) { (src/context/ProductContext.tsx:61:9)
+[browser] Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one of the dependencies changes on every render.
+    at ProductProvider.useEffect.syncFromRepo (src/context/ProductContext.tsx:61:9)
+    at <unknown> (src/lib/repositories/catalogRepository.ts:40:9)
+    at Set.forEach (<anonymous>)
+    at MockCatalogRepository.notifyListeners (src/lib/repositories/catalogRepository.ts:38:20)
+    at MockCatalogRepository.saveProducts (src/lib/repositories/catalogRepository.ts:87:10)
+    at ProductProvider.useEffect (src/context/ProductContext.tsx:79:23)
+  59 |     const syncFromRepo = () => {
+  60 |       try {
+> 61 |         setProducts(catalogRepository.getProducts({ isHydrated: true }));
+     |         ^
+  62 |         setCategories(catalogRepository.getCategories({ isHydrated: true }));
+  63 |         setBrands(catalogRepository.getBrands({ isHydrated: true }));
+  64 |       } catch (e) { (src/context/ProductContext.tsx:61:9)
+[browser] Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one of the dependencies changes on every render.
+    at ProductProvider.useEffect.syncFromRepo (src/context/ProductContext.tsx:61:9)
+    at <unknown> (src/lib/repositories/catalogRepository.ts:40:9)
+    at Set.forEach (<anonymous>)
+    at MockCatalogRepository.notifyListeners (src/lib/repositories/catalogRepository.ts:38:20)
+    at MockCatalogRepository.saveProducts (src/lib/repositories/catalogRepository.ts:87:10)
+    at ProductProvider.useEffect (src/context/ProductContext.tsx:79:23)
+  59 |     const syncFromRepo = () => {
+  60 |       try {
+> 61 |         setProducts(catalogRepository.getProducts({ isHydrated: true }));
+     |         ^
+  62 |         setCategories(catalogRepository.getCategories({ isHydrated: true }));
+  63 |         setBrands(catalogRepository.getBrands({ isHydrated: true }));
+  64 |       } catch (e) { (src/context/ProductContext.tsx:61:9)
+[browser] Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one of the dependencies changes on every render.
+    at ProductProvider.useEffect.syncFromRepo (src/context/ProductContext.tsx:61:9)
+    at <unknown> (src/lib/repositories/catalogRepository.ts:40:9)
+    at Set.forEach (<anonymous>)
+    at MockCatalogRepository.notifyListeners (src/lib/repositories/catalogRepository.ts:38:20)
+    at MockCatalogRepository.saveProducts (src/lib/repositories/catalogRepository.ts:87:10)
+    at ProductProvider.useEffect (src/context/ProductContext.tsx:79:23)
+  59 |     const syncFromRepo = () => {
+  60 |       try {
+> 61 |         setProducts(catalogRepository.getProducts({ isHydrated: true }));
+     |         ^
+  62 |         setCategories(catalogRepository.getCategories({ isHydrated: true }));
+  63 |         setBrands(catalogRepository.getBrands({ isHydrated: true }));
+  64 |       } catch (e) { (src/context/ProductContext.tsx:61:9)

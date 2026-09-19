@@ -44,6 +44,14 @@ export const routes = {
     profile: "/account/profile",
   },
 
+  // Blog Storefront Routes
+  blog: {
+    list: "/blog",
+    detail: (slug: string) => `/blog/${slug}`,
+    category: (slug: string) => `/blog?category=${slug}`,
+    tag: (slug: string) => `/blog?tag=${slug}`,
+  },
+
   // Public Informational Pages
   public: {
     blog: "/blog",
@@ -56,6 +64,9 @@ export const routes = {
   // Admin Management Routes
   admin: {
     dashboard: "/admin/dashboard",
+    blog: "/admin/blog",
+    blogNew: "/admin/blog/new",
+    blogEdit: (id: string) => `/admin/blog/${id}/edit`,
     products: "/admin/products",
     productNew: "/admin/products/new",
     productDetail: (id: string) => `/admin/products/${id}`,

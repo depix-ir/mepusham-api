@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
+  BookOpen,
   Package,
   Boxes,
   ShoppingBag,
@@ -31,6 +32,7 @@ export interface NavItem {
 
 export const ADMIN_NAV_ITEMS: NavItem[] = [
   { id: "dashboard", title: "داشبورد", href: "/admin/dashboard", icon: LayoutDashboard },
+  { id: "blog", title: "وبلاگ", href: "/admin/blog", icon: BookOpen },
   { id: "products", title: "محصولات", href: "/admin/products", icon: Package },
   { id: "inventory", title: "موجودی", href: "/admin/inventory", icon: Boxes },
   { id: "orders", title: "سفارش‌ها", href: "/admin/orders", icon: ShoppingBag },
