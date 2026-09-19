@@ -15,6 +15,7 @@ import {
   mockInitialQuickReplies,
   AUTOMATIC_RESPONSE_TEMPLATE,
 } from "@/data/mockSupportData";
+import { authService } from "@/lib/auth/authService";
 
 const TICKETS_KEY = "mepusham_support_tickets_v2";
 const MESSAGES_KEY = "mepusham_support_messages_v2";
@@ -137,6 +138,19 @@ class SupportService {
     return tickets.find(
       (t) => t.id === cleanId || t.ticketNumber === cleanId || t.id === ticketId
     );
+  }
+
+  /**
+   * Secure customer ticket lookup enforcing service-level ownership checks (IDOR protection).
+   */
+  getTicketByIdForCustomer(ticketId: string): SupportTicket | undefined {
+    const ticket = this.getTicketById(ticketId);
+    if (!ticket) return undefined;
+    const isOwner =
+      authService.validateOwnership(ticket.customerId) ||
+      authService.validateOwnership(ticket.customerPhone);
+    if (!isOwner) return undefined;
+    return ticket;
   }
 
   createTicket(payload: {

@@ -35,13 +35,14 @@ export async function generateMetadata({
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = getProductBySlug(slug, { isHydrated: false });
+  const relatedProducts = product ? getRelatedProducts(product, 8, { isHydrated: false }) : [];
 
-  if (!product) {
-    notFound();
-  }
-
-  const relatedProducts = getRelatedProducts(product, 8);
-
-  return <ProductDetailPage product={product} relatedProducts={relatedProducts} />;
+  return (
+    <ProductDetailPage
+      initialProduct={product ?? undefined}
+      initialRelatedProducts={relatedProducts}
+      slug={slug}
+    />
+  );
 }

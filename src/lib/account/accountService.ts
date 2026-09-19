@@ -15,6 +15,7 @@ import {
   mockInitialTickets,
 } from "@/data/mockAccountData";
 import { catalogRepository } from "@/lib/repositories/catalogRepository";
+import { authService } from "@/lib/auth/authService";
 import { storeSettingsService } from "@/lib/store-settings/storeSettingsService";
 import { Product, ProductOption, ProductOptionValue, ProductVariant } from "@/types/product";
 
@@ -69,6 +70,19 @@ class AccountService {
     return orders.find(
       (o) => o.id === cleanId || o.orderNumber === cleanId || o.id === orderId || o.orderNumber === orderId
     );
+  }
+
+  /**
+   * Secure customer order lookup enforcing service-level ownership checks (IDOR protection).
+   */
+  getOrderByIdForCustomer(orderId: string): Order | undefined {
+    const order = this.getOrderById(orderId);
+    if (!order) return undefined;
+    const isOwner =
+      authService.validateOwnership(order.customerId) ||
+      authService.validateOwnership(order.shippingAddress?.phone);
+    if (!isOwner) return undefined;
+    return order;
   }
 
   updateOrderStatus(

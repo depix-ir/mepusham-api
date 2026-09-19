@@ -29,7 +29,15 @@ export function AnnouncementBar({
   useEffect(() => {
     if (announcements.length <= 1) return;
 
+    let isHidden = false;
+    const handleVisibilityChange = () => {
+      isHidden = document.hidden;
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
     const timer = setInterval(() => {
+      if (isHidden) return;
+
       setPrevIndex(currentIndex);
       setCurrentIndex((prev) => (prev + 1) % announcements.length);
       setIsTransitioning(true);
@@ -42,7 +50,10 @@ export function AnnouncementBar({
       return () => clearTimeout(transitionTimer);
     }, intervalDuration);
 
-    return () => clearInterval(timer);
+    return () => {
+      clearInterval(timer);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, [announcements.length, currentIndex, intervalDuration]);
 
   return (
@@ -66,6 +77,12 @@ export function AnnouncementBar({
           100% {
             transform: translateY(100%);
             opacity: 0;
+          }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .animate-ann-slide-in,
+          .animate-ann-slide-out {
+            animation: none !important;
           }
         }
         .animate-ann-slide-in {

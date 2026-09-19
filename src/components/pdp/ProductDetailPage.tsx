@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Product } from "@/types/product";
 import { getVariantDetails } from "@/lib/product/domain";
+import { getProductBySlug, getRelatedProducts } from "@/lib/product/service";
+import { catalogRepository } from "@/lib/repositories/catalogRepository";
 import { sizeGuideService } from "@/lib/sizeguide/sizeGuideService";
 import { formatPrice } from "@/lib/formatting/currency";
 import { useCart } from "@/store/cart/cart.store";
@@ -24,16 +26,61 @@ import { ShoppingCart, Bell, Plus, Minus, Trash2 } from "lucide-react";
 import { TomanIcon } from "@/components/icons";
 
 export interface ProductDetailPageProps {
-  product: Product;
+  initialProduct?: Product;
+  initialRelatedProducts?: Product[];
+  slug?: string;
+  product?: Product;
   relatedProducts?: Product[];
   onAddToCart?: (product: Product, quantity: number, selectedOptions: Record<string, string>) => void;
 }
 
 export function ProductDetailPage({
-  product,
-  relatedProducts = [],
+  initialProduct,
+  initialRelatedProducts = [],
+  slug,
+  product: directProduct,
+  relatedProducts: directRelatedProducts = [],
   onAddToCart: customOnAddToCart,
 }: ProductDetailPageProps) {
+  const [product, setProduct] = useState<Product | undefined>(() => directProduct || initialProduct);
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>(() => directRelatedProducts.length > 0 ? directRelatedProducts : initialRelatedProducts);
+  const [isResolved, setIsResolved] = useState<boolean>(() => !!(directProduct || initialProduct));
+
+  // Sync with client-side localStorage catalog repository post-hydration
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const syncProduct = () => {
+      const activeSlug = slug || product?.slug;
+      if (activeSlug) {
+        const clientProduct = getProductBySlug(activeSlug, { isHydrated: true });
+        if (clientProduct) {
+          setProduct(clientProduct);
+          const clientRelated = getRelatedProducts(clientProduct, 8, { isHydrated: true });
+          setRelatedProducts(clientRelated);
+        }
+      }
+      setIsResolved(true);
+    };
+
+    syncProduct();
+    return catalogRepository.subscribe(syncProduct);
+  }, [slug, product?.slug]);
+
+  if (!product) {
+    if (!isResolved) {
+      return (
+        <div className="py-20 text-center min-h-[60vh] flex items-center justify-center">
+          <div className="w-10 h-10 rounded-full border-3 border-primary/30 border-t-primary animate-spin mx-auto" />
+        </div>
+      );
+    }
+    return (
+      <div className="py-20 text-center min-h-[60vh] flex flex-col items-center justify-center space-y-4">
+        <h1 className="text-lg font-bold text-foreground">محصول مورد نظر یافت نشد.</h1>
+      </div>
+    );
+  }
   const { items, addItem, updateQuantity, removeItem, openCart } = useCart();
   const { isLiked: checkIsLiked, toggle: toggleWishlist } = useWishlist();
   const isLiked = checkIsLiked(product.id);
