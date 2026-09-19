@@ -32,7 +32,7 @@ export function EmptyState({
     <div
       role="region"
       aria-label={title}
-      className={`flex flex-col items-center justify-center text-center p-6 sm:p-10 my-4 gap-4 w-full max-w-lg mx-auto ${
+      className={`flex flex-col items-center justify-center text-center p-6 sm:p-10 my-4 gap-4 w-full  mx-auto ${
         bordered
           ? "border border-dashed border-border-subtle rounded-2xl bg-surface-subtle/30"
           : ""

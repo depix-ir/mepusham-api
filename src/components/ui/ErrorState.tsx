@@ -40,7 +40,7 @@ export function ErrorState({
     <div
       role="alert"
       aria-live="assertive"
-      className={`flex flex-col items-center justify-center text-center p-6 sm:p-10 my-4 gap-4 w-full max-w-lg mx-auto ${
+      className={`flex flex-col items-center justify-center text-center p-6 sm:p-10 my-4 gap-4 w-full  mx-auto ${
         bordered
           ? "border border-amber-500/20 rounded-2xl bg-amber-500/5"
           : ""

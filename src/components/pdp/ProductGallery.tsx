@@ -490,7 +490,7 @@ export function ProductGallery({
 
           {/* Lightbox Center Image Stage (STRICTLY SQUARE) */}
           <div
-            className="relative w-full max-w-2xl mx-auto aspect-square my-auto flex items-center justify-center"
+            className="relative w-full max-w-md mx-auto aspect-square my-auto flex items-center justify-center"
             onClick={(e) => e.stopPropagation()}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}

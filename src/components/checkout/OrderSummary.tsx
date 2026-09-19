@@ -27,7 +27,7 @@ export function OrderSummary({
 }: OrderSummaryProps) {
   return (
     <div className="bg-background border border-border-subtle rounded-2xl p-5 sm:p-6 flex flex-col gap-5">
-      <div className="flex items-center justify-between pb-3 border-b border-border-subtle">
+      <div className="flex items-center justify-between pb-3 ">
         <h2 className="text-base font-bold text-foreground tracking-tight">
           خلاصه سفارش
         </h2>
