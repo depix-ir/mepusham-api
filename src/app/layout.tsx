@@ -39,7 +39,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fa" dir="rtl" className={peydaFont.variable}>
-      <body className="min-h-screen bg-background text-foreground antialiased font-sans flex flex-col pb-16 md:pb-0">
+      <body suppressHydrationWarning className="min-h-screen bg-background text-foreground antialiased font-sans flex flex-col pb-16 md:pb-0">
         <ToastProvider>
           <AuthProvider>
             <CartProvider>

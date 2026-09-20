@@ -58,9 +58,13 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const syncFromRepo = () => {
       try {
-        setProducts(catalogRepository.getProducts({ isHydrated: true }));
-        setCategories(catalogRepository.getCategories({ isHydrated: true }));
-        setBrands(catalogRepository.getBrands({ isHydrated: true }));
+        const repoProducts = catalogRepository.getProducts({ isHydrated: true });
+        const repoCategories = catalogRepository.getCategories({ isHydrated: true });
+        const repoBrands = catalogRepository.getBrands({ isHydrated: true });
+
+        setProducts((prev) => (prev === repoProducts ? prev : repoProducts));
+        setCategories((prev) => (prev === repoCategories ? prev : repoCategories));
+        setBrands((prev) => (prev === repoBrands ? prev : repoBrands));
       } catch (e) {
         console.error("Failed to sync products state from repository:", e);
       } finally {
@@ -352,9 +356,9 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
 
   const resetToDefaults = useCallback(() => {
     catalogRepository.resetToDefaults();
-    setProducts(catalogRepository.getProducts({ isHydrated: false }));
-    setCategories(catalogRepository.getCategories({ isHydrated: false }));
-    setBrands(catalogRepository.getBrands({ isHydrated: false }));
+    setProducts(catalogRepository.getProducts({ isHydrated: true }));
+    setCategories(catalogRepository.getCategories({ isHydrated: true }));
+    setBrands(catalogRepository.getBrands({ isHydrated: true }));
   }, []);
 
   return (

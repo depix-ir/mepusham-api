@@ -49,6 +49,9 @@ class MockCatalogRepository implements ICatalogRepository {
     if (!isHydrated) {
       return this.memoryProducts ?? initialProducts;
     }
+    if (this.memoryProducts !== null) {
+      return this.memoryProducts;
+    }
     try {
       const stored = localStorage.getItem(STORAGE_KEY_PRODUCTS);
       if (stored) {
@@ -76,6 +79,7 @@ class MockCatalogRepository implements ICatalogRepository {
   }
 
   saveProducts(products: Product[]): void {
+    const previous = this.memoryProducts;
     this.memoryProducts = products;
     if (typeof window !== "undefined") {
       try {
@@ -84,13 +88,18 @@ class MockCatalogRepository implements ICatalogRepository {
         console.error("MockCatalogRepository: Failed to save products:", e);
       }
     }
-    this.notifyListeners();
+    if (previous !== products) {
+      this.notifyListeners();
+    }
   }
 
   getCategories(options?: { isHydrated?: boolean }): ProductCategory[] {
     const isHydrated = options?.isHydrated ?? (typeof window !== "undefined");
     if (!isHydrated) {
       return this.memoryCategories ?? initialCategories;
+    }
+    if (this.memoryCategories !== null) {
+      return this.memoryCategories;
     }
     try {
       const stored = localStorage.getItem(STORAGE_KEY_CATEGORIES);
@@ -109,6 +118,7 @@ class MockCatalogRepository implements ICatalogRepository {
   }
 
   saveCategories(categories: ProductCategory[]): void {
+    const previous = this.memoryCategories;
     this.memoryCategories = categories;
     if (typeof window !== "undefined") {
       try {
@@ -117,13 +127,18 @@ class MockCatalogRepository implements ICatalogRepository {
         console.error("MockCatalogRepository: Failed to save categories:", e);
       }
     }
-    this.notifyListeners();
+    if (previous !== categories) {
+      this.notifyListeners();
+    }
   }
 
   getBrands(options?: { isHydrated?: boolean }): ProductBrand[] {
     const isHydrated = options?.isHydrated ?? (typeof window !== "undefined");
     if (!isHydrated) {
       return this.memoryBrands ?? initialBrands;
+    }
+    if (this.memoryBrands !== null) {
+      return this.memoryBrands;
     }
     try {
       const stored = localStorage.getItem(STORAGE_KEY_BRANDS);
@@ -142,6 +157,7 @@ class MockCatalogRepository implements ICatalogRepository {
   }
 
   saveBrands(brands: ProductBrand[]): void {
+    const previous = this.memoryBrands;
     this.memoryBrands = brands;
     if (typeof window !== "undefined") {
       try {
@@ -150,7 +166,9 @@ class MockCatalogRepository implements ICatalogRepository {
         console.error("MockCatalogRepository: Failed to save brands:", e);
       }
     }
-    this.notifyListeners();
+    if (previous !== brands) {
+      this.notifyListeners();
+    }
   }
 
   resetToDefaults(): void {

@@ -64,6 +64,9 @@ class MockBlogRepository implements IBlogRepository {
     if (!isHydrated) {
       return this.memoryPosts ?? initialBlogPosts;
     }
+    if (this.memoryPosts !== null) {
+      return this.memoryPosts;
+    }
     try {
       const stored = localStorage.getItem(STORAGE_KEY_BLOG_POSTS);
       if (stored) {
@@ -174,6 +177,7 @@ class MockBlogRepository implements IBlogRepository {
   }
 
   savePosts(posts: BlogPost[]): void {
+    const previous = this.memoryPosts;
     this.memoryPosts = posts;
     if (typeof window !== "undefined") {
       try {
@@ -182,13 +186,18 @@ class MockBlogRepository implements IBlogRepository {
         console.error("MockBlogRepository: Failed to save posts:", e);
       }
     }
-    this.notifyListeners();
+    if (previous !== posts) {
+      this.notifyListeners();
+    }
   }
 
   getCategories(options?: { isHydrated?: boolean }): BlogCategory[] {
     const isHydrated = options?.isHydrated ?? (typeof window !== "undefined");
     if (!isHydrated) {
       return this.memoryCategories ?? initialBlogCategories;
+    }
+    if (this.memoryCategories !== null) {
+      return this.memoryCategories;
     }
     try {
       const stored = localStorage.getItem(STORAGE_KEY_BLOG_CATEGORIES);
@@ -212,6 +221,7 @@ class MockBlogRepository implements IBlogRepository {
   }
 
   saveCategories(categories: BlogCategory[]): void {
+    const previous = this.memoryCategories;
     this.memoryCategories = categories;
     if (typeof window !== "undefined") {
       try {
@@ -220,13 +230,18 @@ class MockBlogRepository implements IBlogRepository {
         console.error("MockBlogRepository: Failed to save categories:", e);
       }
     }
-    this.notifyListeners();
+    if (previous !== categories) {
+      this.notifyListeners();
+    }
   }
 
   getTags(options?: { isHydrated?: boolean }): BlogTag[] {
     const isHydrated = options?.isHydrated ?? (typeof window !== "undefined");
     if (!isHydrated) {
       return this.memoryTags ?? initialBlogTags;
+    }
+    if (this.memoryTags !== null) {
+      return this.memoryTags;
     }
     try {
       const stored = localStorage.getItem(STORAGE_KEY_BLOG_TAGS);
@@ -250,6 +265,7 @@ class MockBlogRepository implements IBlogRepository {
   }
 
   saveTags(tags: BlogTag[]): void {
+    const previous = this.memoryTags;
     this.memoryTags = tags;
     if (typeof window !== "undefined") {
       try {
@@ -258,7 +274,9 @@ class MockBlogRepository implements IBlogRepository {
         console.error("MockBlogRepository: Failed to save tags:", e);
       }
     }
-    this.notifyListeners();
+    if (previous !== tags) {
+      this.notifyListeners();
+    }
   }
 
   resetToDefaults(): void {
