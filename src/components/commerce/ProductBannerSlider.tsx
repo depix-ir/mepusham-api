@@ -26,7 +26,7 @@ export function ProductBannerSlider({
 
   return (
     <section
-      className={`w-full max-w-full h-[100px] md:h-[200px] select-none overflow-hidden p-0 m-0 rounded-none border-none relative ${className}`.trim()}
+      className={`w-full max-w-full h-[100px] md:h-[400px] select-none overflow-hidden p-0 m-0 rounded-none border-none relative ${className}`.trim()}
     >
       <Swiper
         modules={[Autoplay]}
@@ -68,7 +68,7 @@ export function ProductBannerSlider({
                     draggable={false}
                   />
 
-                  {/* Mobile Image */}
+                  {/* Mobile Image */}a
                   <Image
                     src={mobileImage}
                     alt={banner.title || `بنر ${index + 1}`}
