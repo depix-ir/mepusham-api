@@ -20,6 +20,7 @@ import { accountService } from "@/lib/account/accountService";
 import { returnService } from "@/lib/returns/returnService";
 import { Order } from "@/types/account";
 import { ReturnRequest } from "@/types/return";
+import { routes } from "@/lib/routes";
 import { QuickReplySelectorModal } from "./QuickReplySelectorModal";
 import { ManageQuickRepliesModal } from "./ManageQuickRepliesModal";
 import {
@@ -618,7 +619,7 @@ export function AdminTicketDetail({ ticket: initialTicket }: AdminTicketDetailPr
                 </div>
 
                 <Link
-                  href={`/admin/returns/${relatedReturn.id}`}
+                  href={routes.admin.returnsDetail(relatedReturn.id)}
                   className="w-full py-2 mt-2 rounded-xl bg-amber-500/10 text-amber-800 hover:bg-amber-500 hover:text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
                 >
                   <span>مشاهده درخواست مرجوعی</span>

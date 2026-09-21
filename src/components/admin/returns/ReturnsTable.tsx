@@ -9,6 +9,7 @@ import {
 } from "./ReturnStatusBadge";
 import { Eye, ArrowLeft, RefreshCw, AlertCircle, Image as ImageIcon } from "lucide-react";
 import { formatToman } from "@/lib/formatting/currency";
+import { routes } from "@/lib/routes";
 
 interface ReturnsTableProps {
   requests: ReturnRequest[];
@@ -171,7 +172,7 @@ export function ReturnsTable({ requests, isLoading, onRefresh }: ReturnsTablePro
                     {/* Action */}
                     <td className="px-4 py-3 whitespace-nowrap text-left">
                       <Link
-                        href={`/admin/returns/${req.id}`}
+                        href={routes.admin.returnsDetail(req.id)}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-surface-subtle text-foreground hover:bg-primary hover:text-primary-foreground border border-border rounded-md transition-colors"
                       >
                         <span>بررسی و مدیریت</span>
@@ -270,7 +271,7 @@ export function ReturnsTable({ requests, isLoading, onRefresh }: ReturnsTablePro
               {/* Action Button */}
               <div className="pt-2 border-t border-border/80 flex justify-end">
                 <Link
-                  href={`/admin/returns/${req.id}`}
+                  href={routes.admin.returnsDetail(req.id)}
                   className="w-full text-center py-2 px-3 text-xs font-semibold bg-primary text-primary-foreground rounded-md hover:bg-primary-hover transition-colors flex items-center justify-center gap-1.5"
                 >
                   <span>مشاهده جزئیات و مدیریت</span>

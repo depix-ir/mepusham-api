@@ -213,3 +213,25 @@ describe("Return Reason Policy Configuration", () => {
     expect(policy.refundShippingCost).toBe(false);
   });
 });
+
+describe("Return Service Lookup & ID Normalization", () => {
+  const { returnService } = require("../returnService");
+
+  test("Retrieves return request by clean ID, prefix ID, or request number insensitive to case", () => {
+    const byCleanId = returnService.getReturnRequestById("1025");
+    const byPrefixId = returnService.getReturnRequestById("ret-1025");
+    const byUpperReqNum = returnService.getReturnRequestById("RET-1025");
+
+    expect(byCleanId).toBeDefined();
+    expect(byPrefixId).toBeDefined();
+    expect(byUpperReqNum).toBeDefined();
+    expect(byCleanId?.id).toBe("ret-1025");
+  });
+
+  test("Filters customer return requests correctly by phone", () => {
+    const customerReturns = returnService.getReturnRequestsForCustomer("09121234567");
+    expect(Array.isArray(customerReturns)).toBe(true);
+    expect(customerReturns.length).toBeGreaterThan(0);
+    expect(customerReturns.every((r: ReturnRequest) => r.customerPhone === "09121234567")).toBe(true);
+  });
+});
