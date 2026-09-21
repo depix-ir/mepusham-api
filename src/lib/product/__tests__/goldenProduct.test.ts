@@ -12,7 +12,7 @@ describe("Golden Product End-to-End Consistency & Snapshot Integrity Test", () =
 
   test("Admin update propagates to Listing, Search, PDP, Cart, while preserving historical Order snapshots", async () => {
     // 1. Initial State Check
-    const initialProd = catalogRepository.getProductById("prod-bag-01");
+    const initialProd = catalogRepository.getProductById("prod-shirt-10-featured");
     expect(initialProd).not.toBeNull();
     const prodId = initialProd!.id;
     const variantId = initialProd!.variants[0]?.id;
