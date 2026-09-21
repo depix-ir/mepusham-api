@@ -68,7 +68,7 @@ function AdminLoginForm() {
             ورود به پنل مدیریت
           </h1>
           <p className="text-xs text-muted-foreground">
-            برای دسترسی به پنل مدیریت فروشگاه مپوشام وارد شوید.
+            برای دسترسی به پنل مدیریت فروشگاه مپوشــــم وارد شوید.
           </p>
         </div>
 
@@ -140,7 +140,7 @@ function AdminLoginForm() {
         {/* Footer Info */}
         <div className="pt-4 border-t border-border text-center">
           <p className="text-[11px] text-muted-foreground">
-            سیستم مدیریت فروشگاه اینترنتی مپوشام
+            سیستم مدیریت فروشگاه اینترنتی مپوشــــم
           </p>
         </div>
       </div>

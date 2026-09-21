@@ -147,7 +147,7 @@ export function TicketDetailView({ ticket, onBack, onSendMessage }: TicketDetail
                 <div className={`flex items-center justify-between gap-3 text-[10px] pb-1 border-b ${
                   isUser ? "border-white/15 text-primary-foreground/80" : "border-border-subtle text-muted-foreground"
                 }`}>
-                  <span className="font-bold">{isUser ? "شما" : "پشتیبانی مپوشام"}</span>
+                  <span className="font-bold">{isUser ? "شما" : "پشتیبانی مپوشــــم"}</span>
                   <span dir="ltr">{msg.createdAt}</span>
                 </div>
 

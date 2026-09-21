@@ -21,7 +21,7 @@ describe("Blog Domain Service & Repository Tests", () => {
 
   it("2. Correctly calculates reading time based on block contents", () => {
     const blocks: BlogContentBlock[] = [
-      { type: "paragraph", text: "یک متن ساده برای تست زمان مطالعه مقاله وبلاگ فروشگاه مپوشام" },
+      { type: "paragraph", text: "یک متن ساده برای تست زمان مطالعه مقاله وبلاگ فروشگاه مپوشــــم" },
       { type: "heading", level: 2, text: "عنوان اصلی بخش اول" },
       { type: "list", ordered: false, items: ["آیتم اول لیست", "آیتم دوم لیست"] },
     ];

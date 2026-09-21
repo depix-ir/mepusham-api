@@ -17,13 +17,13 @@ export async function generateMetadata({
 
   if (!product) {
     return {
-      title: "محصول یافت نشد | مپوشام",
+      title: "محصول یافت نشد | مپوشــــم",
       description: "محصول مورد نظر یافت نشد.",
     };
   }
 
   return {
-    title: `${product.title} | فروشگاه مپوشام`,
+    title: `${product.title} | فروشگاه مپوشــــم`,
     description: product.description || `خرید اینترنتی ${product.title} با بهترین قیمت و ارسال سریع`,
     openGraph: {
       title: product.title,

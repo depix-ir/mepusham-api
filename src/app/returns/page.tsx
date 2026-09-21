@@ -17,7 +17,7 @@ export default function ReturnsPage() {
       />
       <div className="space-y-4 text-neutral-600 text-sm md:text-base leading-relaxed">
         <p>
-          رضایتمندی مشتریان از اولویت‌های اصلی مپوشام است. در همین راستا، امکان بازگشت کالا تا ۷ روز پس از تحویل سفارش طبق شرایط زیر مهیا می‌باشد:
+          رضایتمندی مشتریان از اولویت‌های اصلی مپوشــــم است. در همین راستا، امکان بازگشت کالا تا ۷ روز پس از تحویل سفارش طبق شرایط زیر مهیا می‌باشد:
         </p>
         <ul className="list-disc list-inside space-y-2 text-neutral-700 pr-2">
           <li>کالا در حالت اولیه و با اتیکت اصلی باشد.</li>

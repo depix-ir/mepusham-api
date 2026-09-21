@@ -25,7 +25,7 @@ export function MainHeader({ cartItemCount = 0 }: MainHeaderProps) {
           href={routes.home}
           className="hidden md:flex items-center gap-2 text-2xl font-black text-primary tracking-tight shrink-0 hover:opacity-90 transition-opacity"
         >
-          <span>مپوشام</span>
+          <span>مپوشــــم</span>
         </Link>
 
         {/* Search Bar - Responsive */}
@@ -37,7 +37,7 @@ export function MainHeader({ cartItemCount = 0 }: MainHeaderProps) {
                 onClick={(e) => e.stopPropagation()}
                 className="text-primary font-black text-sm hover:opacity-80 transition-opacity cursor-pointer"
               >
-                مپوشام
+                مپوشــــم
               </Link>
             }
           />

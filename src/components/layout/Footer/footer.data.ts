@@ -55,7 +55,7 @@ export const trustBadges: TrustBadge[] = [
 ];
 
 export const brandInfo = {
-  name: "مپوشام",
+  name: "مپوشــــم",
   description: "یک فروشگاه آنلاین برای انتخاب ساده‌تر و مطمئن‌تر پوشاک و اکسسوری زنانه.",
-  copyright: "© ۱۴۰۵ مپوشام، تمامی حقوق محفوظ است.",
+  copyright: "© ۱۴۰۵ مپوشــــم، تمامی حقوق محفوظ است.",
 };

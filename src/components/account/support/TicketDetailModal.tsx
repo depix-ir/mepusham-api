@@ -139,7 +139,7 @@ export function TicketDetailModal({
                   }`}
                 >
                   <div className="flex items-center justify-between gap-4 text-[10px] opacity-80">
-                    <span className="font-bold">{isUser ? "شما" : "پشتیبانی مپوشام"}</span>
+                    <span className="font-bold">{isUser ? "شما" : "پشتیبانی مپوشــــم"}</span>
                     <span>{msg.createdAt}</span>
                   </div>
                   <p className="leading-relaxed whitespace-pre-wrap">{msg.text}</p>

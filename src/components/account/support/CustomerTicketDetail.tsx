@@ -238,7 +238,7 @@ export function CustomerTicketDetail({
                   }`}
                 >
                   <span className="font-bold">
-                    {isCustomer ? "شما" : msg.senderName || "پشتیبانی مپوشام"}
+                    {isCustomer ? "شما" : msg.senderName || "پشتیبانی مپوشــــم"}
                   </span>
                   <span dir="ltr">{msg.createdAt}</span>
                 </div>

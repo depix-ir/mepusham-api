@@ -71,7 +71,7 @@ function NewTicketContent() {
         <div className="space-y-6">
           <AccountPageHeader
             title="ایجاد تیکت جدید"
-            description="ارسال پیام به تیم پشتیبانی مپوشام"
+            description="ارسال پیام به تیم پشتیبانی مپوشــــم"
             icon={PlusCircle}
             backUrl="/account/support"
             backLabel="بازگشت به پشتیبانی"

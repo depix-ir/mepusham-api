@@ -32,7 +32,7 @@ export function BlogPostForm({ initialData }: BlogPostFormProps) {
   const [coverImage, setCoverImage] = useState(initialData?.coverImage || "");
   const [categoryId, setCategoryId] = useState(initialData?.categoryId || "");
   const [tagIds, setTagIds] = useState<string[]>(initialData?.tagIds || []);
-  const [authorName, setAuthorName] = useState(initialData?.authorName || "تیم محتوای مپوشام");
+  const [authorName, setAuthorName] = useState(initialData?.authorName || "تیم محتوای مپوشــــم");
   const [status, setStatus] = useState<BlogPostStatus>(initialData?.status || "draft");
   const [publishedAt, setPublishedAt] = useState(
     initialData?.publishedAt

@@ -5,7 +5,7 @@ import { Product } from "@/types/product";
 const mockProduct: Product = {
   id: "prod-test-1",
   slug: "test-product",
-  title: "محصول تست مپوشام",
+  title: "محصول تست مپوشــــم",
   category: { id: "cat-1", name: "پوشاک", slug: "clothing" },
   images: [
     { id: "img-2", url: "/images/img2.webp", alt: "تصویر دوم", sortOrder: 2 },

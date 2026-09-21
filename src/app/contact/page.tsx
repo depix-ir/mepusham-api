@@ -8,7 +8,7 @@ export default function ContactPage() {
         تماس با ما
       </h1>
       <p className="text-neutral-600 text-sm md:text-base leading-relaxed mb-6">
-        تیم پشتیبانی مپوشام همواره آماده پاسخگویی به سوالات و نظرات شماست.
+        تیم پشتیبانی مپوشــــم همواره آماده پاسخگویی به سوالات و نظرات شماست.
       </p>
       <div className="flex flex-col gap-3 text-sm text-neutral-700">
         <p><strong>ایمیل پشتیبانی:</strong> info@mepusham.ir</p>

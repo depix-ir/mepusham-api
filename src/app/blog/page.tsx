@@ -78,7 +78,7 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 pb-6 border-b border-[#EEEEEE]">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-            وبلاگ مپوشام
+            وبلاگ مپوشــــم
           </h1>
           <p className="text-neutral-600 text-xs md:text-sm leading-relaxed">
             راهنمایی برای انتخاب بهتر، استایل و دنیای مد زنانه

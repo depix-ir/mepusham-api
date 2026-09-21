@@ -129,7 +129,7 @@ class ReviewService {
       id: `rev-usr-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       orderId: input.orderId,
       productId: input.productId,
-      authorName: input.authorName.trim() || "کاربر مپوشام",
+      authorName: input.authorName.trim() || "کاربر مپوشــــم",
       rating: Math.min(5, Math.max(1, input.rating)),
       date: new Date().toLocaleDateString("fa-IR"),
       comment: input.comment.trim(),

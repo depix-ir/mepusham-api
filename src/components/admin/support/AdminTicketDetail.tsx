@@ -116,7 +116,7 @@ export function AdminTicketDetail({ ticket: initialTicket }: AdminTicketDetailPr
         ticket.id,
         replyText.trim(),
         attachments.length > 0 ? attachments : undefined,
-        "پشتیبانی مپوشام"
+        "پشتیبانی مپوشــــم"
       );
     } else {
       updated = supportService.addInternalNote(

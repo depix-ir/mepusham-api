@@ -90,7 +90,7 @@ export function OrderReviewSection({ order }: OrderReviewSectionProps) {
       reviewService.submitReview({
         orderId: order.id,
         productId: selectedProductId,
-        authorName: order.shippingAddress.recipientName || "خریدار مپوشام",
+        authorName: order.shippingAddress.recipientName || "خریدار مپوشــــم",
         rating,
         comment,
         images,

@@ -6,7 +6,7 @@ export const LEGACY_SETTINGS_STORAGE_KEY = "mepusham_settings_v1";
 export const DEFAULT_STORE_ADDRESS: StoreAddress = {
   id: "addr-store-default",
   title: "انبار مرکزی و دفتر تهران",
-  recipientName: "مسئول انبار مپوشام",
+  recipientName: "مسئول انبار مپوشــــم",
   phone: "02188889999",
   province: "تهران",
   city: "تهران",
@@ -17,7 +17,7 @@ export const DEFAULT_STORE_ADDRESS: StoreAddress = {
 };
 
 export const DEFAULT_STORE_SETTINGS: StoreSettings = {
-  storeName: "فروشگاه آنلاین مپوشام",
+  storeName: "فروشگاه آنلاین مپوشــــم",
   contactPhone: "02188889999",
   supportEmail: "support@mepusham.ir",
   address: "تهران، خیابان ولیعصر، بالاتر از میدان ونک، پلاک ۱۲",

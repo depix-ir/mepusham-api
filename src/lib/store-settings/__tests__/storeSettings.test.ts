@@ -16,16 +16,16 @@ describe("Store Settings & Address Domain Tests", () => {
 
   test("1. Store Settings retrieve defaults and update store info", () => {
     const settings = storeSettingsService.getSettings();
-    expect(settings.storeName).toBe("فروشگاه آنلاین مپوشام");
+    expect(settings.storeName).toBe("فروشگاه آنلاین مپوشــــم");
     expect(settings.addresses.length).toBeGreaterThan(0);
 
     const updated = storeSettingsService.saveSettings({
       ...settings,
-      storeName: "فروشگاه مپوشام تهران",
+      storeName: "فروشگاه مپوشــــم تهران",
       taxRate: 9,
     });
 
-    expect(updated.storeName).toBe("فروشگاه مپوشام تهران");
+    expect(updated.storeName).toBe("فروشگاه مپوشــــم تهران");
     expect(updated.taxRate).toBe(9);
   });
 

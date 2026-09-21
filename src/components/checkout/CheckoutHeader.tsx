@@ -67,9 +67,9 @@ export function CheckoutHeader({ currentStep = "shipping" }: CheckoutHeaderProps
             <Link
               href={routes.home}
               className="flex items-center gap-2 text-xl sm:text-2xl font-black text-primary tracking-tight hover:opacity-90 transition-opacity"
-              title="صفحه اصلی مپوشام"
+              title="صفحه اصلی مپوشــــم"
             >
-              <span>مپوشام</span>
+              <span>مپوشــــم</span>
             </Link>
           </div>
 
