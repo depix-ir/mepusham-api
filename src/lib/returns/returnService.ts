@@ -120,17 +120,26 @@ export class ReturnService {
     };
   }
 
-  /* ================= GET BY ID ================= */
+  /* ================= GET BY ID & CUSTOMER SEARCH ================= */
 
   getReturnRequestById(id: string): ReturnRequest | undefined {
+    if (!id) return undefined;
     const clean = id.trim().toLowerCase();
     const requests = this.loadAllRequests();
-    return requests.find(
-      (r) =>
-        r.id.toLowerCase() === clean ||
-        r.requestNumber.toLowerCase() === clean ||
-        r.id.toLowerCase() === `ret-${clean}`
-    );
+    return requests.find((r) => {
+      const rId = r.id.toLowerCase();
+      const rNum = r.requestNumber.toLowerCase();
+      return (
+        rId === clean ||
+        rNum === clean ||
+        rId === `ret-${clean}` ||
+        rId === `exc-${clean}` ||
+        rNum === `ret-${clean}` ||
+        rNum === `exc-${clean}` ||
+        clean === rId.replace(/^(ret-|exc-)/, "") ||
+        clean === rNum.replace(/^(ret-|exc-)/, "")
+      );
+    });
   }
 
   /**
@@ -144,6 +153,29 @@ export class ReturnService {
       authService.validateOwnership(request.customerPhone);
     if (!isOwner) return undefined;
     return request;
+  }
+
+  /**
+   * Retrieves return requests belonging to the currently logged in customer or specified phone/id.
+   */
+  getReturnRequestsForCustomer(customerIdOrPhone?: string): ReturnRequest[] {
+    const requests = this.loadAllRequests();
+    const currentAdmin = authService.getCurrentAdmin();
+
+    if (currentAdmin) return requests;
+
+    return requests.filter((r) => {
+      if (customerIdOrPhone) {
+        const norm = customerIdOrPhone.trim().toLowerCase().replace(/[\s-]/g, "");
+        const custId = (r.customerId || "").trim().toLowerCase().replace(/[\s-]/g, "");
+        const custPhone = (r.customerPhone || "").trim().toLowerCase().replace(/[\s-]/g, "");
+        return norm === custId || norm === custPhone;
+      }
+      return (
+        authService.validateOwnership(r.customerId) ||
+        authService.validateOwnership(r.customerPhone)
+      );
+    });
   }
 
   /* ================= CREATE RETURN REQUEST ================= */

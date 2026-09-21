@@ -29,8 +29,8 @@ export default function CustomerReturnsListPage() {
     setIsLoading(true);
     setIsError(false);
     try {
-      const data = returnService.getReturnRequests();
-      setRequests(data.items);
+      const items = returnService.getReturnRequestsForCustomer();
+      setRequests(items);
     } catch {
       setIsError(true);
     } finally {

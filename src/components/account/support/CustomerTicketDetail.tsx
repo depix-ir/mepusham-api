@@ -12,6 +12,7 @@ import {
 } from "@/types/support";
 import { supportService } from "@/lib/support/supportService";
 import { Order } from "@/types/account";
+import { routes } from "@/lib/routes";
 import {
   ArrowRight,
   Send,
@@ -156,7 +157,7 @@ export function CustomerTicketDetail({
           <div className="flex flex-wrap items-center gap-2 text-[11px] pt-1">
             {ticket.orderNumber && (
               <Link
-                href={`/orders/${ticket.orderId || ticket.orderNumber}`}
+                href={routes.account.orders.detail(ticket.orderId || ticket.orderNumber!)}
                 className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-surface border border-border hover:border-primary text-foreground hover:text-primary transition-colors font-mono"
               >
                 <Package className="w-3 h-3 text-primary" />
@@ -167,7 +168,7 @@ export function CustomerTicketDetail({
 
             {ticket.returnId && (
               <Link
-                href={`/account/returns/${ticket.returnId}`}
+                href={routes.account.returns.detail(ticket.returnId)}
                 className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-surface border border-border hover:border-primary text-foreground hover:text-primary transition-colors font-mono"
               >
                 <RotateCcw className="w-3 h-3 text-amber-600" />
