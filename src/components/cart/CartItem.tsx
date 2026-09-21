@@ -28,7 +28,7 @@ export function CartItem({
   const isStockLimited = !isOutOfStock && item.quantity > item.availableStock;
 
   return (
-    <div className="relative flex flex-col p-3  rounded-xl  bg-indigo-50 border-border-subtle hover:border-border transition-all">
+    <div className="relative flex flex-col p-3  rounded-xl  bg-primary/10 border-border-subtle hover:border-border transition-all">
       {/* Top Header Row: Title/Specs on Right, Trash on Left (RTL) */}
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">

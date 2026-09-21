@@ -36,7 +36,7 @@ export function CategorySection({
             } gap-[8px]`}
           >
             {categories.map((category) => {
-              const fallbackImg = "/images/category-1.webp";
+              const fallbackImg = "/images/category-one.webp";
               const imgSrc = category.imageUrl || fallbackImg;
 
               return (
@@ -76,7 +76,7 @@ export function CategorySection({
         </div>
         <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-8 md:gap-10 justify-items-center">
           {categories.map((category) => {
-            const fallbackImg = "/images/category-1.webp";
+            const fallbackImg = "/images/category-one.webp";
             const imgSrc = category.imageUrl || fallbackImg;
 
             return (

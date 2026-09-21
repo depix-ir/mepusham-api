@@ -1591,7 +1591,7 @@ export const products: Product[] = [
     brand: brands[0],
     category: categories[0],
     images: [
-      { id: "img-dress-01-1", url: "/images/category-1.webp", alt: "پیراهن ساحلی نخی گلدار زنانه", sortOrder: 0 },
+      { id: "img-dress-01-1", url: "/images/category-one.webp", alt: "پیراهن ساحلی نخی گلدار زنانه", sortOrder: 0 },
       { id: "img-dress-01-2", url: "/images/product-1.webp", alt: "پیراهن ساحلی نما دیگر", sortOrder: 1 },
     ],
     options: dress01Var.options,

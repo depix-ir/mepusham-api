@@ -203,7 +203,7 @@ export const initialBlogPosts: BlogPost[] = [
     slug: "essential-accessories-for-minimal-style",
     title: "اکسسوری‌های ضروری برای ساخت یک استایل مینیمال و شیک",
     excerpt: "معرفی زیورآلات و مکمل‌های ساده‌ای که بدون شلوغ کردن ظاهر، استایل شما را گران‌قیمت و جذاب نشان می‌دهند.",
-    coverImage: "/images/category-4.webp",
+    coverImage: "/images/category-four.webp",
     categoryId: "bcat-3", // اکسسوری
     tagIds: ["btag-1", "btag-7", "btag-6"], // استایل زنانه, اکسسوری, هدیه
     authorName: "نرگس رضایی",
@@ -271,7 +271,7 @@ export const initialBlogPosts: BlogPost[] = [
     slug: "autumn-winter-capsule-wardrobe",
     title: "چگونه یک کمد کپسولی پاییزی و زمستانی بسازیم؟",
     excerpt: "لیست دقیق قطعات اصلی لباس، پالتو، بوت و کیف برای ایجاد ده‌ها ترکیب مختلف استایل با حداقل تعداد لباس.",
-    coverImage: "/images/category-1.webp",
+    coverImage: "/images/category-one.webp",
     categoryId: "bcat-1", // استایل و مد
     tagIds: ["btag-1", "btag-2"], // استایل زنانه, استایل روزمره
     authorName: "سارا احمدی",
