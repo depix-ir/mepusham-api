@@ -12,7 +12,7 @@ export default function HomePage() {
   const categories = catalogRepository.getCategories({ isHydrated: false });
 
   const discountedProducts = products.filter((p) => p.pricing.hasDiscount);
-  const newArrivals = products.slice(0, 9);
+  const newArrivals = products.slice(0, 8);
   const topCategories = categories.slice(0, 4);
 
   return (
