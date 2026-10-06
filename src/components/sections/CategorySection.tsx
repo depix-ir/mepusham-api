@@ -38,7 +38,7 @@ export function CategorySection({
                 <Link
                   key={category.id}
                   href={`/products?category=${category.slug}`}
-                  className="group relative block w-full h-[160px] sm:h-[180px] rounded-2xl overflow-hidden bg-surface-subtle border border-border-product shadow-xs hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                  className="group relative block w-full h-[260px] sm:h-[340px] rounded-2xl overflow-hidden bg-surface-subtle border accepted-[4/5] border-border-product shadow-xs hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
                 >
                   <Image
                     src={imgSrc}
