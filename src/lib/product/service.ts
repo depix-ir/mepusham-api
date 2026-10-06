@@ -3,6 +3,7 @@ import { catalogRepository } from "@/lib/repositories/catalogRepository";
 import {
   FOOTWEAR_SIZE_GUIDE,
   CLOTHING_SIZE_GUIDE,
+  MENS_CLOTHING_SIZE_GUIDE,
   DEFAULT_SHIPPING_RETURNS,
   getDefaultRatingAndReviews,
   getDefaultSpecifications,
@@ -14,17 +15,27 @@ import {
  * if they are not already present.
  */
 export function enrichProduct(product: Product): Product {
-  const categorySlug = product.category.slug;
+  const categorySlug = product.category?.slug || "";
   const { rating, reviews } = getDefaultRatingAndReviews(product.title);
 
   let sizeGuide = product.sizeGuide;
   if (!sizeGuide) {
-    if (categorySlug === "shoes-sandals") {
+    if (
+      categorySlug === "mens-shoes" ||
+      categorySlug === "womens-shoes" ||
+      categorySlug === "shoes-sandals" ||
+      categorySlug === "woman-shoes"
+    ) {
       sizeGuide = FOOTWEAR_SIZE_GUIDE;
+    } else if (categorySlug === "mens-clothing") {
+      sizeGuide = MENS_CLOTHING_SIZE_GUIDE;
     } else if (
+      categorySlug === "womens-clothing" ||
       categorySlug === "womens-dresses" ||
       categorySlug === "coats-jackets" ||
-      categorySlug === "pants-skirts"
+      categorySlug === "pants-skirts" ||
+      categorySlug === "womens-shirts-blouses" ||
+      categorySlug === "womens-t-shirts"
     ) {
       sizeGuide = CLOTHING_SIZE_GUIDE;
     }
@@ -34,28 +45,8 @@ export function enrichProduct(product: Product): Product {
     ...product,
     rating: product.rating || rating,
     reviews: product.reviews || reviews,
-    specifications:
-      product.specifications ||
-      getDefaultSpecifications(
-        categorySlug === "shoes-sandals"
-          ? "shoes"
-          : categorySlug === "bags-backpacks"
-          ? "bags"
-          : categorySlug === "accessories"
-          ? "accessories"
-          : "clothing"
-      ),
-    careInstructions:
-      product.careInstructions ||
-      getDefaultCareInstructions(
-        categorySlug === "shoes-sandals"
-          ? "shoes"
-          : categorySlug === "bags-backpacks"
-          ? "bags"
-          : categorySlug === "accessories"
-          ? "accessories"
-          : "clothing"
-      ),
+    specifications: product.specifications || getDefaultSpecifications(categorySlug),
+    careInstructions: product.careInstructions || getDefaultCareInstructions(categorySlug),
     sizeGuide,
     shippingReturns: product.shippingReturns || DEFAULT_SHIPPING_RETURNS,
   };

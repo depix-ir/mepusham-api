@@ -19,7 +19,6 @@ export function CategorySection({
 
   // Variant 1: Photo Cards (Used at the top of the Home Page)
   if (variant === "cards") {
-    const isFourItems = categories.length === 4;
     return (
       <section className="w-full">
         <Container>
@@ -30,11 +29,7 @@ export function CategorySection({
               </h2>
             </div>
           )}
-          <div
-            className={`grid grid-cols-2 ${
-              isFourItems ? "sm:grid-cols-4" : "sm:grid-cols-3 lg:grid-cols-6"
-            } gap-[8px]`}
-          >
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
             {categories.map((category) => {
               const fallbackImg = "/images/category-one.webp";
               const imgSrc = category.imageUrl || fallbackImg;
@@ -42,20 +37,21 @@ export function CategorySection({
               return (
                 <Link
                   key={category.id}
-                  href={`/category/${category.slug}`}
-                  className="group relative block w-full h-[150px] rounded-2xl overflow-hidden bg-surface-subtle border border-border-product shadow-xs hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                  href={`/products?category=${category.slug}`}
+                  className="group relative block w-full h-[160px] sm:h-[180px] rounded-2xl overflow-hidden bg-surface-subtle border border-border-product shadow-xs hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
                 >
                   <Image
                     src={imgSrc}
                     alt={category.name}
                     fill
-                    sizes={
-                      isFourItems
-                        ? "(max-width: 640px) 50vw, 25vw"
-                        : "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
-                    }
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
                     className="object-cover object-center group-hover:scale-108 transition-transform duration-500"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex items-end p-3 sm:p-4">
+                    <span className="text-white text-sm sm:text-base font-bold drop-shadow-md">
+                      {category.name}
+                    </span>
+                  </div>
                 </Link>
               );
             })}
@@ -65,7 +61,7 @@ export function CategorySection({
     );
   }
 
-  // Variant 2: Large Circular Images + Linked Category Name (Used at the bottom of Home Page)
+  // Variant 2: Large Circular Images + Linked Category Name
   return (
     <section className="w-full my-8 md:my-12">
       <Container>
@@ -74,7 +70,7 @@ export function CategorySection({
             {title || "دسته‌بندی‌های محبوب"}
           </h2>
         </div>
-        <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-8 md:gap-10 justify-items-center">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-8 justify-items-center">
           {categories.map((category) => {
             const fallbackImg = "/images/category-one.webp";
             const imgSrc = category.imageUrl || fallbackImg;
@@ -82,16 +78,16 @@ export function CategorySection({
             return (
               <Link
                 key={category.id}
-                href={`/category/${category.slug}`}
+                href={`/products?category=${category.slug}`}
                 className="group flex flex-col items-center text-center cursor-pointer"
               >
                 {/* Round Image with Full Border Radius */}
-                <div className="relative w-28 h-28 sm:w-36 sm:h-36 md:w-44 md:h-44 rounded-full overflow-hidden border-2 border-border-product group-hover:border-primary group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 shadow-md bg-surface-subtle">
+                <div className="relative w-28 h-28 sm:w-36 sm:h-36 md:w-40 md:h-44 rounded-full overflow-hidden border-2 border-border-product group-hover:border-primary group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 shadow-md bg-surface-subtle">
                   <Image
                     src={imgSrc}
                     alt={category.name}
                     fill
-                    sizes="(max-width: 640px) 112px, (max-width: 768px) 144px, 176px"
+                    sizes="(max-width: 640px) 112px, (max-width: 768px) 144px, 160px"
                     className="object-cover object-center group-hover:scale-110 transition-transform duration-500"
                   />
                 </div>

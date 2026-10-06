@@ -13,28 +13,27 @@ export default function HomePage() {
 
   const discountedProducts = products.filter((p) => p.pricing.hasDiscount);
   const newArrivals = products.slice(0, 8);
-  const topCategories = categories.slice(0, 4);
 
   return (
     <div className="flex flex-col gap-6 md:gap-10 pb-8">
       {/* Hero Banner Section (Full width, no padding, no border-radius) */}
       {banners.length > 0 && <HeroSection banners={banners} id="hero-main" />}
 
-      {/* Top Categories Showcase (Photo Cards Grid - 4 categories) */}
-      <CategorySection categories={topCategories} variant="cards" />
+      {/* Top Categories Showcase (Photo Cards Grid - 5 main categories) */}
+      <CategorySection categories={categories} variant="cards" />
 
       {/* Special Offers Section (Carousel) */}
       <OfferSection
         products={discountedProducts}
         title="پیشنهادهای شگفت‌انگیز"
-        description="تخفیف‌های ویژه روی لباس‌ها و اکسسوری‌های منتخب"
+        description="تخفیف‌های ویژه روی لباس‌ها و کفش‌های جدید مردانه و زنانه"
       />
 
       {/* New Arrivals Grid Section */}
       <ProductGridSection
         products={newArrivals}
         title="جدیدترین محصولات"
-        subtitle="بهترین و به روزترین استایل‌های زنانه"
+        subtitle="بهترین و به‌روزترین استایل‌های لباس و کفش مردانه و زنانه"
         viewAllUrl="/products"
       />
 
