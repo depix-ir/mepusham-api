@@ -37,17 +37,18 @@ export default function HomePage() {
         viewAllUrl="/products"
       />
 
+      {/* Secondary Banner Slider directly below New Arrivals */}
+      {secondaryBanners.length > 0 && (
+        <HeroSection banners={secondaryBanners} id="hero-secondary" />
+      )}
+
       {/* Category Product Carousels (1 Carousel Per Category) */}
       {categories.map((category) => (
-        <React.Fragment key={category.id}>
-          <CategoryCarouselSection
-            category={category}
-            products={products}
-          />
-          {category.slug === "bags-backpacks" && secondaryBanners.length > 0 && (
-            <HeroSection banners={secondaryBanners} id="hero-secondary" />
-          )}
-        </React.Fragment>
+        <CategoryCarouselSection
+          key={category.id}
+          category={category}
+          products={products}
+        />
       ))}
     </div>
   );

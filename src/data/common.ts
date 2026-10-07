@@ -34,12 +34,12 @@ export const categories: ProductCategory[] = [
 ];
 
 export const brands: ProductBrand[] = [
-  { id: "brand-gstar", name: "جی استار رو (G-Star Raw)", slug: "g-star-raw" },
-  { id: "brand-adidas", name: "آدیداس (Adidas)", slug: "adidas" },
-  { id: "brand-zara", name: "زارا (Zara)", slug: "zara" },
-  { id: "brand-mango", name: "مانگو (Mango)", slug: "mango" },
-  { id: "brand-bershka", name: "برشکا (Bershka)", slug: "bershka" },
-  { id: "brand-stradivarius", name: "استرادیواریوس (Stradivarius)", slug: "stradivarius" },
+  { id: "brand-gstar", name: "جی استار رو", slug: "g-star-raw" },
+  { id: "brand-adidas", name: "آدیداس", slug: "adidas" },
+  { id: "brand-zara", name: "زارا", slug: "zara" },
+  { id: "brand-mango", name: "مانگو", slug: "mango" },
+  { id: "brand-bershka", name: "برشکا", slug: "bershka" },
+  { id: "brand-stradivarius", name: "استرادیواریوس", slug: "stradivarius" },
 ];
 
 export const banners: Banner[] = [

@@ -329,7 +329,7 @@ export const mockInitialReturnRequests: ReturnRequest[] = [
         id: "tl-1028-3",
         type: "refund_processed",
         title: "مبلغ واریز شد",
-        description: "مبلغ ۸۹۰,۰۰۰ تومان با شماره پیگیری REF-9988221 واریز گردید.",
+        description: "مبلغ ۸۹۰،۰۰۰ تومان با شماره پیگیری REF-9988221 واریز گردید.",
         actor: "admin",
         actorName: "مدیر مالی",
         createdAt: daysAgo(0.5),

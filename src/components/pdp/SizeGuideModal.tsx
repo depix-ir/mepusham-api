@@ -20,11 +20,11 @@ export function SizeGuideModal({ isOpen, onClose, data }: SizeGuideModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-sm animate-fade-in"
       onClick={onClose}
     >
       <div
-        className="bg-background border border-border-product rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto flex flex-col p-5 sm:p-6 relative animate-scale-up"
+        className="bg-background border-0 sm:border border-border-product rounded-none sm:rounded-2xl shadow-xl w-full h-[100dvh] sm:h-auto sm:max-w-lg sm:max-h-[90vh] overflow-y-auto flex flex-col p-4 sm:p-6 relative animate-scale-up"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
