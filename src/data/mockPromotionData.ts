@@ -79,7 +79,7 @@ export const INITIAL_DISCOUNTS: ProductDiscount[] = [
   {
     id: "disc-bag-fixed",
     title: "تخفیف ویژه کیف و کفش",
-    description: "تخفیف ۳۰۰,۰۰۰ تومانی روی کیف‌های چرمی کژوال",
+    description: "تخفیف ۳۰۰،۰۰۰ تومانی روی کیف‌های چرمی کژوال",
     type: "fixed",
     value: 300000,
     productIds: ["prod-bag-01", "prod-bag-02", "prod-bag-05", "prod-bag-08"],
@@ -137,7 +137,7 @@ export const INITIAL_DISCOUNTS: ProductDiscount[] = [
   {
     id: "disc-welcome-unlimited",
     title: "تخفیف خوش‌آمدگویی مشتریان جدید",
-    description: "تخفیف ثابت ۱۵۰,۰۰۰ تومانی بدون محدودیت تعداد استفاده",
+    description: "تخفیف ثابت ۱۵۰،۰۰۰ تومانی بدون محدودیت تعداد استفاده",
     type: "fixed",
     value: 150000,
     productIds: [
@@ -160,7 +160,7 @@ export const INITIAL_FREE_SHIPPING_RULES: FreeShippingRule[] = [
   {
     id: "fs-store-wide",
     title: "ارسال رایگان سفارش‌های بالای ۱ میلیون تومان",
-    description: "ارسال رایگان سراسری برای تمامی خریدهای بالای ۱,۰۰۰,۰۰۰ تومان",
+    description: "ارسال رایگان سراسری برای تمامی خریدهای بالای ۱،۰۰۰،۰۰۰ تومان",
     scope: "store",
     minPurchaseAmount: 1000000,
     startsAt: thirtyDaysAgo,

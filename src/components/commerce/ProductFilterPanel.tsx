@@ -229,7 +229,7 @@ export function ProductFilterPanel({
             <span className="text-muted">تا:</span>
             <input
               type="text"
-              placeholder="مثلا ۳,۰۰۰,۰۰۰"
+              placeholder="مثلا ۳،۰۰۰،۰۰۰"
               value={filters.maxPrice ? Number(filters.maxPrice).toLocaleString("fa-IR") : ""}
               onChange={handleMaxPriceChange}
               className="w-full h-9 bg-surface-subtle border border-border-product rounded-lg px-2.5 text-xs text-foreground placeholder:text-muted focus:outline-none focus:border-primary transition-colors text-left dir-ltr"
