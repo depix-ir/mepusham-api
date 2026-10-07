@@ -40,7 +40,7 @@ export function CheckoutHeader({ currentStep = "shipping" }: CheckoutHeaderProps
   };
 
   return (
-    <header className="w-full bg-background border-b border-border-subtle py-4 transition-all">
+    <header className="w-full bg-background  py-4 transition-all">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between gap-4">
 

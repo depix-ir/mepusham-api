@@ -47,7 +47,7 @@ export function CategorySection({
                     sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
                     className="object-cover object-center group-hover:scale-108 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex items-end p-3 sm:p-4">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent flex items-end p-3 sm:p-4">
                     <span className="text-white text-sm sm:text-base font-bold drop-shadow-md">
                       {category.name}
                     </span>

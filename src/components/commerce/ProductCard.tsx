@@ -109,11 +109,11 @@ export function ProductCard({
           title={isLiked ? "حذف از پسندیده‌ها" : "افزودن به پسندیده‌ها"}
           className={`absolute top-2 left-2 z-10 p-1.5 rounded-full shadow-xs transition-all cursor-pointer flex items-center justify-center ${
             isLiked
-              ? "bg-white/95 backdrop-blur-xs text-rose-500 hover:bg-white hover:scale-110"
-              : "bg-white/80 backdrop-blur-xs text-neutral-400 hover:text-rose-500 hover:bg-white hover:scale-110"
+              ? " backdrop-blur-xs text-primary-500 hover:bg-white hover:scale-110"
+              : " backdrop-blur-xs text-primary-500 hover:text-primary hover:bg-white hover:scale-110"
           }`}
         >
-          <Heart size={16} fill={isLiked ? "currentColor" : "none"} className={isLiked ? "text-rose-500" : ""} />
+          <Heart size={16} fill={isLiked ? "currentColor" : "none"} className={isLiked ? "text-primary-500" : ""} />
         </button>
 
         {/* Discount Badge */}
