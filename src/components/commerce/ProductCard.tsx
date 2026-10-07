@@ -77,7 +77,7 @@ export function ProductCard({
       {/* Media / Image Container */}
       <Link
         href={`/products/${product.slug}`}
-        className="relative block w-full aspect-square bg-surface-subtle overflow-hidden"
+        className="relative block w-full aspect-[4/4.8] bg-surface-subtle overflow-hidden"
       >
         {/* Primary Image */}
         <Image

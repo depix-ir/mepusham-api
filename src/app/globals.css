@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @theme {
+
   /* =========================================================
      Typography
      ========================================================= */
@@ -10,43 +11,46 @@
 
 
   /* =========================================================
-     PRIMARY — Burgundy
-     Modern Women's Fashion
+     PRIMARY — Mango Inspired
+     Clean / Minimal / Fashion
      ========================================================= */
 
-  --color-primary-50: #fbf5f6;
-  --color-primary-100: #f5e8ea;
-  --color-primary-200: #ead1d5;
-  --color-primary-300: #d7aeb5;
-  --color-primary-400: #bc7f89;
-  --color-primary-500: #8c4b57;
+  --color-primary-50: #F7F7F5;
+  --color-primary-100: #EEEEEB;
+  --color-primary-200: #E2E2DE;
+  --color-primary-300: #D1D1CC;
+  --color-primary-400: #B8B8B1;
+  --color-primary-500: #8F8F88;
 
-  --color-primary: #5A2630;
-  --color-primary-hover: #471D25;
-  --color-primary-active: #35161C;
-  --color-primary-900: #261015;
-  --color-primary-foreground: #ffffff;
+  --color-primary: #111111;
+  --color-primary-hover: #2B2B2B;
+  --color-primary-active: #000000;
+  --color-primary-900: #000000;
+
+  --color-primary-foreground: #FFFFFF;
 
 
   /* =========================================================
      BACKGROUND & SURFACES
+     Warm Minimal Fashion
      ========================================================= */
 
-  --color-background: #FBF8F6;
-  --color-foreground: #21191B;
+  --color-background: #FAF9F7;
+  --color-foreground: #111111;
 
   --color-surface: #FFFFFF;
-  --color-surface-muted: #F5F0ED;
-  --color-surface-subtle: #EEE7E3;
+  --color-surface-muted: #F5F4F1;
+  --color-surface-subtle: #ECEBE7;
 
 
   /* =========================================================
-     SECONDARY — Dusty Rose / Warm Taupe
+     SECONDARY — Warm Taupe / Beige
      ========================================================= */
 
-  --color-secondary: #80696A;
-  --color-secondary-hover: #6E5859;
-  --color-secondary-active: #5C494A;
+  --color-secondary: #8A847B;
+  --color-secondary-hover: #716C65;
+  --color-secondary-active: #5D5953;
+
   --color-secondary-foreground: #FFFFFF;
 
 
@@ -54,27 +58,28 @@
      TEXT
      ========================================================= */
 
-  --color-muted: #76696A;
-  --color-muted-foreground: #625658;
+  --color-muted: #77736C;
+  --color-muted-foreground: #5E5A54;
 
 
   /* =========================================================
      BORDERS
      ========================================================= */
 
-  --color-border-product: #E8DEDC;
-  --color-border: #DED3D0;
-  --color-border-strong: #C8BAB7;
+  --color-border-product: #E7E5E0;
+  --color-border: #DCDAD5;
+  --color-border-strong: #C7C4BD;
 
 
   /* =========================================================
-     ACCENT — Champagne / Warm Gold
-     Use sparingly
+     ACCENT — Warm Beige / Camel
+     Use Sparingly
      ========================================================= */
 
-  --color-accent: #A8846A;
-  --color-accent-hover: #927256;
-  --color-accent-active: #795C44;
+  --color-accent: #B19A7A;
+  --color-accent-hover: #9C8567;
+  --color-accent-active: #806C52;
+
   --color-accent-foreground: #FFFFFF;
 
 
@@ -82,16 +87,16 @@
      SEMANTIC COLORS
      ========================================================= */
 
-  --color-success: #55705D;
+  --color-success: #52665A;
   --color-success-foreground: #FFFFFF;
 
-  --color-warning: #9A7445;
+  --color-warning: #9A8056;
   --color-warning-foreground: #FFFFFF;
 
-  --color-error: #9A3E48;
+  --color-error: #9A4A45;
   --color-error-foreground: #FFFFFF;
 
-  --color-info: #66707A;
+  --color-info: #687078;
   --color-info-foreground: #FFFFFF;
 
 
@@ -126,13 +131,14 @@
    =========================================================== */
 
 :root {
+
   /* ---------------------------------------------------------
      Brand
      --------------------------------------------------------- */
 
-  --primary: #5A2630;
-  --primary-hover: #471D25;
-  --primary-active: #35161C;
+  --primary: #111111;
+  --primary-hover: #2B2B2B;
+  --primary-active: #000000;
   --primary-foreground: #FFFFFF;
 
 
@@ -140,8 +146,8 @@
      Background
      --------------------------------------------------------- */
 
-  --background: #FBF8F6;
-  --foreground: #21191B;
+  --background: #FAF9F7;
+  --foreground: #111111;
 
 
   /* ---------------------------------------------------------
@@ -149,35 +155,35 @@
      --------------------------------------------------------- */
 
   --surface: #FFFFFF;
-  --surface-muted: #F5F0ED;
-  --surface-subtle: #EEE7E3;
+  --surface-muted: #F5F4F1;
+  --surface-subtle: #ECEBE7;
 
 
   /* ---------------------------------------------------------
      Borders
      --------------------------------------------------------- */
 
-  --border-product: #E8DEDC;
-  --border-default: #DED3D0;
-  --border-strong: #C8BAB7;
+  --border-product: #E7E5E0;
+  --border-default: #DCDAD5;
+  --border-strong: #C7C4BD;
 
 
   /* ---------------------------------------------------------
      Text
      --------------------------------------------------------- */
 
-  --text-primary: #21191B;
-  --text-secondary: #625658;
-  --text-muted: #8D8080;
+  --text-primary: #111111;
+  --text-secondary: #5E5A54;
+  --text-muted: #77736C;
 
 
   /* ---------------------------------------------------------
      Secondary
      --------------------------------------------------------- */
 
-  --secondary: #80696A;
-  --secondary-hover: #6E5859;
-  --secondary-active: #5C494A;
+  --secondary: #8A847B;
+  --secondary-hover: #716C65;
+  --secondary-active: #5D5953;
   --secondary-foreground: #FFFFFF;
 
 
@@ -185,9 +191,9 @@
      Accent
      --------------------------------------------------------- */
 
-  --accent: #A8846A;
-  --accent-hover: #927256;
-  --accent-active: #795C44;
+  --accent: #B19A7A;
+  --accent-hover: #9C8567;
+  --accent-active: #806C52;
   --accent-foreground: #FFFFFF;
 
 
@@ -195,10 +201,10 @@
      Semantic
      --------------------------------------------------------- */
 
-  --success: #55705D;
-  --warning: #9A7445;
-  --error: #9A3E48;
-  --info: #66707A;
+  --success: #52665A;
+  --warning: #9A8056;
+  --error: #9A4A45;
+  --info: #687078;
 
 
   /* ---------------------------------------------------------
@@ -217,17 +223,28 @@ html {
   direction: rtl;
   background-color: var(--background);
   color: var(--foreground);
+
   font-family: var(--font-peyda-family);
+
   -webkit-tap-highlight-color: transparent;
+
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
 
 body {
   margin: 0;
   padding: 0;
+
   background-color: var(--background);
   color: var(--foreground);
+
   font-family: var(--font-peyda-family);
+
   min-height: 100vh;
+
   display: flex;
   flex-direction: column;
 }
@@ -244,6 +261,7 @@ svg {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+
   -webkit-user-drag: none;
 }
 
@@ -259,4 +277,79 @@ svg {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+
+/* ===========================================================
+   SELECTION
+   =========================================================== */
+
+::selection {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+
+/* ===========================================================
+   FOCUS
+   =========================================================== */
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+
+/* ===========================================================
+   LINKS
+   =========================================================== */
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+
+/* ===========================================================
+   BUTTON RESET
+   =========================================================== */
+
+button {
+  font-family: inherit;
+}
+
+
+/* ===========================================================
+   FORM ELEMENTS
+   =========================================================== */
+
+input,
+textarea,
+select {
+  font-family: inherit;
+}
+
+
+/* ===========================================================
+   DISABLED STATES
+   =========================================================== */
+
+:disabled {
+  cursor: not-allowed;
+}
+
+
+/* ===========================================================
+   REDUCED MOTION
+   =========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

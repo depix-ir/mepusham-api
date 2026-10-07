@@ -43,7 +43,7 @@ export function SizeGuideModal({ isOpen, onClose, data }: SizeGuideModalProps) {
             type="button"
             onClick={onClose}
             aria-label="بستن"
-            className="w-8 h-8 rounded-full bg-surface-subtle hover:bg-border-product text-foreground flex items-center justify-center transition-colors cursor-pointer"
+            className="w-8 h-8 rounded-full  hover:bg-border-product text-foreground flex items-center justify-center transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>

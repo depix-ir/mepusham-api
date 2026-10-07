@@ -46,7 +46,7 @@ export function ProductCardSkeleton({
       className={`relative flex flex-col bg-background border border-border-product rounded-lg overflow-hidden h-full ${className}`.trim()}
     >
       {/* Media / Image Container (aspect-square mirroring ProductCard) */}
-      <div className="relative block w-full aspect-square bg-surface-subtle overflow-hidden animate-pulse">
+      <div className="relative block w-full aspect-[square] bg-surface-subtle overflow-hidden animate-pulse">
         {/* Wishlist Heart Icon Placeholder */}
         <div className="absolute top-2 left-2 z-10 w-7 h-7 rounded-full bg-surface-muted/80 backdrop-blur-xs" />
         {/* Discount Badge Placeholder */}
