@@ -1424,7 +1424,7 @@ export default function AdminProductsPage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-1 dir-rtl">
+            <div className="  ">
               <button
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={validPage === 1}
