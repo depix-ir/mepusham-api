@@ -35,7 +35,7 @@ export function ReturnsTable({ requests, isLoading, onRefresh }: ReturnsTablePro
           <AlertCircle className="w-6 h-6" />
         </div>
         <h3 className="text-base font-semibold text-foreground mb-1">
-          درخواستی برای مرجوعی یا تعویض یافت نشد
+          درخواستی برای مرجوعی یافت نشد
         </h3>
         <p className="text-xs text-muted-foreground max-w-sm mb-4">
           هیچ درخواستی مطابق با فیلترها و عبارت جستجوی انتخابی پیدا نشد.
@@ -64,7 +64,6 @@ export function ReturnsTable({ requests, isLoading, onRefresh }: ReturnsTablePro
                 <th className="px-4 py-3">شماره درخواست / تاریخ</th>
                 <th className="px-4 py-3">شماره سفارش</th>
                 <th className="px-4 py-3">مشتری</th>
-                <th className="px-4 py-3">نوع</th>
                 <th className="px-4 py-3">کالاهای درخواستی</th>
                 <th className="px-4 py-3">دلیل</th>
                 <th className="px-4 py-3">وضعیت</th>
@@ -112,10 +111,6 @@ export function ReturnsTable({ requests, isLoading, onRefresh }: ReturnsTablePro
                       </div>
                     </td>
 
-                    {/* Request Type */}
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <RequestTypeBadge type={req.type} />
-                    </td>
 
                     {/* Items */}
                     <td className="px-4 py-3 max-w-xs">
@@ -160,13 +155,7 @@ export function ReturnsTable({ requests, isLoading, onRefresh }: ReturnsTablePro
 
                     {/* Refund Amount */}
                     <td className="px-4 py-3 whitespace-nowrap font-semibold text-foreground">
-                      {req.type === "return" ? (
-                        formatToman(req.refund?.amount || 0)
-                      ) : (
-                        <span className="text-muted-foreground font-normal text-[11px]">
-                          تعویض پایاپای
-                        </span>
-                      )}
+                      {formatToman(req.refund?.amount || 0)}
                     </td>
 
                     {/* Action */}
@@ -261,9 +250,7 @@ export function ReturnsTable({ requests, isLoading, onRefresh }: ReturnsTablePro
                 <div className="text-right">
                   <span className="text-muted-foreground text-[11px] block">مبلغ:</span>
                   <span className="font-bold text-foreground">
-                    {req.type === "return"
-                      ? formatToman(req.refund?.amount || 0)
-                      : "تعویض پایاپای"}
+                    {formatToman(req.refund?.amount || 0)}
                   </span>
                 </div>
               </div>

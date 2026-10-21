@@ -145,7 +145,7 @@ export function AccountDashboard({
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5 sm:gap-2">
                     <h2 className="text-xs sm:text-base font-bold text-foreground group-hover:text-primary transition-colors truncate">
-                      مرجوعی‌ها و تعویض
+                      مرجوعی‌ها
                     </h2>
                     {returnCount > 0 && (
                       <span className="px-1.5 sm:px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] sm:text-[11px] font-bold shrink-0">

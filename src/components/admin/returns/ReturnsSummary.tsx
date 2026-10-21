@@ -9,28 +9,24 @@ interface ReturnsSummaryProps {
 
 export function ReturnsSummary({ requests }: ReturnsSummaryProps) {
   const totalCount = requests.length;
-  const returnCount = requests.filter((r) => r.type === "return").length;
-  const exchangeCount = requests.filter((r) => r.type === "exchange").length;
   const actionRequiredCount = requests.filter((r) => isActionRequiredByAdmin(r.status)).length;
   const completedCount = requests.filter(
-    (r) => r.status === "completed" || r.status === "refunded" || r.status === "replacement_shipped"
+    (r) => r.status === "completed" || r.status === "refunded"
   ).length;
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
       {/* Total Card */}
       <div className="bg-background border border-border rounded-lg p-3.5 flex flex-col justify-between">
         <div className="flex items-center justify-between text-muted-foreground text-xs font-medium">
-          <span>کل درخواست‌ها</span>
+          <span>کل درخواست‌های مرجوعی</span>
           <RotateCcw className="w-4 h-4 text-primary" />
         </div>
         <div className="mt-2 flex items-baseline justify-between">
           <span className="text-xl font-bold text-foreground">
             {totalCount.toLocaleString("fa-IR")}
           </span>
-          <span className="text-[11px] text-muted-foreground">
-            {returnCount} مرجوعی / {exchangeCount} تعویض
-          </span>
+          <span className="text-[11px] text-muted-foreground">درخواست</span>
         </div>
       </div>
 
@@ -48,38 +44,10 @@ export function ReturnsSummary({ requests }: ReturnsSummaryProps) {
         </div>
       </div>
 
-      {/* Returns Card */}
-      <div className="bg-background border border-border rounded-lg p-3.5 flex flex-col justify-between">
-        <div className="flex items-center justify-between text-muted-foreground text-xs font-medium">
-          <span>مرجوعی و بازپرداخت</span>
-          <RotateCcw className="w-4 h-4 text-blue-600" />
-        </div>
-        <div className="mt-2 flex items-baseline justify-between">
-          <span className="text-xl font-bold text-foreground">
-            {returnCount.toLocaleString("fa-IR")}
-          </span>
-          <span className="text-[11px] text-muted-foreground">درخواست</span>
-        </div>
-      </div>
-
-      {/* Exchange Card */}
-      <div className="bg-background border border-border rounded-lg p-3.5 flex flex-col justify-between">
-        <div className="flex items-center justify-between text-muted-foreground text-xs font-medium">
-          <span>تعویض کالا</span>
-          <RefreshCw className="w-4 h-4 text-indigo-600" />
-        </div>
-        <div className="mt-2 flex items-baseline justify-between">
-          <span className="text-xl font-bold text-foreground">
-            {exchangeCount.toLocaleString("fa-IR")}
-          </span>
-          <span className="text-[11px] text-muted-foreground">درخواست</span>
-        </div>
-      </div>
-
       {/* Completed Card */}
-      <div className="bg-background border border-border rounded-lg p-3.5 flex flex-col justify-between col-span-2 sm:col-span-1">
+      <div className="bg-background border border-border rounded-lg p-3.5 flex flex-col justify-between">
         <div className="flex items-center justify-between text-muted-foreground text-xs font-medium">
-          <span>تکمیل شده</span>
+          <span>تکمیل شده / بازپرداخت شده</span>
           <CheckCircle2 className="w-4 h-4 text-emerald-600" />
         </div>
         <div className="mt-2 flex items-baseline justify-between">

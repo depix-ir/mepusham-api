@@ -56,13 +56,6 @@ export function ReturnStatusBadge({ status }: ReturnStatusBadgeProps) {
 }
 
 export function RequestTypeBadge({ type }: { type: RequestType }) {
-  if (type === "exchange") {
-    return (
-      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
-        تعویض
-      </span>
-    );
-  }
   return (
     <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
       مرجوعی

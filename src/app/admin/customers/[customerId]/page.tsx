@@ -204,7 +204,7 @@ export default function AdminCustomerDetailPage() {
         {/* Returns Count */}
         <div className="p-4 rounded-2xl bg-surface border border-border shadow-2xs space-y-1">
           <div className="flex items-center justify-between text-amber-600">
-            <span className="text-[11px] font-medium text-muted-foreground">مرجوعی و تعویض</span>
+            <span className="text-[11px] font-medium text-muted-foreground">مرجوعی</span>
             <RotateCcw className="w-4 h-4" />
           </div>
           <span className="text-xl font-bold text-foreground block">{customer.returnsCount}</span>
@@ -312,12 +312,12 @@ export default function AdminCustomerDetailPage() {
         )}
       </div>
 
-      {/* Returns / Exchange Section */}
+      {/* Returns Section */}
       <div className="bg-surface border border-border rounded-2xl p-5 shadow-2xs space-y-4">
         <div className="flex items-center justify-between border-b border-border pb-3">
           <h2 className="text-sm font-bold text-foreground flex items-center gap-2">
             <RotateCcw className="w-4 h-4 text-amber-600" />
-            <span>درخواست‌های مرجوعی و تعویض ({returns.length})</span>
+            <span>درخواست‌های مرجوعی ({returns.length})</span>
           </h2>
 
           <Link
@@ -344,7 +344,7 @@ export default function AdminCustomerDetailPage() {
                     </span>
                   </div>
                   <span className="text-[11px] text-muted-foreground block">
-                    نوع: {r.type === "return" ? "مرجوعی" : "تعویض"} | وضعیت: {RETURN_STATUS_LABELS[r.status] || r.status}
+                    وضعیت: {RETURN_STATUS_LABELS[r.status] || r.status}
                   </span>
                 </div>
 
@@ -360,7 +360,7 @@ export default function AdminCustomerDetailPage() {
           </div>
         ) : (
           <p className="text-xs text-muted-foreground text-center py-4">
-            هیچ درخواست مرجوعی یا تعویضی برای این کاربر وجود ندارد.
+            هیچ درخواست مرجوعی برای این کاربر وجود ندارد.
           </p>
         )}
       </div>

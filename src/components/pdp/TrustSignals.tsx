@@ -22,7 +22,7 @@ export function TrustSignals() {
         <RotateCcw className="w-4 h-4 text-primary shrink-0" />
         <div className="flex flex-col">
           <span className="font-semibold text-foreground text-[11px] sm:text-xs">۷ روز بازگشت</span>
-          <span className="text-[10px] text-muted hidden sm:inline">تعویض و مرجوعی راحت</span>
+          <span className="text-[10px] text-muted hidden sm:inline">مرجوعی راحت</span>
         </div>
       </div>
     </div>

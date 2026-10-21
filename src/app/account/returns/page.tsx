@@ -103,8 +103,8 @@ export default function CustomerReturnsListPage() {
       <Container className="max-w-3xl space-y-6">
         {/* Header */}
         <AccountPageHeader
-          title="درخواست‌های مرجوعی و تعویض"
-          description="مدیریت و پیگیری وضعیت درخواست‌ها"
+          title="درخواست‌های مرجوعی"
+          description="مدیریت و پیگیری وضعیت درخواست‌های مرجوعی"
           icon={RotateCcw}
           backUrl={routes.account.root}
           backLabel="بازگشت به حساب کاربری"
@@ -158,12 +158,8 @@ export default function CustomerReturnsListPage() {
                         </div>
 
                         <div className="flex items-center gap-2">
-                          <span
-                            className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${
-                              req.type === "return" ? "bg-primary/10 text-primary border-primary/20" : "bg-purple-500/10 text-purple-700 border-purple-500/20"
-                            }`}
-                          >
-                            {req.type === "return" ? "مرجوعی کالا" : "تعویض کالا"}
+                          <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full border bg-primary/10 text-primary border-primary/20">
+                            مرجوعی کالا
                           </span>
 
                           <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${getStatusBadgeClass(req.status)}`}>
@@ -200,17 +196,11 @@ export default function CustomerReturnsListPage() {
 
                       {/* Card Footer */}
                       <div className="flex items-center justify-between pt-3 text-xs">
-                        {req.type === "return" ? (
-                          <div className="flex items-center gap-1">
-                            <span className="text-muted-foreground">مبلغ استرداد:</span>
-                            <span className="font-bold text-primary">{formatPrice(req.refund?.amount || 0)}</span>
-                            <TomanIcon className="w-3.5 h-3.5 text-primary" />
-                          </div>
-                        ) : (
-                          <div className="text-muted-foreground text-[11px]">
-                            جایگزین: <strong className="text-foreground">{req.exchange?.replacementVariantDisplay || "تنوع جدید"}</strong>
-                          </div>
-                        )}
+                        <div className="flex items-center gap-1">
+                          <span className="text-muted-foreground">مبلغ استرداد:</span>
+                          <span className="font-bold text-primary">{formatPrice(req.refund?.amount || 0)}</span>
+                          <TomanIcon className="w-3.5 h-3.5 text-primary" />
+                        </div>
 
                         <Link
                           href={routes.account.returns.detail(req.id)}

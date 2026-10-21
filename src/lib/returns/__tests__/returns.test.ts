@@ -2,7 +2,6 @@ import { describe, test, expect } from "bun:test";
 import {
   isWithinReturnWindow,
   checkItemEligibility,
-  validateExchangeVariant,
 } from "../eligibility";
 import {
   isValidStateTransition,
@@ -10,7 +9,6 @@ import {
 import { getReturnPolicy } from "../policy";
 import { ReturnRequest } from "@/types/return";
 import { OrderItem } from "@/types/account";
-import { Product } from "@/types/product";
 
 describe("Return Window Enforcement (2 Days / 48 Hours)", () => {
   test("Order delivered 1 day ago is within return window", () => {
@@ -142,63 +140,6 @@ describe("State Machine Transition Validation", () => {
   });
 });
 
-describe("Exchange Variant Selection Validation", () => {
-  const mockProduct: Product = {
-    id: "prod-shoe",
-    slug: "leather-shoe",
-    title: "کفش چرم",
-    category: { id: "cat-1", name: "کفش", slug: "shoes" },
-    images: [{ id: "img-1", url: "/images/shoes-1.webp", sortOrder: 0 }],
-    options: [
-      {
-        id: "opt-size",
-        name: "سایز",
-        type: "size",
-        required: true,
-        sortOrder: 1,
-        values: [
-          { id: "val-38", label: "38", value: "38", sortOrder: 1 },
-          { id: "val-39", label: "39", value: "39", sortOrder: 2 },
-        ],
-      },
-    ],
-    variants: [
-      {
-        id: "v-38",
-        sku: "SHO-38",
-        optionValues: [{ optionId: "opt-size", valueId: "val-38" }],
-        pricing: { price: 1500000 },
-        inventory: { stock: 0, trackStock: true }, // Out of stock
-        status: "active",
-      },
-      {
-        id: "v-39",
-        sku: "SHO-39",
-        optionValues: [{ optionId: "opt-size", valueId: "val-39" }],
-        pricing: { price: 1500000 },
-        inventory: { stock: 5, trackStock: true }, // In stock
-        status: "active",
-      },
-    ],
-    pricing: { minPrice: 1500000, hasDiscount: false },
-    inventory: { totalStock: 5, trackStock: true, hasAvailableVariants: true },
-    status: "active",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
-
-  test("Approves active variant in stock for exchange", () => {
-    const res = validateExchangeVariant(mockProduct, "v-39");
-    expect(res.isValid).toBe(true);
-    expect(res.variant?.id).toBe("v-39");
-  });
-
-  test("Rejects out of stock variant with clear Persian message", () => {
-    const res = validateExchangeVariant(mockProduct, "v-38");
-    expect(res.isValid).toBe(false);
-    expect(res.reason).toBe("این گزینه در حال حاضر موجود نیست.");
-  });
-});
 
 describe("Return Reason Policy Configuration", () => {
   test("Merchant pays shipping for damaged goods", () => {

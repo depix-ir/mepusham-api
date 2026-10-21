@@ -113,10 +113,10 @@ function AdminReturnsContent() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
         <div>
           <h1 className="text-xl md:text-2xl font-black text-foreground tracking-tight">
-            <span>مرجوعی و تعویض کالا</span>
+            <span>مرجوعی کالا</span>
           </h1>
           <p className="text-xs text-muted-foreground mt-1">
-            مدیریت درخواست‌های مرجوعی، تعویض و بازپرداخت سفارش‌ها
+            مدیریت درخواست‌های مرجوعی و بازپرداخت سفارش‌ها
           </p>
         </div>
 

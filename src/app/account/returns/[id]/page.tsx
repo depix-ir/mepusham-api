@@ -139,9 +139,9 @@ export default function ReturnDetailPage({
 
         {/* Page Header Component */}
         <AccountPageHeader
-          title={`درخواست ${request.type === "return" ? "مرجوعی" : "تعویض"} #${request.requestNumber}`}
+          title={`درخواست مرجوعی #${request.requestNumber}`}
           description={`ثبت شده برای سفارش #${request.orderNumber} در ${new Date(request.createdAt).toLocaleDateString("fa-IR")}`}
-          icon={request.type === "return" ? RotateCcw : RefreshCw}
+          icon={RotateCcw}
           backUrl="/account/returns"
           backLabel="بازگشت به درخواست‌ها"
           badgeText={RETURN_STATUS_LABELS[request.status] || request.status}
@@ -184,7 +184,7 @@ export default function ReturnDetailPage({
 
           {/* Items Section */}
           <div className="space-y-3">
-            <h2 className="text-xs font-bold text-foreground">کالاهای مرجوعی / تعویضی</h2>
+            <h2 className="text-xs font-bold text-foreground">کالاهای مرجوعی</h2>
             <div className="bg-surface-subtle/60 rounded-xl p-3 divide-y divide-border-subtle">
               {request.items.map((item) => (
                 <div key={item.id} className="py-3 first:pt-0 last:pb-0 flex items-center gap-3">
@@ -210,45 +210,28 @@ export default function ReturnDetailPage({
             </div>
           </div>
 
-          {/* Financial or Replacement Details */}
-          {request.type === "return" ? (
-            <div className="bg-surface-subtle/50 rounded-xl p-4 space-y-2 text-xs">
-              <div className="flex justify-between text-muted-foreground">
-                <span>مبلغ استرداد کالا</span>
-                <div className="flex items-center gap-1 font-bold text-foreground">
-                  <span>{formatPrice(request.refund?.amount || 0)}</span>
-                  <TomanIcon className="w-3 h-3 text-muted-foreground" />
-                </div>
+          {/* Financial Refund Details */}
+          <div className="bg-surface-subtle/50 rounded-xl p-4 space-y-2 text-xs">
+            <div className="flex justify-between text-muted-foreground">
+              <span>مبلغ استرداد کالا</span>
+              <div className="flex items-center gap-1 font-bold text-foreground">
+                <span>{formatPrice(request.refund?.amount || 0)}</span>
+                <TomanIcon className="w-3 h-3 text-muted-foreground" />
               </div>
-              <div className="flex justify-between text-muted-foreground">
-                <span>وضعیت بازپرداخت</span>
-                <span className="font-bold text-foreground">
-                  {request.refund?.status === "completed" ? "واریز شده به حساب" : "در حال پردازش مالی"}
-                </span>
-              </div>
-              {request.refund?.referenceId && (
-                <div className="flex justify-between text-muted-foreground text-[11px]">
-                  <span>شماره پیگیری واریز:</span>
-                  <span className="font-mono font-bold text-foreground" dir="ltr">{request.refund.referenceId}</span>
-                </div>
-              )}
             </div>
-          ) : (
-            <div className="bg-purple-500/5 border border-purple-500/20 rounded-xl p-4 space-y-2 text-xs">
-              <div className="flex justify-between text-muted-foreground">
-                <span>تنوع جایگزین درخواستی:</span>
-                <span className="font-bold text-purple-700">{request.exchange?.replacementVariantDisplay || "تنوع جدید"}</span>
-              </div>
-              {request.exchange?.replacementShipment?.trackingCode && (
-                <div className="flex justify-between text-muted-foreground pt-1 border-t border-purple-200">
-                  <span>کد رهگیری ارسال کالای جایگزین:</span>
-                  <span className="font-mono font-bold text-purple-700" dir="ltr">
-                    {request.exchange.replacementShipment.trackingCode}
-                  </span>
-                </div>
-              )}
+            <div className="flex justify-between text-muted-foreground">
+              <span>وضعیت بازپرداخت</span>
+              <span className="font-bold text-foreground">
+                {request.refund?.status === "completed" ? "واریز شده به حساب" : "در حال پردازش مالی"}
+              </span>
             </div>
-          )}
+            {request.refund?.referenceId && (
+              <div className="flex justify-between text-muted-foreground text-[11px]">
+                <span>شماره پیگیری واریز:</span>
+                <span className="font-mono font-bold text-foreground" dir="ltr">{request.refund.referenceId}</span>
+              </div>
+            )}
+          </div>
 
           {/* Request Timeline */}
           <div className="space-y-3 pt-2">

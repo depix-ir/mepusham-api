@@ -1,10 +1,6 @@
-import {
-  ReturnRequestStatus,
-  ExchangeRequestStatus,
-  RequestType,
-} from "@/types/return";
+import { ReturnRequestStatus, RequestType } from "@/types/return";
 
-export type AnyRequestStatus = ReturnRequestStatus | ExchangeRequestStatus;
+export type AnyRequestStatus = ReturnRequestStatus;
 
 export const VALID_RETURN_TRANSITIONS: Record<
   ReturnRequestStatus,
@@ -26,26 +22,6 @@ export const VALID_RETURN_TRANSITIONS: Record<
   cancelled: [],
 };
 
-export const VALID_EXCHANGE_TRANSITIONS: Record<
-  ExchangeRequestStatus,
-  ExchangeRequestStatus[]
-> = {
-  requested: ["under_review", "approved", "rejected", "cancelled"],
-  under_review: ["approved", "rejected", "cancelled"],
-  approved: ["awaiting_customer_shipment", "in_transit", "received", "cancelled"],
-  rejected: [],
-  awaiting_customer_shipment: ["in_transit", "received", "cancelled"],
-  in_transit: ["received", "cancelled"],
-  received: ["inspection"],
-  inspection: ["inspection_approved", "inspection_rejected"],
-  inspection_approved: ["replacement_pending", "replacement_shipped"],
-  inspection_rejected: ["completed", "rejected"],
-  replacement_pending: ["replacement_shipped", "completed"],
-  replacement_shipped: ["completed"],
-  completed: [],
-  cancelled: [],
-};
-
 /**
  * Validates if a state transition from `fromStatus` to `toStatus` is allowed.
  */
@@ -56,13 +32,8 @@ export function isValidStateTransition(
 ): boolean {
   if (fromStatus === toStatus) return true;
 
-  if (type === "return") {
-    const allowed = VALID_RETURN_TRANSITIONS[fromStatus as ReturnRequestStatus];
-    return allowed ? allowed.includes(toStatus as ReturnRequestStatus) : false;
-  } else {
-    const allowed = VALID_EXCHANGE_TRANSITIONS[fromStatus as ExchangeRequestStatus];
-    return allowed ? allowed.includes(toStatus as ExchangeRequestStatus) : false;
-  }
+  const allowed = VALID_RETURN_TRANSITIONS[fromStatus];
+  return allowed ? allowed.includes(toStatus) : false;
 }
 
 /**
@@ -72,11 +43,7 @@ export function getAllowedNextStatuses(
   type: RequestType,
   currentStatus: AnyRequestStatus
 ): AnyRequestStatus[] {
-  if (type === "return") {
-    return VALID_RETURN_TRANSITIONS[currentStatus as ReturnRequestStatus] || [];
-  } else {
-    return VALID_EXCHANGE_TRANSITIONS[currentStatus as ExchangeRequestStatus] || [];
-  }
+  return VALID_RETURN_TRANSITIONS[currentStatus] || [];
 }
 
 /**
@@ -90,7 +57,6 @@ export function isActionRequiredByAdmin(status: AnyRequestStatus): boolean {
     "inspection",
     "inspection_approved",
     "refund_pending",
-    "replacement_pending",
   ].includes(status);
 }
 
