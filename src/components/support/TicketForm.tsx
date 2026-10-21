@@ -94,7 +94,7 @@ export function TicketForm({ orders, onCancel, onSubmit }: TicketFormProps) {
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
           error={errors.subject}
-          placeholder="مثلاً: سوال درباره زمان ارسال یا تعویض سایز"
+          placeholder="مثلاً: سوال درباره زمان ارسال یا مرجوعی"
           autoFocus
         />
 

@@ -102,7 +102,7 @@ export function RejectModal({ isOpen, onClose, onConfirm, isSubmitting }: Reject
       <div className="bg-background border border-border rounded-lg max-w-md w-full p-5 space-y-4 shadow-xl">
         <div className="flex items-center gap-2.5 text-rose-600 font-bold text-base border-b border-border pb-3">
           <AlertTriangle className=" shrink-0" />
-          <h3>رد درخواست مرجوعی / تعویض</h3>
+          <h3>رد درخواست مرجوعی</h3>
         </div>
 
         <p className="text-xs text-muted-foreground leading-relaxed">

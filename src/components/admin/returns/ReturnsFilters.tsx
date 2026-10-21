@@ -31,38 +31,9 @@ export function ReturnsFilters({
     <div className="bg-background border border-border rounded-lg p-4 mb-5 space-y-4">
       {/* Top Bar: Tabs & Search Input */}
       <div className="flex flex-col md:flex-row gap-3 md:items-center justify-between">
-        {/* Navigation Tabs */}
-        <div className="flex items-center gap-1 p-1 bg-surface-subtle border border-border rounded-lg text-xs font-medium self-start md:self-auto overflow-x-auto max-w-full">
-          <button
-            onClick={() => handleTabClick("all")}
-            className={`px-3 py-1.5 rounded-md whitespace-nowrap transition-colors ${
-              activeTab === "all"
-                ? "bg-background text-foreground font-semibold shadow-xs"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            همه درخواست‌ها
-          </button>
-          <button
-            onClick={() => handleTabClick("return")}
-            className={`px-3 py-1.5 rounded-md whitespace-nowrap transition-colors ${
-              activeTab === "return"
-                ? "bg-primary text-primary-foreground font-semibold shadow-xs"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            مرجوعی و بازپرداخت
-          </button>
-          <button
-            onClick={() => handleTabClick("exchange")}
-            className={`px-3 py-1.5 rounded-md whitespace-nowrap transition-colors ${
-              activeTab === "exchange"
-                ? "bg-indigo-600 text-white font-semibold shadow-xs"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            تعویض کالا
-          </button>
+        {/* Title Indicator */}
+        <div className="flex items-center gap-2 text-xs font-bold text-foreground">
+          <span>لیست درخواست‌های مرجوعی</span>
         </div>
 
         {/* Abstraction Search Service Bar */}

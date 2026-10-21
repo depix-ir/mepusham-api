@@ -3,7 +3,6 @@ export type SupportCategory =
   | "shipping"
   | "payment"
   | "return"
-  | "exchange"
   | "product"
   | "account"
   | "complaint"
@@ -72,7 +71,6 @@ export interface SupportTicket {
   orderId?: string;
   orderNumber?: string;
   returnId?: string;
-  exchangeId?: string;
   productId?: string;
   productTitle?: string;
 
@@ -104,7 +102,6 @@ export const supportCategoryLabels: Record<SupportCategory, string> = {
   shipping: "پیگیری ارسال",
   payment: "پرداخت",
   return: "مرجوعی",
-  exchange: "تعویض",
   product: "محصول",
   account: "حساب کاربری",
   complaint: "شکایت",

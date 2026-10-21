@@ -8,13 +8,11 @@ import {
   InspectionResult,
   ReturnTimelineEvent,
   Refund,
-  ExchangeDetails,
 } from "@/types/return";
 import { getReturnPolicy } from "./policy";
 import {
   checkOrderEligibility,
   checkItemEligibility,
-  validateExchangeVariant,
 } from "./eligibility";
 import { isValidStateTransition, isActionRequiredByAdmin } from "./stateMachine";
 import { mockInitialReturnRequests } from "@/data/mockReturnData";
@@ -91,7 +89,7 @@ export class ReturnService {
         const matchesId = r.id.toLowerCase().includes(query) || r.requestNumber.toLowerCase().includes(query);
         const matchesOrder = r.orderId.toLowerCase().includes(query) || r.orderNumber.toLowerCase().includes(query);
         const matchesCustomer = r.customerName.toLowerCase().includes(query) || r.customerPhone.includes(query);
-        const matchesTracking = r.shipment?.trackingCode?.toLowerCase().includes(query) || r.exchange?.replacementShipment?.trackingCode?.toLowerCase().includes(query);
+        const matchesTracking = r.shipment?.trackingCode?.toLowerCase().includes(query);
         const matchesItem = r.items.some(
           (item) =>
             item.productTitle.toLowerCase().includes(query) ||
@@ -303,150 +301,6 @@ export class ReturnService {
     return newRequest;
   }
 
-  /* ================= CREATE EXCHANGE REQUEST ================= */
-
-  createExchangeRequest(params: {
-    order: Order;
-    orderItemId: string;
-    replacementProductId: string;
-    replacementVariantId: string;
-    replacementVariantDisplay?: string;
-    quantity: number;
-    reason: ReturnReason;
-    customerNote?: string;
-    evidence?: string[];
-    productsCatalog: Product[];
-  }): ReturnRequest {
-    const allRequests = this.loadAllRequests();
-
-    // 1. Order Eligibility
-    const eligibility = checkOrderEligibility(params.order, allRequests);
-    if (!eligibility.isEligible) {
-      throw new Error(eligibility.reason || "این سفارش واجد شرایط تعویض نیست.");
-    }
-
-    // 2. Order Item Eligibility
-    const orderItem = params.order.items.find((i) => i.id === params.orderItemId);
-    if (!orderItem) {
-      throw new Error("کالای مورد نظر در سفارش یافت نشد.");
-    }
-
-    const itemElig = checkItemEligibility(orderItem, allRequests);
-    if (params.quantity > itemElig.returnableQuantity) {
-      throw new Error(
-        `تعداد درخواستی (${params.quantity}) بیش از تعداد قابل تعویض (${itemElig.returnableQuantity}) است.`
-      );
-    }
-
-    // 3. Exchange Variant Validation & Price Difference Calculation
-    const targetProduct = params.productsCatalog.find((p) => p.id === params.replacementProductId);
-    if (!targetProduct) {
-      throw new Error("محصول مقصد برای تعویض یافت نشد.");
-    }
-
-    const targetVariant = targetProduct.variants.find((v) => v.id === params.replacementVariantId);
-    if (!targetVariant && targetProduct.variants.length > 0) {
-      throw new Error("تنوع انتخابی یافت نشد.");
-    }
-
-    const variantValidation = validateExchangeVariant(targetProduct, params.replacementVariantId);
-    if (!variantValidation.isValid) {
-      throw new Error(variantValidation.reason || "تنوع مقصد انتخاب‌شده قابل تعویض نیست.");
-    }
-
-    const replacementPrice = targetVariant ? targetVariant.pricing.price : targetProduct.pricing.minPrice;
-    const originalUnitPrice = orderItem.finalUnitPrice;
-
-    // Price difference per item * quantity
-    // Positive = customer pays extra, Negative = merchant refunds difference
-    const priceDifference = (replacementPrice - originalUnitPrice) * params.quantity;
-
-    const policy = getReturnPolicy(params.reason);
-    const nowIso = new Date().toISOString();
-
-    const count = allRequests.length + 1020;
-    const reqNum = `EXC-${count}`;
-    const reqId = `exc-${count}`;
-
-    const storeReturnAddr = storeSettingsService.getDefaultReturnAddress();
-
-    const returnItem: ReturnItem = {
-      id: `exc-item-${Date.now()}`,
-      orderItemId: orderItem.id,
-      productId: orderItem.productId,
-      productTitle: orderItem.title,
-      productImage: orderItem.image,
-      variantDisplay: orderItem.variant
-        ? `${orderItem.variant.color || ""} ${orderItem.variant.size || ""}`.trim()
-        : undefined,
-      quantity: params.quantity,
-      purchasedUnitPrice: orderItem.finalUnitPrice,
-      reason: params.reason,
-      customerNote: params.customerNote,
-      evidence: params.evidence,
-      refundAmount: priceDifference < 0 ? Math.abs(priceDifference) : 0,
-    };
-
-    const newRequest: ReturnRequest = {
-      id: reqId,
-      requestNumber: reqNum,
-      type: "exchange",
-      orderId: params.order.id,
-      orderNumber: params.order.orderNumber,
-      orderCreatedAt: params.order.createdAt,
-      customerId: params.order.shippingAddress.phone,
-      customerName: params.order.shippingAddress.recipientName,
-      customerPhone: params.order.shippingAddress.phone,
-      status: "requested",
-      requestedAt: nowIso,
-      reason: params.reason,
-      customerNote: params.customerNote,
-      items: [returnItem],
-      shipment: {
-        status: "not_started",
-        payer: policy.customerPaysReturnShipping ? "customer" : "merchant",
-        shippingCostAmount: 0,
-      },
-      exchange: {
-        originalVariantId: orderItem.id,
-        originalVariantDisplay: returnItem.variantDisplay,
-        replacementProductId: params.replacementProductId,
-        replacementVariantId: params.replacementVariantId,
-        replacementVariantDisplay: params.replacementVariantDisplay,
-        replacementProductTitle: targetProduct.title,
-        replacementUnitPrice: replacementPrice,
-        originalUnitPrice: originalUnitPrice,
-        priceDifference: priceDifference,
-      },
-      timeline: [
-        {
-          id: `tl-${Date.now()}-1`,
-          type: "created",
-          title: "درخواست تعویض ثبت شد",
-          description: `درخواست تعویض سایز/رنگ کالا ثبت گردید.`,
-          actor: "customer",
-          actorName: params.order.shippingAddress.recipientName,
-          createdAt: nowIso,
-        },
-      ],
-      storeReturnAddress: storeReturnAddr ? {
-        recipientName: storeReturnAddr.recipientName,
-        phone: storeReturnAddr.phone,
-        province: storeReturnAddr.province,
-        city: storeReturnAddr.city,
-        address: storeReturnAddr.address,
-        plaque: storeReturnAddr.plaque,
-        floor: storeReturnAddr.floor,
-        postalCode: storeReturnAddr.postalCode,
-      } : undefined,
-      createdAt: nowIso,
-      updatedAt: nowIso,
-    };
-
-    const updatedRequests = [newRequest, ...allRequests];
-    this.persistRequests(updatedRequests);
-    return newRequest;
-  }
 
   /* ================= APPROVE REQUEST ================= */
 
@@ -747,50 +601,6 @@ export class ReturnService {
     });
   }
 
-  /* ================= SHIP REPLACEMENT (EXCHANGE) ================= */
-
-  shipReplacement(
-    id: string,
-    trackingCode: string,
-    carrierName = "پست پیشتاز",
-    actorName = "مدیر انبار"
-  ): ReturnRequest {
-    return this.updateRequest(id, (req) => {
-      if (req.type !== "exchange") {
-        throw new Error("عملیات ارسال کالای جایگزین فقط برای درخواست‌های تعویض معتبر است.");
-      }
-
-      const nowIso = new Date().toISOString();
-      const newTimeline: ReturnTimelineEvent = {
-        id: `tl-${Date.now()}`,
-        type: "replacement_shipped",
-        title: "کالای جایگزین ارسال شد",
-        description: `کالای جایگزین با کد رهگیری ${trackingCode} ارسال گردید.`,
-        actor: "admin",
-        actorName,
-        createdAt: nowIso,
-      };
-
-      const updatedExchange: ExchangeDetails = {
-        ...req.exchange!,
-        replacementShipment: {
-          status: "shipped",
-          trackingCode,
-          carrierName,
-          shippedAt: nowIso,
-        },
-      };
-
-      return {
-        ...req,
-        status: "replacement_shipped" as const,
-        completedAt: nowIso,
-        exchange: updatedExchange,
-        timeline: [...req.timeline, newTimeline],
-        updatedAt: nowIso,
-      };
-    });
-  }
 
   /* ================= CANCEL REQUEST ================= */
 

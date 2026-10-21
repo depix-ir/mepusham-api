@@ -55,7 +55,6 @@ export default function OrderCreateReturnPage({
   const { isAuthLoading, isAuthenticated } = useAuth();
 
   const [order, setOrder] = useState<Order | null>(null);
-  const [requestType, setRequestType] = useState<"return" | "exchange">("return");
   const [selectedReason, setSelectedReason] = useState<ReturnReason>("size_issue");
   const [customerNote, setCustomerNote] = useState<string>("");
 
@@ -63,10 +62,6 @@ export default function OrderCreateReturnPage({
   const [itemSelections, setItemSelections] = useState<
     Record<string, { selected: boolean; quantity: number }>
   >({});
-
-  // Exchange selection state (for exchange mode)
-  const [selectedExchangeItemId, setSelectedExchangeItemId] = useState<string>("");
-  const [replacementVariantId, setReplacementVariantId] = useState<string>("");
 
   // Evidence links state
   const [evidenceInput, setEvidenceInput] = useState<string>("");
@@ -93,9 +88,6 @@ export default function OrderCreateReturnPage({
 
         setItemSelections(initialMap);
 
-        if (found.items.length > 0) {
-          setSelectedExchangeItemId(found.items[0].id);
-        }
       }
     }
   }, [resolvedParams.orderId]);
@@ -224,90 +216,35 @@ export default function OrderCreateReturnPage({
     return sum + item.finalUnitPrice * qty;
   }, 0);
 
-  /* Exchange target product & variants selection helper */
-  const selectedExchangeItem = order.items.find((i) => i.id === selectedExchangeItemId);
-  const catalogProducts = catalogRepository.getProducts();
-  const exchangeTargetProduct = selectedExchangeItem
-    ? catalogProducts.find((p) => p.id === selectedExchangeItem.productId)
-    : undefined;
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
       setIsSubmitting(true);
 
-      if (requestType === "return") {
-        if (selectedItemsList.length === 0) {
-          showToast("لطفاً حداقل یک کالا را برای مرجوعی انتخاب کنید.", "error");
-          setIsSubmitting(false);
-          return;
-        }
-
-        const itemsPayload = selectedItemsList.map((item) => ({
-          orderItemId: item.id,
-          quantity: itemSelections[item.id].quantity,
-          reason: selectedReason,
-          customerNote,
-          evidence: evidenceList.length > 0 ? evidenceList : undefined,
-        }));
-
-        const newReq = returnService.createReturnRequest({
-          order,
-          items: itemsPayload,
-          reason: selectedReason,
-          customerNote,
-        });
-
-        showToast("درخواست مرجوعی با موفقیت ثبت شد.", "success");
-        router.push(routes.account.returns.detail(newReq.id));
-      } else {
-        // Exchange Request
-        if (!selectedExchangeItemId) {
-          showToast("لطفاً کالای موردنظر جهت تعویض را انتخاب کنید.", "error");
-          setIsSubmitting(false);
-          return;
-        }
-
-        if (!exchangeTargetProduct) {
-          showToast("محصول مقصد برای تعویض یافت نشد.", "error");
-          setIsSubmitting(false);
-          return;
-        }
-
-        if (!replacementVariantId) {
-          showToast("لطفاً تنوع (سایز/رنگ) جایگزین درخواستی را انتخاب کنید.", "error");
-          setIsSubmitting(false);
-          return;
-        }
-
-        const targetVariant = exchangeTargetProduct.variants.find((v) => v.id === replacementVariantId);
-        const variantDisplay = targetVariant
-          ? targetVariant.optionValues
-              .map((ov) => {
-                const opt = exchangeTargetProduct.options.find((o) => o.id === ov.optionId);
-                const val = opt?.values.find((v) => v.id === ov.valueId);
-                return val?.label || ov.valueId;
-              })
-              .join(" / ")
-          : "تنوع جدید";
-
-        const newReq = returnService.createExchangeRequest({
-          order,
-          orderItemId: selectedExchangeItemId,
-          replacementProductId: exchangeTargetProduct.id,
-          replacementVariantId,
-          replacementVariantDisplay: variantDisplay,
-          quantity: itemSelections[selectedExchangeItemId]?.quantity || 1,
-          reason: selectedReason,
-          customerNote,
-          evidence: evidenceList.length > 0 ? evidenceList : undefined,
-          productsCatalog: catalogProducts,
-        });
-
-        showToast("درخواست تعویض با موفقیت ثبت شد.", "success");
-        router.push(routes.account.returns.detail(newReq.id));
+      if (selectedItemsList.length === 0) {
+        showToast("لطفاً حداقل یک کالا را برای مرجوعی انتخاب کنید.", "error");
+        setIsSubmitting(false);
+        return;
       }
+
+      const itemsPayload = selectedItemsList.map((item) => ({
+        orderItemId: item.id,
+        quantity: itemSelections[item.id].quantity,
+        reason: selectedReason,
+        customerNote,
+        evidence: evidenceList.length > 0 ? evidenceList : undefined,
+      }));
+
+      const newReq = returnService.createReturnRequest({
+        order,
+        items: itemsPayload,
+        reason: selectedReason,
+        customerNote,
+      });
+
+      showToast("درخواست مرجوعی با موفقیت ثبت شد.", "success");
+      router.push(routes.account.returns.detail(newReq.id));
     } catch (err: any) {
       showToast(err.message || "خطا در ثبت درخواست.", "error");
     } finally {
@@ -336,12 +273,12 @@ export default function OrderCreateReturnPage({
             #{order.orderNumber}
           </Link>
           <ChevronLeft className="w-3.5 h-3.5 rtl:rotate-180" />
-          <span className="text-foreground font-bold">ثبت مرجوعی / تعویض</span>
+          <span className="text-foreground font-bold">ثبت مرجوعی</span>
         </nav>
 
         {/* Page Header */}
         <AccountPageHeader
-          title={`ثبت درخواست مرجوعی / تعویض سفارش #${order.orderNumber}`}
+          title={`ثبت درخواست مرجوعی سفارش #${order.orderNumber}`}
           description="لطفاً کالاهای موردنظر و علت درخواست را مشخص کنید."
           icon={RotateCcw}
           backUrl={routes.account.orders.detail(order.id)}
@@ -349,35 +286,6 @@ export default function OrderCreateReturnPage({
         />
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Request Type Selector Tabs */}
-          <div className="bg-surface-subtle/70 p-1.5 rounded-2xl flex gap-1.5 border border-border-subtle">
-            <button
-              type="button"
-              onClick={() => setRequestType("return")}
-              className={`flex-1 py-3 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
-                requestType === "return"
-                  ? "bg-background text-primary shadow-xs border border-border-subtle"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <RotateCcw className="w-4 h-4 text-primary" />
-              <span>مرجوعی کالا (بازگشت وجه)</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setRequestType("exchange")}
-              className={`flex-1 py-3 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
-                requestType === "exchange"
-                  ? "bg-background text-purple-700 shadow-xs border border-border-subtle"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <RefreshCw className="w-4 h-4 text-purple-600" />
-              <span>تعویض کالا (تغییر سایز / رنگ)</span>
-            </button>
-          </div>
-
           {/* Items Selection Card */}
           <div className="bg-background border border-border rounded-2xl p-4 sm:p-5 space-y-4 shadow-2xs">
             <h2 className="text-xs sm:text-sm font-bold text-foreground flex items-center gap-2">
@@ -410,25 +318,12 @@ export default function OrderCreateReturnPage({
                 return (
                   <div key={item.id} className="py-3.5 first:pt-0 last:pb-0 space-y-3">
                     <div className="flex items-start gap-3">
-                      {requestType === "return" ? (
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={() => toggleItemSelection(item.id)}
-                          className="mt-1.5 w-4 h-4 rounded border-border text-primary focus:ring-primary cursor-pointer"
-                        />
-                      ) : (
-                        <input
-                          type="radio"
-                          name="exchangeItem"
-                          checked={selectedExchangeItemId === item.id}
-                          onChange={() => {
-                            setSelectedExchangeItemId(item.id);
-                            setReplacementVariantId("");
-                          }}
-                          className="mt-1.5 w-4 h-4 text-purple-600 focus:ring-purple-500 cursor-pointer"
-                        />
-                      )}
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => toggleItemSelection(item.id)}
+                        className="mt-1.5 w-4 h-4 rounded border-border text-primary focus:ring-primary cursor-pointer"
+                      />
 
                       <div className="relative w-14 h-14 rounded-xl bg-surface-muted overflow-hidden shrink-0">
                         <Image src={item.image} alt={item.title} fill className="object-cover" />
@@ -447,7 +342,7 @@ export default function OrderCreateReturnPage({
                       </div>
 
                       {/* Quantity Selector */}
-                      {(requestType === "return" ? isSelected : selectedExchangeItemId === item.id) && (
+                      {isSelected && (
                         <div className="flex items-center gap-1 bg-surface-subtle border border-border-subtle rounded-xl p-1 shrink-0">
                           <button
                             type="button"
@@ -485,56 +380,10 @@ export default function OrderCreateReturnPage({
             </div>
           </div>
 
-          {/* Exchange Variant Picker (Only for Exchange Mode) */}
-          {requestType === "exchange" && exchangeTargetProduct && (
-            <div className="bg-purple-50/50 border border-purple-200 rounded-2xl p-4 sm:p-5 space-y-3">
-              <h3 className="text-xs sm:text-sm font-bold text-purple-900 flex items-center gap-2">
-                <RefreshCw className="w-4 h-4 text-purple-600" />
-                <span>انتخاب سایز/رنگ جایگزین برای {exchangeTargetProduct.title}</span>
-              </h3>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
-                {exchangeTargetProduct.variants.map((variant) => {
-                  const isAvailable = (variant.inventory?.stock ?? 0) > 0;
-                  const isSelected = replacementVariantId === variant.id;
-
-                  const displayLabel = variant.optionValues
-                    .map((ov) => {
-                      const opt = exchangeTargetProduct.options.find((o) => o.id === ov.optionId);
-                      const val = opt?.values.find((v) => v.id === ov.valueId);
-                      return val?.label || ov.valueId;
-                    })
-                    .join(" / ");
-
-                  return (
-                    <button
-                      key={variant.id}
-                      type="button"
-                      disabled={!isAvailable}
-                      onClick={() => setReplacementVariantId(variant.id)}
-                      className={`p-3 rounded-xl border text-right transition-all flex items-center justify-between text-xs cursor-pointer ${
-                        isSelected
-                          ? "bg-purple-600 text-white border-purple-600 shadow-xs font-bold"
-                          : isAvailable
-                          ? "bg-background text-foreground border-border hover:border-purple-400"
-                          : "bg-surface-subtle text-muted-foreground border-border-subtle opacity-50 cursor-not-allowed"
-                      }`}
-                    >
-                      <span>{displayLabel || "پیش‌فرض"}</span>
-                      <span className="text-[11px] font-mono">
-                        {isAvailable ? `${formatPrice(variant.pricing.price)} تومان` : "ناموجود"}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
           {/* Reason Selection */}
           <div className="bg-background border border-border rounded-2xl p-4 sm:p-5 space-y-3 shadow-2xs">
             <h2 className="text-xs sm:text-sm font-bold text-foreground">
-              علت درخواست {requestType === "return" ? "مرجوعی" : "تعویض"}
+              علت درخواست مرجوعی
             </h2>
 
             <select
@@ -622,15 +471,13 @@ export default function OrderCreateReturnPage({
 
           {/* Summary & Submit Action */}
           <div className="bg-background border-2 border-primary/20 rounded-2xl p-4 sm:p-5 space-y-4 shadow-md">
-            {requestType === "return" && (
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground">برآورد مبلغ قابل استرداد:</span>
-                <div className="flex items-center gap-1 font-bold text-base text-primary">
-                  <span>{formatPrice(estimatedTotalRefund)}</span>
-                  <TomanIcon className="w-4 h-4 text-primary" />
-                </div>
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-muted-foreground">برآورد مبلغ قابل استرداد:</span>
+              <div className="flex items-center gap-1 font-bold text-base text-primary">
+                <span>{formatPrice(estimatedTotalRefund)}</span>
+                <TomanIcon className="w-4 h-4 text-primary" />
               </div>
-            )}
+            </div>
 
             <button
               type="submit"

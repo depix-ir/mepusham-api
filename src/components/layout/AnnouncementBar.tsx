@@ -5,7 +5,7 @@ import { Container } from "@/components/ui/Container";
 
 const DEFAULT_ANNOUNCEMENTS = [
   "ارسال رایگان برای سفارش‌های بالای ۲ میلیون تومان",
-  "ضمانت ۷ روزه بازگشت و تعویض کالا",
+  "ضمانت بازگشت کالا",
   "تخفیف ویژه اولین خرید با کد تخفیف WELCOME",
 ];
 

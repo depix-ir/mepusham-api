@@ -615,7 +615,7 @@ export function AdminTicketDetail({ ticket: initialTicket }: AdminTicketDetailPr
                 </div>
                 <div className="flex items-center justify-between text-muted-foreground">
                   <span>نوع درخواست:</span>
-                  <span>{relatedReturn.type === "return" ? "مرجوعی" : "تعویض"}</span>
+                  <span>مرجوعی</span>
                 </div>
 
                 <Link

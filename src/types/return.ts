@@ -21,7 +21,7 @@ export type ReturnReasonPolicy = {
   description: string;
 };
 
-export type RequestType = "return" | "exchange";
+export type RequestType = "return";
 
 export type ReturnRequestStatus =
   | "requested"
@@ -36,22 +36,6 @@ export type ReturnRequestStatus =
   | "inspection_rejected"
   | "refund_pending"
   | "refunded"
-  | "completed"
-  | "cancelled";
-
-export type ExchangeRequestStatus =
-  | "requested"
-  | "under_review"
-  | "approved"
-  | "rejected"
-  | "awaiting_customer_shipment"
-  | "in_transit"
-  | "received"
-  | "inspection"
-  | "inspection_approved"
-  | "inspection_rejected"
-  | "replacement_pending"
-  | "replacement_shipped"
   | "completed"
   | "cancelled";
 
@@ -160,7 +144,7 @@ export type ReturnRequest = {
   customerName: string;
   customerPhone: string;
 
-  status: ReturnRequestStatus | ExchangeRequestStatus;
+  status: ReturnRequestStatus;
 
   requestedAt: string;
   approvedAt?: string;
@@ -177,8 +161,6 @@ export type ReturnRequest = {
   shipment?: ReturnShipment;
 
   refund?: Refund;
-
-  exchange?: ExchangeDetails;
 
   timeline: ReturnTimelineEvent[];
 
@@ -223,8 +205,6 @@ export const RETURN_STATUS_LABELS: Record<string, string> = {
   inspection_rejected: "رد کارشناسی",
   refund_pending: "در انتظار بازپرداخت",
   refunded: "بازپرداخت شده",
-  replacement_pending: "در انتظار کالای جایگزین",
-  replacement_shipped: "کالای جایگزین ارسال شد",
   completed: "تکمیل شده",
   cancelled: "لغو شده",
 };

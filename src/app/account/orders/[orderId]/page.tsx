@@ -335,11 +335,11 @@ export default function AccountOrderDetailPage({
                     <div className="flex items-center gap-2">
                       <RotateCcw className="w-4 h-4 text-primary" />
                       <h3 className="text-xs sm:text-sm font-bold text-foreground">
-                        درخواست مرجوعی یا تعویض کالا
+                        درخواست مرجوعی کالا
                       </h3>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      این سفارش واجد شرایط مرجوعی یا تعویض است (مهلت مرجوعی ۲ روز کاری).
+                      این سفارش واجد شرایط مرجوعی است (مهلت مرجوعی ۲ روز کاری).
                     </p>
                   </div>
                   <Link
@@ -358,7 +358,7 @@ export default function AccountOrderDetailPage({
                 <div className="flex items-center gap-2">
                   <RotateCcw className="w-4 h-4 text-muted-foreground/70 shrink-0" />
                   <span>
-                    <strong>وضعیت مرجوعی:</strong> {eligibility.reason || "این سفارش امکان مرجوعی یا تعویض ندارد."}
+                    <strong>وضعیت مرجوعی:</strong> {eligibility.reason || "این سفارش امکان مرجوعی ندارد."}
                   </span>
                 </div>
                 <Link

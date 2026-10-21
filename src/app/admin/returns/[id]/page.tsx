@@ -61,7 +61,6 @@ export default function AdminReturnDetailPage({
 
   // Form states for quick actions inline
   const [trackingCodeInput, setTrackingCodeInput] = useState("");
-  const [replacementTrackingInput, setReplacementTrackingInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchDetail = useCallback(() => {
@@ -206,21 +205,6 @@ export default function AdminReturnDetailPage({
     }
   };
 
-  const handleShipReplacement = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!replacementTrackingInput.trim()) return;
-    try {
-      setIsSubmitting(true);
-      returnService.shipReplacement(request.id, replacementTrackingInput.trim());
-      showToast("کالای جایگزین با موفقیت ارسال شد.", "success");
-      setReplacementTrackingInput("");
-      fetchDetail();
-    } catch (e: any) {
-      showToast(e.message || "خطا در ثبت ارسال کالای جایگزین.", "error");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   return (
     <div className="space-y-6 pb-16 text-xs">
@@ -266,7 +250,7 @@ export default function AdminReturnDetailPage({
           <div className="bg-background border border-border rounded-lg p-4 space-y-4 shadow-2xs">
             <h2 className="font-bold text-sm text-foreground flex items-center gap-2 border-b border-border pb-3">
               <Package className="w-4 h-4 text-primary" />
-              <span>کالاهای درخواست شده جهت {request.type === "return" ? "مرجوعی" : "تعویض"}</span>
+              <span>کالاهای درخواست شده جهت مرجوعی</span>
             </h2>
 
             <div className="space-y-3">
@@ -295,27 +279,6 @@ export default function AdminReturnDetailPage({
                         تنوع فعلی: {item.variantDisplay || "پیش‌فرض"} {item.sku && `(SKU: ${item.sku})`}
                       </div>
 
-                      {/* If Exchange: Show Replacement Variant and Price Difference Info */}
-                      {request.type === "exchange" && request.exchange && (
-                        <div className="mt-1 p-2 bg-indigo-50 border border-indigo-200 rounded text-[11px] text-indigo-900 font-medium space-y-1">
-                          <div>
-                            کالای درخواستی جایگزین: <strong>{request.exchange.replacementVariantDisplay || request.exchange.replacementProductTitle || "سایز/رنگ مقصد"}</strong>
-                          </div>
-                          {request.exchange.priceDifference !== undefined && request.exchange.priceDifference !== 0 && (
-                            <div className="font-bold">
-                              {request.exchange.priceDifference > 0 ? (
-                                <span className="text-amber-700">
-                                  مابه‌التفاوت قابل دریافت از مشتری: +{formatToman(request.exchange.priceDifference)}
-                                </span>
-                              ) : (
-                                <span className="text-emerald-700">
-                                  مابه‌التفاوت قابل استرداد به مشتری: {formatToman(Math.abs(request.exchange.priceDifference))}
-                                </span>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      )}
 
                       {/* Inspection result badge if present */}
                       {item.inspection && (
@@ -334,11 +297,9 @@ export default function AdminReturnDetailPage({
                     <div className="text-[11px] text-muted-foreground">
                       قیمت زمان خرید: <strong className="text-foreground">{formatToman(item.purchasedUnitPrice)}</strong>
                     </div>
-                    {request.type === "return" && (
-                      <div className="font-bold text-foreground text-xs mt-0.5">
-                        قابل بازپرداخت: {formatToman(item.refundAmount)}
-                      </div>
-                    )}
+                    <div className="font-bold text-foreground text-xs mt-0.5">
+                      قابل بازپرداخت: {formatToman(item.refundAmount)}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -484,90 +445,39 @@ export default function AdminReturnDetailPage({
             )}
           </div>
 
-          {/* Refund or Exchange Processing Panel */}
-          {request.type === "return" ? (
-            <div className="bg-background border border-border rounded-lg p-4 space-y-3">
-              <div className="flex items-center justify-between border-b border-border pb-3">
-                <h2 className="font-bold text-sm text-foreground flex items-center gap-2">
-                  <DollarSign className="w-4 h-4 text-emerald-600" />
-                  <span>وضعیت بازپرداخت مالی</span>
-                </h2>
-                <span className="font-bold text-base text-foreground">
-                  {formatToman(request.refund?.amount || 0)}
+          {/* Refund Processing Panel */}
+          <div className="bg-background border border-border rounded-lg p-4 space-y-3">
+            <div className="flex items-center justify-between border-b border-border pb-3">
+              <h2 className="font-bold text-sm text-foreground flex items-center gap-2">
+                <DollarSign className="w-4 h-4 text-emerald-600" />
+                <span>وضعیت بازپرداخت مالی</span>
+              </h2>
+              <span className="font-bold text-base text-foreground">
+                {formatToman(request.refund?.amount || 0)}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div>
+                <span className="text-muted-foreground block text-[11px]">روش بازپرداخت:</span>
+                <span className="font-medium text-foreground">روش پرداخت اصلی سفارش</span>
+              </div>
+
+              <div>
+                <span className="text-muted-foreground block text-[11px]">وضعیت واریز:</span>
+                <span className={`font-bold ${request.refund?.status === "completed" ? "text-emerald-600" : "text-amber-600"}`}>
+                  {request.refund?.status === "completed" ? "واریز شده" : "در انتظار واریز"}
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                <div>
-                  <span className="text-muted-foreground block text-[11px]">روش بازپرداخت:</span>
-                  <span className="font-medium text-foreground">روش پرداخت اصلی سفارش</span>
-                </div>
-
-                <div>
-                  <span className="text-muted-foreground block text-[11px]">وضعیت واریز:</span>
-                  <span className={`font-bold ${request.refund?.status === "completed" ? "text-emerald-600" : "text-amber-600"}`}>
-                    {request.refund?.status === "completed" ? "واریز شده" : "در انتظار واریز"}
-                  </span>
-                </div>
-
-                <div>
-                  <span className="text-muted-foreground block text-[11px]">شماره پیگیری بانک:</span>
-                  <span className="font-mono text-foreground font-semibold">
-                    {request.refund?.referenceId || "-"}
-                  </span>
-                </div>
+              <div>
+                <span className="text-muted-foreground block text-[11px]">شماره پیگیری بانک:</span>
+                <span className="font-mono text-foreground font-semibold">
+                  {request.refund?.referenceId || "-"}
+                </span>
               </div>
             </div>
-          ) : (
-            <div className="bg-background border border-border rounded-lg p-4 space-y-3">
-              <h2 className="font-bold text-sm text-foreground flex items-center gap-2 border-b border-border pb-3">
-                <RefreshCw className="w-4 h-4 text-indigo-600" />
-                <span>مدیریت ارسال کالای جایگزین (تعویض)</span>
-              </h2>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                <div>
-                  <span className="text-muted-foreground block text-[11px]">تنوع درخواستی جدید:</span>
-                  <span className="font-bold text-indigo-900">
-                    {request.exchange?.replacementVariantDisplay || "تنوع جدید"}
-                  </span>
-                </div>
-
-                <div>
-                  <span className="text-muted-foreground block text-[11px]">کد رهگیری ارسال جایگزین:</span>
-                  <span className="font-mono font-bold text-foreground">
-                    {request.exchange?.replacementShipment?.trackingCode || "ارسال نشده"}
-                  </span>
-                </div>
-              </div>
-
-              {/* Form to ship replacement */}
-              {(request.status === "inspection_approved" || request.status === "replacement_pending") && (
-                <form onSubmit={handleShipReplacement} className="mt-3 p-3 bg-indigo-50/50 border border-indigo-200 rounded-md space-y-2">
-                  <label className="block text-xs font-semibold text-indigo-900">
-                    ثبت کد رهگیری پست برای ارسال کالای جایگزین به مشتری:
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={replacementTrackingInput}
-                      onChange={(e) => setReplacementTrackingInput(e.target.value)}
-                      placeholder="کد رهگیری پست پیشتاز..."
-                      className="flex-1 p-2 bg-background border border-border rounded-md text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                      required
-                    />
-                    <button
-                      type="submit"
-                      disabled={isSubmitting || !replacementTrackingInput.trim()}
-                      className="px-4 py-2 bg-indigo-600 text-white font-semibold text-xs rounded-md hover:bg-indigo-700 disabled:opacity-50 shrink-0"
-                    >
-                      ثبت و ارسال جایگزین
-                    </button>
-                  </div>
-                </form>
-              )}
-            </div>
-          )}
+          </div>
 
           {/* Timeline Events Audit Trail */}
           <div className="bg-background border border-border rounded-lg p-4 space-y-3">
@@ -657,21 +567,20 @@ export default function AdminReturnDetailPage({
                 </button>
               )}
 
-              {/* Step 4: Process Refund (If return OR if exchange with negative price difference needing refund) */}
-              {((request.type === "return" && (request.status === "inspection_approved" || request.status === "refund_pending")) ||
-                (request.type === "exchange" && (request.exchange?.priceDifference ?? 0) < 0 && (request.status === "inspection_approved" || request.status === "replacement_pending"))) && (
-                  <button
-                    onClick={() => setShowRefundModal(true)}
-                    disabled={isSubmitting}
-                    className="w-full py-2 px-3 text-xs font-semibold bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition-colors flex items-center justify-center gap-1.5 shadow-xs"
-                  >
-                    <DollarSign className="w-4 h-4" />
-                    <span>ثبت بازپرداخت مالی {request.type === "exchange" ? "مابه‌التفاوت" : "به مشتری"}</span>
-                  </button>
-                )}
+              {/* Step 4: Process Refund */}
+              {(request.status === "inspection_approved" || request.status === "refund_pending") && (
+                <button
+                  onClick={() => setShowRefundModal(true)}
+                  disabled={isSubmitting}
+                  className="w-full py-2 px-3 text-xs font-semibold bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition-colors flex items-center justify-center gap-1.5 shadow-xs"
+                >
+                  <DollarSign className="w-4 h-4" />
+                  <span>ثبت بازپرداخت مالی به مشتری</span>
+                </button>
+              )}
 
               {/* Terminal message if completed or rejected */}
-              {(request.status === "completed" || request.status === "refunded" || request.status === "replacement_shipped") && (
+              {(request.status === "completed" || request.status === "refunded") && (
                 <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-md text-center text-emerald-800 font-semibold text-xs">
                   ✓ این درخواست با موفقیت به پایان رسیده است.
                 </div>

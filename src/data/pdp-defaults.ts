@@ -60,7 +60,7 @@ export const CLOTHING_SIZE_GUIDE: SizeGuideData = {
 };
 
 export const DEFAULT_SHIPPING_RETURNS = `ارسال سریع با پست پیشتاز و پیک اختصاصی در سراسر کشور.
-امکان تعویض و مرجوعی کالا تا ۷ روز کاری پس از تحویل در صورت عدم استفاده و حفظ اتیکت اولیه.
+امکان مرجوعی کالا تا ۲ روز کاری پس از تحویل در صورت عدم استفاده و حفظ اتیکت اولیه.
 تمامی سفارش‌های بالای ۲ میلیون تومان شامل ارسال رایگان می‌باشند.`;
 
 export function getDefaultRatingAndReviews(productTitle: string): { rating: ProductRating; reviews: ProductReview[] } {
