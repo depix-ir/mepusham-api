@@ -18,13 +18,13 @@ export function CategoryPickerModal({
   onConfirm,
 }: CategoryPickerModalProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>(selectedCategoryIds);
+  const [prevSelectedCategoryIds, setPrevSelectedCategoryIds] = useState(selectedCategoryIds);
   const [searchQuery, setSearchQuery] = useState("");
 
-  React.useEffect(() => {
-    if (isOpen) {
-      setSelectedIds(selectedCategoryIds);
-    }
-  }, [isOpen, selectedCategoryIds]);
+  if (isOpen && selectedCategoryIds !== prevSelectedCategoryIds) {
+    setPrevSelectedCategoryIds(selectedCategoryIds);
+    setSelectedIds(selectedCategoryIds);
+  }
 
   const filteredCategories = useMemo(() => {
     const allCategories = catalogRepository.getCategories();

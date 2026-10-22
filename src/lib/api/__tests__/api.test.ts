@@ -92,7 +92,7 @@ describe("API Central Infrastructure Tests", () => {
           status: 200,
           headers: { "Content-Type": "application/json" },
         });
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       await apiClient.get(API_ENDPOINTS.storeBrands, {
         params: {
@@ -127,7 +127,7 @@ describe("API Central Infrastructure Tests", () => {
           status: 200,
           headers: { "Content-Type": "application/json" },
         });
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       await apiClient.get(API_ENDPOINTS.adminSettings);
 
@@ -143,7 +143,7 @@ describe("API Central Infrastructure Tests", () => {
           status: 200,
           headers: { "Content-Type": "application/json" },
         });
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       await apiClient.get(API_ENDPOINTS.storeBrands, {
         headers: { "X-Custom-Header": "CustomValue" },
@@ -169,7 +169,7 @@ describe("API Central Infrastructure Tests", () => {
           status: 201,
           headers: { "Content-Type": "application/json" },
         });
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       const formData = new FormData();
       formData.append("file", new Blob(["fake-image-data"]), "test.png");
@@ -194,7 +194,7 @@ describe("API Central Infrastructure Tests", () => {
             headers: { "Content-Type": "application/json" },
           }
         );
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       const payload = { name: "Nike", slug: "nike" };
       await apiClient.post(API_ENDPOINTS.adminBrands, payload);
@@ -211,7 +211,7 @@ describe("API Central Infrastructure Tests", () => {
     test("handles HTTP 204 No Content response without throwing JSON parse error", async () => {
       global.fetch = mock(async () => {
         return new Response(null, { status: 204 });
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       const result = await apiClient.delete(API_ENDPOINTS.adminBrand("b1"));
       expect(result).toEqual({});
@@ -235,7 +235,7 @@ describe("API Central Infrastructure Tests", () => {
           statusText: "Bad Request",
           headers: { "Content-Type": "application/json" },
         });
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       try {
         await apiClient.post(API_ENDPOINTS.adminBrands, { name: "Test", slug: "test" });
@@ -256,7 +256,7 @@ describe("API Central Infrastructure Tests", () => {
           statusText: "Internal Server Error",
           headers: { "Content-Type": "text/html" },
         });
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       try {
         await apiClient.get(API_ENDPOINTS.storeBrands);
@@ -283,7 +283,7 @@ describe("API Central Infrastructure Tests", () => {
             reject(err);
           });
         });
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       try {
         await apiClient.get(API_ENDPOINTS.storeBrands, { timeout: 10 });

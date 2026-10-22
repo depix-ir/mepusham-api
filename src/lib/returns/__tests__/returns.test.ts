@@ -141,6 +141,9 @@ describe("State Machine Transition Validation", () => {
 });
 
 
+import { returnService } from "../returnService";
+import { accountService } from "@/lib/account/accountService";
+
 describe("Return Reason Policy Configuration", () => {
   test("Merchant pays shipping for damaged goods", () => {
     const policy = getReturnPolicy("damaged");
@@ -156,9 +159,6 @@ describe("Return Reason Policy Configuration", () => {
 });
 
 describe("Return Service Lookup & ID Normalization", () => {
-  const { returnService } = require("../returnService");
-  const { accountService } = require("@/lib/account/accountService");
-
   test("Retrieves return request by clean ID, prefix ID, or request number insensitive to case", () => {
     const order = accountService.createOrder({
       customerId: "cust-test-1025",
@@ -179,8 +179,8 @@ describe("Return Service Lookup & ID Normalization", () => {
 
     const createdReq = returnService.createReturnRequest({
       order: deliveredOrder,
-      items: [{ orderItemId: deliveredOrder.items[0].id, quantity: 1, reason: "defect" }],
-      reason: "defect",
+      items: [{ orderItemId: deliveredOrder.items[0].id, quantity: 1, reason: "quality_issue" }],
+      reason: "quality_issue",
     });
 
     const reqId = createdReq.id;
@@ -217,8 +217,8 @@ describe("Return Service Lookup & ID Normalization", () => {
 
     returnService.createReturnRequest({
       order: deliveredOrder,
-      items: [{ orderItemId: deliveredOrder.items[0].id, quantity: 1, reason: "defect" }],
-      reason: "defect",
+      items: [{ orderItemId: deliveredOrder.items[0].id, quantity: 1, reason: "quality_issue" }],
+      reason: "quality_issue",
     });
 
     const customerReturns = returnService.getReturnRequestsForCustomer("09121234567");

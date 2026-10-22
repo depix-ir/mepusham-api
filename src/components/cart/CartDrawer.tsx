@@ -27,9 +27,12 @@ export function CartDrawer() {
   // Manage entry and exit transition states
   useEffect(() => {
     if (isCartOpen) {
-      setShouldRender(true);
-      const timer = setTimeout(() => setIsVisible(true), 10);
-      return () => clearTimeout(timer);
+      const timer1 = setTimeout(() => setShouldRender(true), 0);
+      const timer2 = setTimeout(() => setIsVisible(true), 10);
+      return () => {
+        clearTimeout(timer1);
+        clearTimeout(timer2);
+      };
     } else {
       setIsVisible(false);
       const timer = setTimeout(() => setShouldRender(false), 300);

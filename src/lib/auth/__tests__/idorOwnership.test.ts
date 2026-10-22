@@ -24,7 +24,7 @@ describe("AUD-001 Customer Resource Ownership & IDOR Protection Tests", () => {
         );
       }
       return new Response(JSON.stringify({}), { status: 200, headers: { "Content-Type": "application/json" } });
-    }) as typeof fetch;
+    }) as unknown as typeof fetch;
 
     await authService.logoutAdmin();
     await authService.logout();
@@ -101,8 +101,8 @@ describe("AUD-001 Customer Resource Ownership & IDOR Protection Tests", () => {
 
     const createdReq = returnService.createReturnRequest({
       order: deliveredOrder,
-      items: [{ orderItemId: deliveredOrder.items[0].id, quantity: 1, reason: "defect" }],
-      reason: "defect",
+      items: [{ orderItemId: deliveredOrder.items[0].id, quantity: 1, reason: "quality_issue" }],
+      reason: "quality_issue",
     });
 
     const req = returnService.getReturnRequestByIdForCustomer(createdReq.id);
@@ -135,8 +135,8 @@ describe("AUD-001 Customer Resource Ownership & IDOR Protection Tests", () => {
     const deliveredOrderA = accountService.updateOrderStatus(orderA.id, "delivered");
     const returnA = returnService.createReturnRequest({
       order: deliveredOrderA,
-      items: [{ orderItemId: deliveredOrderA.items[0].id, quantity: 1, reason: "defect" }],
-      reason: "defect",
+      items: [{ orderItemId: deliveredOrderA.items[0].id, quantity: 1, reason: "quality_issue" }],
+      reason: "quality_issue",
     });
 
     // User B attempts access
@@ -223,8 +223,8 @@ describe("AUD-001 Customer Resource Ownership & IDOR Protection Tests", () => {
     const deliveredCustomerOrder = accountService.updateOrderStatus(customerOrder.id, "delivered");
     const customerReturn = returnService.createReturnRequest({
       order: deliveredCustomerOrder,
-      items: [{ orderItemId: deliveredCustomerOrder.items[0].id, quantity: 1, reason: "defect" }],
-      reason: "defect",
+      items: [{ orderItemId: deliveredCustomerOrder.items[0].id, quantity: 1, reason: "quality_issue" }],
+      reason: "quality_issue",
     });
     const customerTicket = supportService.createTicket({
       customerId: "c_admin_test",

@@ -26,7 +26,9 @@ export function MegaMenu({
 }: MegaMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
   const onCloseRef = useRef(onClose);
-  onCloseRef.current = onClose;
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
   // Close on Escape key press
   useEffect(() => {

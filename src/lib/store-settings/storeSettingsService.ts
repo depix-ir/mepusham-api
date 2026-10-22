@@ -7,7 +7,7 @@ import {
   IStoreSettingsRepository,
   storeSettingsRepository,
 } from "./storeSettingsRepository";
-import { storeSettingsApiService, StoreSettingsDto, StoreAddressDto } from "@/lib/services/storeSettings";
+import { storeSettingsApiService, StoreSettingsDto } from "@/lib/services/storeSettings";
 
 export function normalizeDigits(input: string): string {
   if (!input) return "";
@@ -262,8 +262,8 @@ export class StoreSettingsService {
           defaultShippingAddressId: apiSettings.defaultShippingAddressId || undefined,
           defaultReturnAddressId: apiSettings.defaultReturnAddressId || undefined,
           addresses: mappedAddresses,
-          createdAt: apiSettings.createdAt,
-          updatedAt: apiSettings.updatedAt,
+          createdAt: apiSettings.createdAt || new Date().toISOString(),
+          updatedAt: apiSettings.updatedAt || new Date().toISOString(),
         };
 
         return this.saveSettings(mappedSettings);
@@ -310,14 +310,14 @@ export class StoreSettingsService {
       const createdAddr: StoreAddress = {
         id: apiRes.address.id,
         title: apiRes.address.title,
-        recipientName: apiRes.address.recipientName || apiRes.address.recipient_name || addressData.recipientName,
+        recipientName: apiRes.address.recipientName || apiRes.address.recipient_name || addressData.recipientName || "",
         phone: apiRes.address.phone,
         province: apiRes.address.province,
         city: apiRes.address.city,
         address: apiRes.address.address,
         plaque: apiRes.address.plaque || undefined,
         floor: apiRes.address.floor || undefined,
-        postalCode: apiRes.address.postalCode || apiRes.address.postal_code || cleanPostalCode,
+        postalCode: apiRes.address.postalCode || apiRes.address.postal_code || cleanPostalCode || "",
       };
       return { address: createdAddr, settings: updatedSettings };
     }

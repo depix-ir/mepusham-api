@@ -42,7 +42,7 @@ describe("Phase 6 Supplementary Features API Integration Tests", () => {
           }),
           { status: 200, headers: { "Content-Type": "application/json" } }
         );
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       const res = await notificationsApiService.listNotifications({ limit: 10 });
       expect(requestedUrl).toBe("http://localhost:9000/store/notifications?limit=10");
@@ -58,7 +58,7 @@ describe("Phase 6 Supplementary Features API Integration Tests", () => {
           status: 200,
           headers: { "Content-Type": "application/json" },
         });
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       const res = await notificationsApiService.getUnreadCount();
       expect(requestedUrl).toBe("http://localhost:9000/store/notifications/unread-count");
@@ -73,7 +73,7 @@ describe("Phase 6 Supplementary Features API Integration Tests", () => {
           status: 200,
           headers: { "Content-Type": "application/json" },
         });
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       const res = await notificationsApiService.markAllAsRead();
       expect(methodUsed).toBe("POST");
@@ -97,7 +97,7 @@ describe("Phase 6 Supplementary Features API Integration Tests", () => {
           }),
           { status: 200, headers: { "Content-Type": "application/json" } }
         );
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       const res = await notificationsApiService.markSingleAsRead("notif-1");
       expect(requestedUrl).toBe("http://localhost:9000/store/notifications/notif-1/read");
@@ -126,7 +126,7 @@ describe("Phase 6 Supplementary Features API Integration Tests", () => {
           }),
           { status: 200, headers: { "Content-Type": "application/json" } }
         );
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       const res = await supportApiService.listStoreTickets();
       expect(requestedUrl).toBe("http://localhost:9000/store/tickets");
@@ -152,7 +152,7 @@ describe("Phase 6 Supplementary Features API Integration Tests", () => {
           }),
           { status: 201, headers: { "Content-Type": "application/json" } }
         );
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       const payload = {
         category_id: "product",
@@ -174,7 +174,7 @@ describe("Phase 6 Supplementary Features API Integration Tests", () => {
           status: 200,
           headers: { "Content-Type": "application/json" },
         });
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       const res = await supportApiService.listAdminTickets({ status: "open" });
       expect(requestedUrl).toBe("http://localhost:9000/admin/tickets?status=open");
@@ -198,7 +198,7 @@ describe("Phase 6 Supplementary Features API Integration Tests", () => {
           }),
           { status: 201, headers: { "Content-Type": "application/json" } }
         );
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       const fd = new FormData();
       const res = await mediaApiService.uploadAdminMedia(fd);
@@ -216,7 +216,7 @@ describe("Phase 6 Supplementary Features API Integration Tests", () => {
           }),
           { status: 201, headers: { "Content-Type": "application/json" } }
         );
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       const fd = new FormData();
       const res = await mediaApiService.uploadStoreReviewMedia(fd);
@@ -243,7 +243,7 @@ describe("Phase 6 Supplementary Features API Integration Tests", () => {
           }),
           { status: 200, headers: { "Content-Type": "application/json" } }
         );
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       const res = await sizeGuideApiService.listTemplates();
       expect(requestedUrl).toBe("http://localhost:9000/admin/size-guides/templates");
@@ -265,7 +265,7 @@ describe("Phase 6 Supplementary Features API Integration Tests", () => {
           }),
           { status: 200, headers: { "Content-Type": "application/json" } }
         );
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       const res = await sizeGuideApiService.getStoreProductSizeGuide("prod-100");
       expect(requestedUrl).toBe("http://localhost:9000/store/products/prod-100/size-guide");
@@ -295,7 +295,7 @@ describe("Phase 6 Supplementary Features API Integration Tests", () => {
           }),
           { status: 200, headers: { "Content-Type": "application/json" } }
         );
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       const res = await inventoryApiService.getGlobalInventoryHistory();
       expect(requestedUrl).toBe("http://localhost:9000/admin/inventory/history");
@@ -310,7 +310,7 @@ describe("Phase 6 Supplementary Features API Integration Tests", () => {
           status: 200,
           headers: { "Content-Type": "application/json" },
         });
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       const res = await inventoryApiService.getLowStockAlerts({ threshold: 5 });
       expect(requestedUrl).toBe("http://localhost:9000/admin/inventory/low-stock?threshold=5");
@@ -339,7 +339,7 @@ describe("Phase 6 Supplementary Features API Integration Tests", () => {
           }),
           { status: 200, headers: { "Content-Type": "application/json" } }
         );
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       const res = await storeSettingsApiService.getStoreSettings();
       expect(requestedUrl).toBe("http://localhost:9000/admin/settings");
@@ -365,7 +365,7 @@ describe("Phase 6 Supplementary Features API Integration Tests", () => {
           }),
           { status: 200, headers: { "Content-Type": "application/json" } }
         );
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       const res = await reportsApiService.getMarginReport({ group_by: "day" });
       expect(requestedUrl).toBe("http://localhost:9000/admin/reports/margin?group_by=day");

@@ -37,7 +37,7 @@ describe("Catalog Migration Integration Tests (Brands & Categories)", () => {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
-    }) as typeof fetch;
+    }) as unknown as typeof fetch;
 
     const categories = await catalogRepository.fetchCategoriesFromApi();
 
@@ -74,7 +74,7 @@ describe("Catalog Migration Integration Tests (Brands & Categories)", () => {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
-    }) as typeof fetch;
+    }) as unknown as typeof fetch;
 
     const brands = await catalogRepository.fetchBrandsFromApi();
 
@@ -95,7 +95,7 @@ describe("Catalog Migration Integration Tests (Brands & Categories)", () => {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
-    }) as typeof fetch;
+    }) as unknown as typeof fetch;
 
     const categories = await catalogRepository.fetchCategoriesFromApi();
     expect(categories).toHaveLength(0);
@@ -111,7 +111,7 @@ describe("Catalog Migration Integration Tests (Brands & Categories)", () => {
         status: 500,
         statusText: "Internal Server Error",
       });
-    }) as typeof fetch;
+    }) as unknown as typeof fetch;
 
     expect(catalogRepository.fetchCategoriesFromApi()).rejects.toThrow(ApiError);
   });

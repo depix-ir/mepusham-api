@@ -55,8 +55,24 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Initial client hydration phase
-    refreshSession();
-  }, [refreshSession]);
+    let isMounted = true;
+    Promise.resolve().then(async () => {
+      const activeSession = await adminAuthService.getSession();
+      if (!isMounted) return;
+      if (activeSession) {
+        setSession(activeSession);
+        setAdmin(activeSession.user);
+      } else {
+        setSession(null);
+        setAdmin(null);
+      }
+      setIsLoading(false);
+      setIsHydrated(true);
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const login = async (credentials: AdminLoginCredentials): Promise<AdminSession> => {
     setIsLoading(true);

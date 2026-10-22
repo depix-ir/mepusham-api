@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import { Product } from "@/types/product";
 import { catalogRepository } from "@/lib/repositories/catalogRepository";
 import { getVariantDetails, findVariant } from "@/lib/product/domain";
@@ -37,11 +37,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   // 1. Safely load persisted cart from localStorage post-hydration
   useEffect(() => {
-    const loadedItems = loadCartFromStorage();
-    if (loadedItems && loadedItems.length > 0) {
-      setItems(loadedItems);
-    }
-    setIsHydrated(true);
+    Promise.resolve().then(() => {
+      const loadedItems = loadCartFromStorage();
+      if (loadedItems && loadedItems.length > 0) {
+        setItems(loadedItems);
+      }
+      setIsHydrated(true);
+    });
   }, []);
 
   // 2. Persist to storage whenever items change after initial hydration

@@ -62,7 +62,7 @@ describe("Phase 5 - Customer Account & Admin Panel Backend API Integration Tests
           }),
           { status: 200, headers: { "Content-Type": "application/json" } }
         );
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       const res = await supportApiService.listStoreTickets();
       expect(requestedUrl).toBe("http://localhost:9000/store/tickets");
@@ -88,7 +88,7 @@ describe("Phase 5 - Customer Account & Admin Panel Backend API Integration Tests
           }),
           { status: 201, headers: { "Content-Type": "application/json" } }
         );
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       const payload = {
         category_id: "delivery",
@@ -110,7 +110,7 @@ describe("Phase 5 - Customer Account & Admin Panel Backend API Integration Tests
           JSON.stringify({ tickets: [], count: 0 }),
           { status: 200, headers: { "Content-Type": "application/json" } }
         );
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       await supportApiService.listAdminTickets({ status: "open", priority: "urgent" });
       expect(requestedUrl).toBe("http://localhost:9000/admin/tickets?status=open&priority=urgent");
@@ -131,7 +131,7 @@ describe("Phase 5 - Customer Account & Admin Panel Backend API Integration Tests
           JSON.stringify({ notifications: [], count: 0, offset: 0, limit: 20 }),
           { status: 200, headers: { "Content-Type": "application/json" } }
         );
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       const unreadRes = await notificationsApiService.getUnreadCount();
       expect(unreadRes.count).toBe(3);
@@ -145,7 +145,7 @@ describe("Phase 5 - Customer Account & Admin Panel Backend API Integration Tests
       global.fetch = mock(async (_url: string | URL | Request, init?: RequestInit) => {
         methodUsed = init?.method || "GET";
         return new Response(JSON.stringify({ success: true }), { status: 200, headers: { "Content-Type": "application/json" } });
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       const res = await notificationsApiService.markAllAsRead();
       expect(methodUsed).toBe("POST");
@@ -177,7 +177,7 @@ describe("Phase 5 - Customer Account & Admin Panel Backend API Integration Tests
           return new Response(JSON.stringify({ ...mockSettings, storeName: "مپوشم آنلاین" }), { status: 200, headers: { "Content-Type": "application/json" } });
         }
         return new Response(JSON.stringify(mockSettings), { status: 200, headers: { "Content-Type": "application/json" } });
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       const settings = await storeSettingsApiService.getStoreSettings();
       expect(settings.storeName).toBe("مپوشم");
@@ -215,7 +215,7 @@ describe("Phase 5 - Customer Account & Admin Panel Backend API Integration Tests
           }),
           { status: 200, headers: { "Content-Type": "application/json" } }
         );
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       const result = await storeSettingsService.fetchSettingsFromApi();
       expect(result.storeName).toBe("فروشگاه مپوشم");
@@ -248,7 +248,7 @@ describe("Phase 5 - Customer Account & Admin Panel Backend API Integration Tests
           }),
           { status: 200, headers: { "Content-Type": "application/json" } }
         );
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       const res = await inventoryApiService.getGlobalInventoryHistory();
       expect(res.transactions).toHaveLength(1);
@@ -261,7 +261,7 @@ describe("Phase 5 - Customer Account & Admin Panel Backend API Integration Tests
           JSON.stringify({ items: [{ id: "item-low-1", stock: 2 }] }),
           { status: 200, headers: { "Content-Type": "application/json" } }
         );
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       const res = await inventoryApiService.getLowStockAlerts({ threshold: 5 });
       expect(res.items).toHaveLength(1);
@@ -285,7 +285,7 @@ describe("Phase 5 - Customer Account & Admin Panel Backend API Integration Tests
           }),
           { status: 201, headers: { "Content-Type": "application/json" } }
         );
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       const fd = new FormData();
       fd.append("file", new Blob(["test"]), "product.png");

@@ -32,30 +32,33 @@ export function AccountDropdown() {
 
   useEffect(() => {
     if (isAuthenticated && user) {
-      try {
-        const orders = accountService.getOrders({
-          customerId: user.id,
-          customerPhone: user.phone,
-        });
-        const undelivered = orders.filter(
-          (o) =>
-            o.status !== "delivered" &&
-            o.status !== "cancelled" &&
-            o.status !== "returned"
-        );
-        setUndeliveredCount(undelivered.length);
+      const timer = setTimeout(() => {
+        try {
+          const orders = accountService.getOrders({
+            customerId: user.id,
+            customerPhone: user.phone,
+          });
+          const undelivered = orders.filter(
+            (o) =>
+              o.status !== "delivered" &&
+              o.status !== "cancelled" &&
+              o.status !== "returned"
+          );
+          setUndeliveredCount(undelivered.length);
 
-        const tickets = accountService.getTickets();
-        const updatedTickets = tickets.filter((t) => {
-          if (t.status === "closed") return false;
-          if (t.status === "waiting-user") return true;
-          const lastMsg = t.messages[t.messages.length - 1];
-          return lastMsg && lastMsg.sender === "support";
-        });
-        setTicketUpdatesCount(updatedTickets.length);
-      } catch (err) {
-        console.error("Error loading account dropdown stats:", err);
-      }
+          const tickets = accountService.getTickets();
+          const updatedTickets = tickets.filter((t) => {
+            if (t.status === "closed") return false;
+            if (t.status === "waiting-user") return true;
+            const lastMsg = t.messages[t.messages.length - 1];
+            return lastMsg && lastMsg.sender === "support";
+          });
+          setTicketUpdatesCount(updatedTickets.length);
+        } catch (err) {
+          console.error("Error loading account dropdown stats:", err);
+        }
+      }, 0);
+      return () => clearTimeout(timer);
     } else {
       setUndeliveredCount(0);
       setTicketUpdatesCount(0);

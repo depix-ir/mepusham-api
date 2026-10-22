@@ -21,11 +21,13 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
 
   // Load wishlist from localStorage post-hydration
   useEffect(() => {
-    const loadedIds = loadWishlistFromStorage();
-    if (loadedIds && loadedIds.length > 0) {
-      setLikedProductIds(loadedIds);
-    }
-    setIsHydrated(true);
+    Promise.resolve().then(() => {
+      const loadedIds = loadWishlistFromStorage();
+      if (loadedIds && loadedIds.length > 0) {
+        setLikedProductIds(loadedIds);
+      }
+      setIsHydrated(true);
+    });
   }, []);
 
   // Save to storage on state change after initial hydration

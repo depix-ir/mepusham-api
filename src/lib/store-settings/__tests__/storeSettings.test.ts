@@ -4,13 +4,12 @@ import { MockStoreSettingsRepository } from "../storeSettingsRepository";
 import { accountService } from "@/lib/account/accountService";
 import { returnService } from "@/lib/returns/returnService";
 import { canAccessRoute } from "@/lib/admin-auth/permissions";
-import { ROUTE_PERMISSIONS } from "@/lib/admin-auth/permissions";
 
 describe("Store Settings & Address Domain Tests", () => {
   beforeEach(() => {
     // Reset store settings repository with fresh mock repo for isolated tests
     const repo = new MockStoreSettingsRepository();
-    (storeSettingsService as any).repo = repo;
+    (storeSettingsService as unknown as { repo: unknown }).repo = repo;
   });
 
   test("1. Store Settings retrieve defaults and update store info", () => {
@@ -146,8 +145,8 @@ describe("Store Settings & Address Domain Tests", () => {
     });
 
     expect(newOrder.originAddress).toBeDefined();
-    expect(newOrder.originAddress?.recipientName).toBe(defaultShipping?.recipientName!);
-    expect(newOrder.originAddress?.postalCode).toBe(defaultShipping?.postalCode!);
+    expect(newOrder.originAddress?.recipientName).toBe(defaultShipping?.recipientName ?? "");
+    expect(newOrder.originAddress?.postalCode).toBe(defaultShipping?.postalCode ?? "");
   });
 
   test("7. Return flow automatically resolves default return destination address", () => {
@@ -183,8 +182,8 @@ describe("Store Settings & Address Domain Tests", () => {
     });
 
     expect(newReturn.storeReturnAddress).toBeDefined();
-    expect(newReturn.storeReturnAddress?.recipientName).toBe(defaultReturn?.recipientName!);
-    expect(newReturn.storeReturnAddress?.postalCode).toBe(defaultReturn?.postalCode!);
+    expect(newReturn.storeReturnAddress?.recipientName).toBe(defaultReturn?.recipientName ?? "");
+    expect(newReturn.storeReturnAddress?.postalCode).toBe(defaultReturn?.postalCode ?? "");
   });
 
   test("8. Immutable Snapshot: Changing Store Settings later does NOT mutate historical shipments or returns", async () => {

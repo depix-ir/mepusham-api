@@ -62,62 +62,65 @@ export function FreeShippingFormModal({
 
   useEffect(() => {
     if (isOpen) {
-      if (initialData) {
-        setTitle(initialData.title);
-        setDescription(initialData.description || "");
-        setScope(initialData.scope);
-        setProductIds(initialData.productIds || []);
-        setCategoryIds(initialData.categoryIds || []);
-        setCampaignId(initialData.campaignId);
+      const timer = setTimeout(() => {
+        if (initialData) {
+          setTitle(initialData.title);
+          setDescription(initialData.description || "");
+          setScope(initialData.scope);
+          setProductIds(initialData.productIds || []);
+          setCategoryIds(initialData.categoryIds || []);
+          setCampaignId(initialData.campaignId);
 
-        if (initialData.minPurchaseAmount && initialData.minPurchaseAmount > 0) {
+          if (initialData.minPurchaseAmount && initialData.minPurchaseAmount > 0) {
+            setHasMinPurchase(true);
+            setMinPurchaseAmount(initialData.minPurchaseAmount);
+          } else {
+            setHasMinPurchase(false);
+            setMinPurchaseAmount(1000000);
+          }
+
+          if (initialData.maxPurchaseAmount && initialData.maxPurchaseAmount > 0) {
+            setHasMaxPurchase(true);
+            setMaxPurchaseAmount(initialData.maxPurchaseAmount);
+          } else {
+            setHasMaxPurchase(false);
+            setMaxPurchaseAmount(10000000);
+          }
+
+          setStartsAt(initialData.startsAt);
+          setEndsAt(initialData.endsAt);
+
+          if (initialData.usageLimit && initialData.usageLimit > 0) {
+            setHasUsageLimit(true);
+            setUsageLimit(initialData.usageLimit);
+          } else {
+            setHasUsageLimit(false);
+            setUsageLimit(100);
+          }
+
+          setIsActive(initialData.isActive);
+        } else {
+          const now = new Date();
+          const nextMonth = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+          setTitle("");
+          setDescription("");
+          setScope("store");
+          setProductIds([]);
+          setCategoryIds([]);
+          setCampaignId(undefined);
           setHasMinPurchase(true);
-          setMinPurchaseAmount(initialData.minPurchaseAmount);
-        } else {
-          setHasMinPurchase(false);
           setMinPurchaseAmount(1000000);
-        }
-
-        if (initialData.maxPurchaseAmount && initialData.maxPurchaseAmount > 0) {
-          setHasMaxPurchase(true);
-          setMaxPurchaseAmount(initialData.maxPurchaseAmount);
-        } else {
           setHasMaxPurchase(false);
           setMaxPurchaseAmount(10000000);
-        }
-
-        setStartsAt(initialData.startsAt);
-        setEndsAt(initialData.endsAt);
-
-        if (initialData.usageLimit && initialData.usageLimit > 0) {
-          setHasUsageLimit(true);
-          setUsageLimit(initialData.usageLimit);
-        } else {
+          setStartsAt(now.toISOString());
+          setEndsAt(nextMonth.toISOString());
           setHasUsageLimit(false);
           setUsageLimit(100);
+          setIsActive(true);
         }
-
-        setIsActive(initialData.isActive);
-      } else {
-        const now = new Date();
-        const nextMonth = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
-        setTitle("");
-        setDescription("");
-        setScope("store");
-        setProductIds([]);
-        setCategoryIds([]);
-        setCampaignId(undefined);
-        setHasMinPurchase(true);
-        setMinPurchaseAmount(1000000);
-        setHasMaxPurchase(false);
-        setMaxPurchaseAmount(10000000);
-        setStartsAt(now.toISOString());
-        setEndsAt(nextMonth.toISOString());
-        setHasUsageLimit(false);
-        setUsageLimit(100);
-        setIsActive(true);
-      }
-      setFormError("");
+        setFormError("");
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [isOpen, initialData]);
 

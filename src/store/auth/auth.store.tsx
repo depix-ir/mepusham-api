@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from "react";
-import { User, AuthMode, RequestOtpParams, VerifyOtpParams } from "@/types/auth";
+import { User, RequestOtpParams, VerifyOtpParams } from "@/types/auth";
 import { authService } from "@/lib/auth/authService";
 
 export interface AuthContextType {
@@ -22,16 +22,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Restore session safely on client mount after hydration
   useEffect(() => {
-    try {
-      const currentUser = authService.getCurrentUser();
-      if (currentUser) {
-        setUser(currentUser);
+    Promise.resolve().then(() => {
+      try {
+        const currentUser = authService.getCurrentUser();
+        if (currentUser) {
+          setUser(currentUser);
+        }
+      } catch (e) {
+        console.error("Error loading current user:", e);
+      } finally {
+        setIsAuthLoading(false);
       }
-    } catch (e) {
-      console.error("Error loading current user:", e);
-    } finally {
-      setIsAuthLoading(false);
-    }
+    });
   }, []);
 
   const requestOtp = useCallback(async (params: RequestOtpParams) => {

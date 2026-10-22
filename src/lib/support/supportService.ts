@@ -21,6 +21,13 @@ function mapDtoToSupportTicket(dto: TicketDto): SupportTicket {
   else if (dto.status === "resolved") status = "resolved";
   else if (dto.status === "closed") status = "closed";
 
+  const priorityMap: Record<string, SupportPriority> = {
+    low: "normal",
+    normal: "normal",
+    high: "important",
+    urgent: "urgent",
+  };
+
   return {
     id: dto.id,
     ticketNumber: dto.ticket_number || dto.id,
@@ -30,7 +37,7 @@ function mapDtoToSupportTicket(dto: TicketDto): SupportTicket {
     subject: dto.subject,
     category: (dto.category_id as SupportCategory) || "other",
     status,
-    priority: dto.priority || "normal",
+    priority: (dto.priority && priorityMap[dto.priority]) || "normal",
     orderId: dto.order_id || undefined,
     productId: dto.product_id || undefined,
     assignedTo: dto.assigned_to_id || undefined,
@@ -164,7 +171,7 @@ class SupportService {
       message: payload.message,
       orderId: payload.order_id,
       productId: payload.product_id,
-      priority: payload.priority,
+      priority: payload.priority === "high" ? "important" : (payload.priority as SupportPriority | undefined),
     });
   }
 
@@ -276,7 +283,6 @@ class SupportService {
       orderId: payload.orderId,
       orderNumber: payload.orderNumber,
       returnId: payload.returnId,
-      exchangeId: payload.exchangeId,
       productId: payload.productId,
       productTitle: payload.productTitle,
       createdAt: nowFa,

@@ -20,7 +20,9 @@ export function DesktopNavigation({
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
 
   const isNavVisibleRef = useRef(true);
-  isNavVisibleRef.current = isNavVisible;
+  useEffect(() => {
+    isNavVisibleRef.current = isNavVisible;
+  }, [isNavVisible]);
 
   const lastScrollYRef = useRef(0);
   const pivotScrollYRef = useRef(0);

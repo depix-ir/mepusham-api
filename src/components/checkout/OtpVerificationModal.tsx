@@ -37,12 +37,13 @@ export function OtpVerificationModal({
   // Reset state on open
   useEffect(() => {
     if (isOpen) {
-      setDigits(["", "", "", "", "", ""]);
-      setError(null);
-      setCooldown(45);
-      setTimeout(() => {
+      const timer = setTimeout(() => {
+        setDigits(["", "", "", "", "", ""]);
+        setError(null);
+        setCooldown(45);
         inputRefs.current[0]?.focus();
-      }, 100);
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [isOpen]);
 

@@ -24,10 +24,11 @@ describe("Phase 4 Domain Integrity, Cart, Checkout & Payment Tests", () => {
         {
           id: `${firstProd.id}:${firstVariant.id}`,
           productId: firstProd.id,
+          productSlug: firstProd.slug,
           name: firstProd.title,
           image: firstProd.images?.[0]?.url || "",
           variantId: firstVariant.id,
-          unitPrice: firstVariant.price,
+          unitPrice: firstVariant.pricing.price,
           quantity: 1,
           availableStock: firstVariant.inventory.stock,
         },
@@ -51,10 +52,11 @@ describe("Phase 4 Domain Integrity, Cart, Checkout & Payment Tests", () => {
         {
           id: `${firstProd.id}:${firstVariant.id}`,
           productId: firstProd.id,
+          productSlug: firstProd.slug,
           name: firstProd.title,
           image: firstProd.images?.[0]?.url || "",
           variantId: firstVariant.id,
-          unitPrice: firstVariant.price,
+          unitPrice: firstVariant.pricing.price,
           quantity: excessiveQuantity,
           availableStock: firstVariant.inventory.stock,
         },
@@ -70,6 +72,7 @@ describe("Phase 4 Domain Integrity, Cart, Checkout & Payment Tests", () => {
         {
           id: "non-existent-prod:v-99",
           productId: "non-existent-prod",
+          productSlug: "non-existent-prod",
           name: "محصول ناموجود",
           image: "",
           variantId: "v-99",

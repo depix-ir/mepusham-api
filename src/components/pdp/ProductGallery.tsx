@@ -98,7 +98,12 @@ export function ProductGallery({
   // Zoom State
   const [isHovered, setIsHovered] = useState(false);
   const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(() => {
+    if (typeof window !== "undefined") {
+      return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    }
+    return false;
+  });
 
   // Ref for focus trap & trigger element restoration
   const triggerRef = useRef<HTMLButtonElement | HTMLDivElement | null>(null);
@@ -111,7 +116,6 @@ export function ProductGallery({
   useEffect(() => {
     if (typeof window !== "undefined") {
       const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-      setPrefersReducedMotion(mediaQuery.matches);
       const listener = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
       mediaQuery.addEventListener("change", listener);
       return () => mediaQuery.removeEventListener("change", listener);

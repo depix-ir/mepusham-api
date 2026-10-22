@@ -15,7 +15,7 @@ export function ReturnsFilters({
 }: ReturnsFiltersProps) {
   const activeTab = filters.type || "all";
 
-  const handleTabClick = (tab: "all" | "return" | "exchange") => {
+  const handleTabClick = (tab: "all" | "return") => {
     onFilterChange({ type: tab, page: 1 });
   };
 
@@ -104,7 +104,7 @@ export function ReturnsFilters({
         {/* Date Filter */}
         <select
           value={filters.dateRange || "all"}
-          onChange={(e) => onFilterChange({ dateRange: e.target.value as any, page: 1 })}
+          onChange={(e) => onFilterChange({ dateRange: e.target.value as "all" | "today" | "7days" | "30days", page: 1 })}
           className="bg-background border border-border rounded-md px-2.5 py-1 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
         >
           <option value="all">همه زمان‌ها</option>

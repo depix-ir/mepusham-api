@@ -67,32 +67,20 @@ export function ProductDetailPage({
     return catalogRepository.subscribe(syncProduct);
   }, [slug, product?.slug]);
 
-  if (!product) {
-    if (!isResolved) {
-      return (
-        <div className="py-20 text-center min-h-[60vh] flex items-center justify-center">
-          <div className="w-10 h-10 rounded-full border-3 border-primary/30 border-t-primary animate-spin mx-auto" />
-        </div>
-      );
-    }
-    return (
-      <div className="py-20 text-center min-h-[60vh] flex flex-col items-center justify-center space-y-4">
-        <h1 className="text-lg font-bold text-foreground">محصول مورد نظر یافت نشد.</h1>
-      </div>
-    );
-  }
   const { items, addItem, updateQuantity, removeItem, openCart } = useCart();
   const { isLiked: checkIsLiked, toggle: toggleWishlist } = useWishlist();
-  const isLiked = checkIsLiked(product.id);
+  const isLiked = product ? checkIsLiked(product.id) : false;
 
   // Initialize default option selections if options exist
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>(() => {
     const initial: Record<string, string> = {};
-    product.options.forEach((opt) => {
-      if (opt.values.length > 0) {
-        initial[opt.id] = opt.values[0].id;
-      }
-    });
+    if (product) {
+      product.options.forEach((opt) => {
+        if (opt.values.length > 0) {
+          initial[opt.id] = opt.values[0].id;
+        }
+      });
+    }
     return initial;
   });
 
@@ -101,7 +89,17 @@ export function ProductDetailPage({
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
   // Derive active variant details
-  const variantDetails = getVariantDetails(product, selectedOptions);
+  const variantDetails = product ? getVariantDetails(product, selectedOptions) : {
+    selectedVariant: undefined,
+    allOptionsSelected: false,
+    price: 0,
+    compareAtPrice: undefined,
+    discountPercent: undefined,
+    hasDiscount: false,
+    stock: 0,
+    isAvailable: false,
+    sku: undefined,
+  };
 
   // Match cart item for current selection
   const cartItem = React.useMemo(() => {
@@ -119,6 +117,27 @@ export function ProductDetailPage({
       return true;
     });
   }, [items, product, selectedOptions, variantDetails]);
+
+  // Retrieve dynamic reviews merged with static defaults using reviewService
+  const dynamicReviewsData = React.useMemo(() => {
+    if (!product) return { rating: undefined, reviews: [] };
+    return reviewService.getProductReviews(product.id, product.title);
+  }, [product?.id, product?.title]);
+
+  if (!product) {
+    if (!isResolved) {
+      return (
+        <div className="py-20 text-center min-h-[60vh] flex items-center justify-center">
+          <div className="w-10 h-10 rounded-full border-3 border-primary/30 border-t-primary animate-spin mx-auto" />
+        </div>
+      );
+    }
+    return (
+      <div className="py-20 text-center min-h-[60vh] flex flex-col items-center justify-center space-y-4">
+        <h1 className="text-lg font-bold text-foreground">محصول مورد نظر یافت نشد.</h1>
+      </div>
+    );
+  }
 
   const cartQuantity = cartItem?.quantity || 0;
 
@@ -167,10 +186,6 @@ export function ProductDetailPage({
 
   const mainImageUrl = product.images.length > 0 ? product.images[0].url : undefined;
 
-  // Retrieve dynamic reviews merged with static defaults using reviewService
-  const dynamicReviewsData = React.useMemo(() => {
-    return reviewService.getProductReviews(product.id, product.title);
-  }, [product.id, product.title]);
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-24 md:pb-12 flex flex-col gap-10">
