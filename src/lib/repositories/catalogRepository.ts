@@ -1,10 +1,32 @@
 import { Product, ProductCategory, ProductBrand } from "@/types/product";
 import { products as initialProducts } from "@/data/products";
 import { categories as initialCategories, brands as initialBrands } from "@/data/common";
+import { categoriesApiService, CategoryDto } from "@/lib/services/categories";
+import { brandsApiService, BrandDto } from "@/lib/services/brands";
 
 export const STORAGE_KEY_PRODUCTS = "admin_store_products_v1";
 export const STORAGE_KEY_CATEGORIES = "admin_store_categories_v1";
 export const STORAGE_KEY_BRANDS = "admin_store_brands_v1";
+
+export function mapCategoryDtoToProductCategory(dto: CategoryDto): ProductCategory {
+  return {
+    id: dto.id,
+    name: dto.name,
+    slug: dto.slug,
+    imageUrl: dto.image_id ? `/media/${dto.image_id}` : undefined,
+    parentId: dto.parent_category_id || undefined,
+    isActive: dto.is_active,
+  };
+}
+
+export function mapBrandDtoToProductBrand(dto: BrandDto): ProductBrand {
+  return {
+    id: dto.id,
+    name: dto.name,
+    slug: dto.slug,
+    logo: dto.logo_id ? `/media/${dto.logo_id}` : undefined,
+  };
+}
 
 export type CatalogListener = () => void;
 
@@ -15,8 +37,10 @@ export interface ICatalogRepository {
   saveProducts(products: Product[]): void;
   getCategories(options?: { isHydrated?: boolean }): ProductCategory[];
   saveCategories(categories: ProductCategory[]): void;
+  fetchCategoriesFromApi(): Promise<ProductCategory[]>;
   getBrands(options?: { isHydrated?: boolean }): ProductBrand[];
   saveBrands(brands: ProductBrand[]): void;
+  fetchBrandsFromApi(): Promise<ProductBrand[]>;
   subscribe(listener: CatalogListener): () => void;
   resetToDefaults(): void;
 }
@@ -95,11 +119,11 @@ class MockCatalogRepository implements ICatalogRepository {
 
   getCategories(options?: { isHydrated?: boolean }): ProductCategory[] {
     const isHydrated = options?.isHydrated ?? (typeof window !== "undefined");
-    if (!isHydrated) {
-      return this.memoryCategories ?? initialCategories;
-    }
     if (this.memoryCategories !== null) {
       return this.memoryCategories;
+    }
+    if (!isHydrated) {
+      return initialCategories;
     }
     try {
       const stored = localStorage.getItem(STORAGE_KEY_CATEGORIES);
@@ -108,13 +132,18 @@ class MockCatalogRepository implements ICatalogRepository {
         this.memoryCategories = parsed;
         return parsed;
       }
-      localStorage.setItem(STORAGE_KEY_CATEGORIES, JSON.stringify(initialCategories));
-      this.memoryCategories = initialCategories;
       return initialCategories;
     } catch (e) {
       console.error("MockCatalogRepository: Failed to get categories:", e);
-      return this.memoryCategories ?? initialCategories;
+      return initialCategories;
     }
+  }
+
+  async fetchCategoriesFromApi(): Promise<ProductCategory[]> {
+    const response = await categoriesApiService.listPublicCategories({ limit: 100 });
+    const mapped = (response?.categories || []).map(mapCategoryDtoToProductCategory);
+    this.saveCategories(mapped);
+    return mapped;
   }
 
   saveCategories(categories: ProductCategory[]): void {
@@ -134,11 +163,11 @@ class MockCatalogRepository implements ICatalogRepository {
 
   getBrands(options?: { isHydrated?: boolean }): ProductBrand[] {
     const isHydrated = options?.isHydrated ?? (typeof window !== "undefined");
-    if (!isHydrated) {
-      return this.memoryBrands ?? initialBrands;
-    }
     if (this.memoryBrands !== null) {
       return this.memoryBrands;
+    }
+    if (!isHydrated) {
+      return initialBrands;
     }
     try {
       const stored = localStorage.getItem(STORAGE_KEY_BRANDS);
@@ -147,13 +176,18 @@ class MockCatalogRepository implements ICatalogRepository {
         this.memoryBrands = parsed;
         return parsed;
       }
-      localStorage.setItem(STORAGE_KEY_BRANDS, JSON.stringify(initialBrands));
-      this.memoryBrands = initialBrands;
       return initialBrands;
     } catch (e) {
       console.error("MockCatalogRepository: Failed to get brands:", e);
-      return this.memoryBrands ?? initialBrands;
+      return initialBrands;
     }
+  }
+
+  async fetchBrandsFromApi(): Promise<ProductBrand[]> {
+    const response = await brandsApiService.listPublicBrands({ limit: 100 });
+    const mapped = (response?.brands || []).map(mapBrandDtoToProductBrand);
+    this.saveBrands(mapped);
+    return mapped;
   }
 
   saveBrands(brands: ProductBrand[]): void {

@@ -71,21 +71,15 @@ class AuthService {
     try {
       const apiRes = await authApiService.sendOtp(normalizedPhone);
       return {
-        success: apiRes.success ?? true,
-        message: apiRes.message || "کد تأیید ۶ رقمی به شماره شما پیامک شد.",
+        success: apiRes?.success ?? true,
+        message: apiRes?.message || "کد تأیید ۶ رقمی به شماره شما پیامک شد.",
         cooldownSeconds: 45,
       };
     } catch (err: unknown) {
-      if (err && typeof err === "object" && "status" in err && (err as { status: number }).status > 0) {
-        throw new Error((err as { message: string }).message || "خطا در ارسال کد تأیید");
+      if (err instanceof Error) {
+        throw err;
       }
-      // If backend is not reachable in local/test environment, provide graceful message
-      await new Promise((resolve) => setTimeout(resolve, 300));
-      return {
-        success: true,
-        message: "کد تأیید ۶ رقمی به شماره شما پیامک شد.",
-        cooldownSeconds: 45,
-      };
+      throw new Error("خطا در ارسال کد تأیید");
     }
   }
 
@@ -100,47 +94,44 @@ class AuthService {
       throw new Error("کد تأیید باید ۶ رقم باشد.");
     }
 
-    if (normalizedCode === "000000") {
-      throw new Error("کد واردشده صحیح نیست. لطفاً دوباره تلاش کنید.");
-    }
-
-    let apiToken: string | undefined;
+    let apiRes;
     try {
-      const apiRes = await authApiService.verifyOtp(normalizedPhone, normalizedCode);
-      if (apiRes.token) {
-        apiToken = apiRes.token;
-      }
+      apiRes = await authApiService.verifyOtp(normalizedPhone, normalizedCode);
     } catch (err: unknown) {
-      if (err && typeof err === "object" && "status" in err && (err as { status: number }).status > 0) {
-        throw new Error((err as { message: string }).message || "کد تأیید معتبر نیست.");
+      if (err instanceof Error) {
+        throw err;
       }
-      // Offline fallback for unit tests when local backend server is not running
+      throw new Error("کد تأیید معتبر نیست.");
     }
 
-    await new Promise((resolve) => setTimeout(resolve, 300));
-
-    let userFirstName = params.firstName?.trim() || mockDefaultUser.firstName;
-    let userLastName = params.lastName?.trim() || mockDefaultUser.lastName;
-
-    const existing = this.getCurrentUser();
-    if (existing && existing.phone === normalizedPhone) {
-      userFirstName = existing.firstName || userFirstName;
-      userLastName = existing.lastName || userLastName;
-    }
+    const rawCustomer = (apiRes?.customer || {}) as Record<string, unknown>;
+    const userFirstName =
+      (rawCustomer.first_name as string) ||
+      (rawCustomer.firstName as string) ||
+      params.firstName?.trim() ||
+      "";
+    const userLastName =
+      (rawCustomer.last_name as string) ||
+      (rawCustomer.lastName as string) ||
+      params.lastName?.trim() ||
+      "";
 
     const user: User = {
-      id: existing?.id || `user-${Date.now()}`,
-      phone: normalizedPhone,
+      id: (rawCustomer.id as string) || `user-${Date.now()}`,
+      phone: (rawCustomer.phone as string) || normalizedPhone,
       firstName: userFirstName,
       lastName: userLastName,
-      createdAt: existing?.createdAt || "۱۴۰۳/۰۵/۱۰",
-      role: existing?.role || "customer",
+      createdAt:
+        (rawCustomer.created_at as string) ||
+        (rawCustomer.createdAt as string) ||
+        new Date().toISOString(),
+      role: "customer",
       isActive: true,
     };
 
     const session: AuthSession = {
       user,
-      token: apiToken || `mock-jwt-token-${Date.now()}`,
+      token: apiRes.token,
       expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     };
 

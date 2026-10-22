@@ -5,6 +5,26 @@ import { decrementStockForOrderItems } from "@/lib/inventory/inventoryService";
 
 describe("Production-Readiness Gaps Unit Tests", () => {
   beforeEach(async () => {
+    global.fetch = (async (url: string | URL | Request, init?: RequestInit) => {
+      const urlStr = String(url);
+      if (urlStr.includes("/auth/phone/verify")) {
+        const body = JSON.parse(String(init?.body || "{}"));
+        return new Response(
+          JSON.stringify({
+            token: `token-${Date.now()}`,
+            customer: {
+              id: `user-${body.phone}`,
+              phone: body.phone,
+              first_name: "علی",
+              last_name: "رضایی",
+            },
+          }),
+          { status: 200, headers: { "Content-Type": "application/json" } }
+        );
+      }
+      return new Response(JSON.stringify({}), { status: 200, headers: { "Content-Type": "application/json" } });
+    }) as typeof fetch;
+
     await authService.logoutAdmin();
     await authService.logout();
   });
