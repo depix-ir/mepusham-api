@@ -155,4 +155,40 @@ describe("OTP Phone Authentication Real API Integration Tests", () => {
     expect(user.lastName).toBe("کمالی");
     expect(user.id).not.toContain("mock");
   });
+
+  test("7. Automatically invalidates session when expiresAt is in the past", async () => {
+    const expiredSession = {
+      user: {
+        id: "exp-user-1",
+        phone: "09123456789",
+        firstName: "تست",
+        lastName: "انقضا",
+        createdAt: "2025-01-01T00:00:00Z",
+        role: "customer",
+        isActive: true,
+      },
+      token: "expired-token",
+      expiresAt: new Date(Date.now() - 10000).toISOString(),
+    };
+
+    localStorage.setItem("mepusham_auth_session_v1", JSON.stringify(expiredSession));
+
+    const currentUser = authService.getCurrentUser();
+    expect(currentUser).toBeNull();
+    expect(localStorage.getItem("mepusham_auth_session_v1")).toBeNull();
+  });
+
+  test("8. Handles network errors during OTP verify gracefully", async () => {
+    global.fetch = mock(async () => {
+      throw new Error("Failed to fetch");
+    }) as typeof fetch;
+
+    expect(
+      authService.verifyOtp({
+        phone: "09123456789",
+        code: "123456",
+        mode: "login",
+      })
+    ).rejects.toThrow("Failed to fetch");
+  });
 });
