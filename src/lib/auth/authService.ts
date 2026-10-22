@@ -76,7 +76,7 @@ class AuthService {
         cooldownSeconds: 45,
       };
     } catch (err: unknown) {
-      if (err && typeof err === "object" && "status" in err) {
+      if (err && typeof err === "object" && "status" in err && (err as { status: number }).status > 0) {
         throw new Error((err as { message: string }).message || "خطا در ارسال کد تأیید");
       }
       // If backend is not reachable in local/test environment, provide graceful message
@@ -111,7 +111,7 @@ class AuthService {
         apiToken = apiRes.token;
       }
     } catch (err: unknown) {
-      if (err && typeof err === "object" && "status" in err) {
+      if (err && typeof err === "object" && "status" in err && (err as { status: number }).status > 0) {
         throw new Error((err as { message: string }).message || "کد تأیید معتبر نیست.");
       }
       // Offline fallback for unit tests when local backend server is not running
