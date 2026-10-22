@@ -34,21 +34,20 @@ class AccountService {
     const isHydrated = options?.isHydrated ?? (typeof window !== "undefined");
     let allOrders: Order[] = [];
     if (!isHydrated) {
-      allOrders = this.memoryOrders ?? mockInitialOrders;
+      allOrders = this.memoryOrders ?? [];
     } else {
       try {
         const stored = localStorage.getItem(ORDERS_KEY);
         if (!stored) {
-          localStorage.setItem(ORDERS_KEY, JSON.stringify(mockInitialOrders));
-          this.memoryOrders = mockInitialOrders;
-          allOrders = mockInitialOrders;
+          this.memoryOrders = [];
+          allOrders = [];
         } else {
           const parsed = JSON.parse(stored);
           this.memoryOrders = parsed;
           allOrders = parsed;
         }
       } catch {
-        allOrders = this.memoryOrders ?? mockInitialOrders;
+        allOrders = this.memoryOrders ?? [];
       }
     }
 
@@ -417,16 +416,15 @@ class AccountService {
 
   getAddresses(options?: { isHydrated?: boolean }): UserAddress[] {
     const isHydrated = options?.isHydrated ?? (typeof window !== "undefined");
-    if (!isHydrated) return mockInitialAddresses;
+    if (!isHydrated) return this.memoryAddresses ?? [];
     try {
       const stored = localStorage.getItem(ADDRESSES_KEY);
       if (!stored) {
-        localStorage.setItem(ADDRESSES_KEY, JSON.stringify(mockInitialAddresses));
-        return mockInitialAddresses;
+        return this.memoryAddresses ?? [];
       }
       return JSON.parse(stored);
     } catch {
-      return mockInitialAddresses;
+      return this.memoryAddresses ?? [];
     }
   }
 
@@ -505,16 +503,15 @@ class AccountService {
 
   getTickets(options?: { isHydrated?: boolean }): SupportTicket[] {
     const isHydrated = options?.isHydrated ?? (typeof window !== "undefined");
-    if (!isHydrated) return mockInitialTickets;
+    if (!isHydrated) return this.memoryTickets ?? [];
     try {
       const stored = localStorage.getItem(TICKETS_KEY);
       if (!stored) {
-        localStorage.setItem(TICKETS_KEY, JSON.stringify(mockInitialTickets));
-        return mockInitialTickets;
+        return this.memoryTickets ?? [];
       }
       return JSON.parse(stored);
     } catch {
-      return mockInitialTickets;
+      return this.memoryTickets ?? [];
     }
   }
 

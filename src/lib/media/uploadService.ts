@@ -22,6 +22,8 @@ const DEFAULT_ALLOWED_TYPES = [
   "image/svg+xml",
 ];
 
+import { mediaApiService } from "@/lib/services/media";
+
 const createdObjectUrls = new Set<string>();
 
 export function validateImageFile(file: File, options?: UploadOptions): { valid: boolean; error?: string } {
@@ -60,8 +62,22 @@ export async function uploadMediaFile(
     throw new Error(validation.error || "فایل غیرمجاز است.");
   }
 
-  // Simulate slight async network delay
-  await new Promise((resolve) => setTimeout(resolve, 300));
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    const apiRes = await mediaApiService.uploadAdminMedia(formData);
+    if (apiRes && apiRes.media) {
+      return {
+        id: apiRes.media.id,
+        url: apiRes.media.url,
+        name: apiRes.media.original_filename || file.name,
+        size: apiRes.media.file_size || file.size,
+        type: apiRes.media.mime_type || file.type,
+      };
+    }
+  } catch (err) {
+    console.warn("uploadMediaFile API call error, falling back to local object URL:", err);
+  }
 
   const objectUrl = URL.createObjectURL(file);
   createdObjectUrls.add(objectUrl);

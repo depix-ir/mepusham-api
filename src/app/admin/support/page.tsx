@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { supportService } from "@/lib/support/supportService";
+import { supportApiService } from "@/lib/services/support";
 import {
   SupportTicket,
   SupportTicketStatus,
@@ -38,6 +39,32 @@ export default function AdminSupportDashboardPage() {
   // Load tickets on mount
   useEffect(() => {
     setTickets(supportService.getTickets());
+    supportApiService.listAdminTickets().then((res) => {
+      if (res && res.tickets && res.tickets.length > 0) {
+        const mappedTickets: SupportTicket[] = res.tickets.map((t) => ({
+          id: t.id,
+          ticketNumber: t.ticket_number,
+          customerId: t.customer_id,
+          customerName: "مشتری",
+          customerPhone: "",
+          subject: t.subject,
+          category: (t.category_id as any) || "other",
+          status: t.status === "open" ? "new" : t.status === "in_progress" ? "in_progress" : t.status === "resolved" ? "resolved" : "closed",
+          priority: (t.priority as any) || "normal",
+          orderId: t.order_id || undefined,
+          productId: t.product_id || undefined,
+          createdAt: t.created_at || new Date().toISOString(),
+          updatedAt: t.updated_at || new Date().toISOString(),
+          lastMessageAt: t.updated_at || new Date().toISOString(),
+          lastMessageSender: "customer",
+          unreadForAdmin: true,
+          unreadForCustomer: false,
+        }));
+        setTickets(mappedTickets);
+      }
+    }).catch((err) => {
+      console.warn("Failed to list admin tickets from API:", err);
+    });
   }, []);
 
   // Filtered tickets memo
