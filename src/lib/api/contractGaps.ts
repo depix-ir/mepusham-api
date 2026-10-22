@@ -134,4 +134,37 @@ export const OPENAPI_CONTRACT_GAPS: ContractGap[] = [
     status: "unsupported_by_contract",
     description: "openAPI.yml does not define blog or content management endpoints.",
   },
+
+  // 9. SUPPORT TICKET MESSAGES & ADMIN TICKET UPDATES
+  {
+    domain: "Support Tickets",
+    feature: "Ticket Message Thread & Admin Status Updates",
+    uiLocation: "/account/support/[id], /admin/support/[id]",
+    missingEndpoint: "/store/tickets/{id}/messages, /admin/tickets/{id}",
+    httpMethod: "GET / POST / PATCH",
+    status: "unsupported_by_contract",
+    description: "openAPI.yml defines /store/tickets (GET/POST) and /admin/tickets (GET), but lacks endpoints for ticket message thread history and updating ticket status.",
+  },
+
+  // 10. REVIEWS & COMMENTS TEXT SUBMISSION
+  {
+    domain: "Product Reviews",
+    feature: "Review Comment & Rating Text Submission",
+    uiLocation: "/account/orders",
+    missingEndpoint: "/store/reviews",
+    httpMethod: "POST",
+    status: "unsupported_by_contract",
+    description: "openAPI.yml defines /store/reviews/media for image uploads, but lacks an endpoint for submitting review comment text and rating score.",
+  },
+
+  // 11. SALES & DASHBOARD ANALYTICS REPORTS
+  {
+    domain: "Admin Reports",
+    feature: "Sales Analytics & Revenue Charts",
+    uiLocation: "/admin/dashboard",
+    missingEndpoint: "/admin/reports/sales",
+    httpMethod: "GET",
+    status: "unsupported_by_contract",
+    description: "openAPI.yml defines /admin/reports/margin for margin analysis, but lacks general sales analytics or daily revenue chart endpoints.",
+  },
 ];

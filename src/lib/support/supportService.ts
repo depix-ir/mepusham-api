@@ -16,6 +16,34 @@ import {
   AUTOMATIC_RESPONSE_TEMPLATE,
 } from "@/data/mockSupportData";
 import { authService } from "@/lib/auth/authService";
+import { supportApiService, TicketDto } from "@/lib/services/support";
+
+function mapDtoToSupportTicket(dto: TicketDto): SupportTicket {
+  let status: SupportTicketStatus = "new";
+  if (dto.status === "open") status = "new";
+  else if (dto.status === "in_progress") status = "in_progress";
+  else if (dto.status === "resolved") status = "resolved";
+  else if (dto.status === "closed") status = "closed";
+
+  return {
+    id: dto.id,
+    ticketNumber: dto.ticket_number || dto.id,
+    customerId: dto.customer_id || "cust-current",
+    customerName: "کاربر گرامی",
+    customerPhone: "09120000000",
+    subject: dto.subject,
+    category: (dto.category_id as SupportCategory) || "other",
+    status,
+    priority: dto.priority || "normal",
+    orderId: dto.order_id || undefined,
+    productId: dto.product_id || undefined,
+    assignedTo: dto.assigned_to_id || undefined,
+    createdAt: dto.created_at || new Date().toISOString(),
+    updatedAt: dto.updated_at || new Date().toISOString(),
+    lastMessageAt: dto.updated_at || dto.created_at || new Date().toISOString(),
+    lastMessageSender: "customer",
+  };
+}
 
 const TICKETS_KEY = "mepusham_support_tickets_v2";
 const MESSAGES_KEY = "mepusham_support_messages_v2";
@@ -82,6 +110,67 @@ export interface TicketFilterOptions {
 
 class SupportService {
   /* ================= TICKETS ================= */
+
+  async fetchStoreTicketsFromApi(): Promise<SupportTicket[]> {
+    try {
+      const res = await supportApiService.listStoreTickets();
+      if (res && Array.isArray(res.tickets) && res.tickets.length > 0) {
+        const mapped = res.tickets.map(mapDtoToSupportTicket);
+        this.persistTickets(mapped);
+        return mapped;
+      }
+    } catch (err) {
+      console.warn("fetchStoreTicketsFromApi failed:", err);
+    }
+    return this.readStoredTickets();
+  }
+
+  async fetchAdminTicketsFromApi(params?: {
+    status?: "open" | "in_progress" | "resolved" | "closed";
+    priority?: "low" | "normal" | "high" | "urgent";
+    assigned_to_id?: string;
+  }): Promise<SupportTicket[]> {
+    try {
+      const res = await supportApiService.listAdminTickets(params);
+      if (res && Array.isArray(res.tickets) && res.tickets.length > 0) {
+        const mapped = res.tickets.map(mapDtoToSupportTicket);
+        return mapped;
+      }
+    } catch (err) {
+      console.warn("fetchAdminTicketsFromApi failed:", err);
+    }
+    return this.readStoredTickets();
+  }
+
+  async createStoreTicketApi(payload: {
+    category_id: string;
+    subject: string;
+    message: string;
+    order_id?: string;
+    product_id?: string;
+    priority?: "low" | "normal" | "high" | "urgent";
+  }): Promise<SupportTicket> {
+    try {
+      const res = await supportApiService.createStoreTicket(payload);
+      if (res && res.ticket) {
+        const ticket = mapDtoToSupportTicket(res.ticket);
+        const stored = this.readStoredTickets();
+        this.persistTickets([ticket, ...stored]);
+        return ticket;
+      }
+    } catch (err) {
+      console.warn("createStoreTicketApi failed, creating locally:", err);
+    }
+
+    return this.createTicket({
+      subject: payload.subject,
+      category: (payload.category_id as SupportCategory) || "other",
+      message: payload.message,
+      orderId: payload.order_id,
+      productId: payload.product_id,
+      priority: payload.priority,
+    });
+  }
 
   getTickets(filters?: TicketFilterOptions, options?: { isHydrated?: boolean }): SupportTicket[] {
     let tickets = this.readStoredTickets(options?.isHydrated);

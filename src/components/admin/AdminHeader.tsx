@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import {
   Menu,
@@ -14,6 +14,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { useAdminAuth } from "@/store/admin-auth/adminAuth.store";
+import { notificationsApiService, NotificationDto } from "@/lib/services/notifications";
 
 interface AdminHeaderProps {
   title?: string;
@@ -33,11 +34,55 @@ export function AdminHeader({
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
-  const mockNotifications = [
-    { id: 1, title: "سفارش جدید #۱۲۴۵۸ ثبت شد", time: "۵ دقیقه پیش", unread: true },
-    { id: 2, title: "موجودی محصول 'کفش چرم' کم شده است", time: "۱ ساعت پیش", unread: true },
-    { id: 3, title: "تیکت جدید از طرف سارا احمدی", time: "۳ ساعت پیش", unread: false },
-  ];
+  const [notifications, setNotifications] = useState<NotificationDto[]>([]);
+  const [unreadCount, setUnreadCount] = useState<number>(0);
+
+  const fetchNotifications = useCallback(async () => {
+    try {
+      const [listRes, unreadRes] = await Promise.all([
+        notificationsApiService.listNotifications({ limit: 10 }),
+        notificationsApiService.getUnreadCount(),
+      ]);
+      if (listRes && Array.isArray(listRes.notifications)) {
+        setNotifications(listRes.notifications);
+      }
+      if (unreadRes && typeof unreadRes.count === "number") {
+        setUnreadCount(unreadRes.count);
+      }
+    } catch {
+      // Keep UI clean without breaking
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchNotifications();
+  }, [fetchNotifications]);
+
+  const handleMarkAsRead = async (id: string) => {
+    try {
+      await notificationsApiService.markSingleAsRead(id);
+      setNotifications((prev) =>
+        prev.map((n) =>
+          n.id === id ? { ...n, read_at: new Date().toISOString() } : n
+        )
+      );
+      setUnreadCount((prev) => Math.max(0, prev - 1));
+    } catch {
+      // Ignore
+    }
+  };
+
+  const handleMarkAllAsRead = async () => {
+    try {
+      await notificationsApiService.markAllAsRead();
+      setNotifications((prev) =>
+        prev.map((n) => ({ ...n, read_at: new Date().toISOString() }))
+      );
+      setUnreadCount(0);
+    } catch {
+      // Ignore
+    }
+  };
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -105,12 +150,17 @@ export function AdminHeader({
             onClick={() => {
               setNotificationsOpen(!notificationsOpen);
               setUserMenuOpen(false);
+              if (!notificationsOpen) {
+                fetchNotifications();
+              }
             }}
             className="relative p-2 text-muted-foreground hover:text-foreground hover:bg-surface-subtle rounded-md transition-colors"
             aria-label="Notifications"
           >
             <Bell className="w-3 h-3" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-error ring-2 ring-background" />
+            {unreadCount > 0 && (
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-error ring-2 ring-background" />
+            )}
           </button>
 
           {/* Notifications Dropdown Panel */}
@@ -118,29 +168,61 @@ export function AdminHeader({
             <div className="absolute left-0 mt-2 w-80 bg-background border border-border rounded-md shadow-lg z-50 py-2 animate-in fade-in slide-in-from-top-2 duration-150">
               <div className="px-4 py-2 border-b border-border flex items-center justify-between">
                 <span className="text-xs font-bold text-foreground">اعلان‌ها</span>
-                <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-medium">
-                  ۲ جدید
-                </span>
+                <div className="flex items-center gap-2">
+                  {unreadCount > 0 && (
+                    <button
+                      onClick={handleMarkAllAsRead}
+                      className="text-[10px] text-primary hover:underline"
+                    >
+                      خواندن همه
+                    </button>
+                  )}
+                  <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-medium">
+                    {unreadCount} جدید
+                  </span>
+                </div>
               </div>
               <div className="max-h-64 overflow-y-auto divide-y divide-border/50">
-                {mockNotifications.map((notif) => (
-                  <div
-                    key={notif.id}
-                    className={`p-3 text-xs flex items-start gap-2.5 transition-colors hover:bg-surface-subtle cursor-pointer ${
-                      notif.unread ? "bg-primary/5" : ""
-                    }`}
-                  >
-                    <CheckCircle2
-                      className={`w-4 h-4 shrink-0 mt-0.5 ${
-                        notif.unread ? "text-primary" : "text-muted-foreground"
-                      }`}
-                    />
-                    <div className="flex-1 space-y-1">
-                      <p className="text-foreground leading-snug">{notif.title}</p>
-                      <p className="text-[10px] text-muted-foreground">{notif.time}</p>
-                    </div>
+                {notifications.length === 0 ? (
+                  <div className="p-4 text-center text-xs text-muted-foreground">
+                    اعلانی وجود ندارد.
                   </div>
-                ))}
+                ) : (
+                  notifications.map((notif) => {
+                    const isUnread = !notif.read_at;
+                    const titleStr =
+                      (notif.data?.title as string) ||
+                      (notif.data?.message as string) ||
+                      (notif.data?.text as string) ||
+                      `اعلان ${notif.template || notif.id}`;
+                    const timeStr = notif.created_at
+                      ? new Date(notif.created_at).toLocaleTimeString("fa-IR", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                      : "";
+
+                    return (
+                      <div
+                        key={notif.id}
+                        onClick={() => isUnread && handleMarkAsRead(notif.id)}
+                        className={`p-3 text-xs flex items-start gap-2.5 transition-colors hover:bg-surface-subtle cursor-pointer ${
+                          isUnread ? "bg-primary/5" : ""
+                        }`}
+                      >
+                        <CheckCircle2
+                          className={`w-4 h-4 shrink-0 mt-0.5 ${
+                            isUnread ? "text-primary" : "text-muted-foreground"
+                          }`}
+                        />
+                        <div className="flex-1 space-y-1">
+                          <p className="text-foreground leading-snug">{titleStr}</p>
+                          {timeStr && <p className="text-[10px] text-muted-foreground">{timeStr}</p>}
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
               </div>
               <div className="p-2 border-t border-border text-center">
                 <button

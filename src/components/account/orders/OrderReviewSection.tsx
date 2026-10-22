@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Order } from "@/types/account";
 import { reviewService } from "@/lib/product/reviewService";
-import { uploadMediaFile } from "@/lib/media/uploadService";
+import { uploadStoreReviewMediaFile } from "@/lib/media/uploadService";
 import { useToast } from "@/components/ui/Toast";
 import {
   Star,
@@ -58,7 +58,7 @@ export function OrderReviewSection({ order }: OrderReviewSectionProps) {
       const newImageUrls: string[] = [];
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        const result = await uploadMediaFile(file);
+        const result = await uploadStoreReviewMediaFile(file);
         if (result.url) {
           newImageUrls.push(result.url);
         }

@@ -5,6 +5,33 @@ import {
   SizeGuideDataRow,
   SizeGuideData,
 } from "@/types/product";
+import { sizeGuideApiService, SizeGuideTemplateDto } from "@/lib/services/sizeGuide";
+
+function mapDtoToSizeGuideTemplate(dto: SizeGuideTemplateDto): SizeGuideTemplate {
+  const columns: SizeGuideColumn[] = (dto.columns || []).map((colStr, idx) => ({
+    id: `col-${idx + 1}`,
+    label: colStr,
+    key: `col_${idx + 1}`,
+    order: idx + 1,
+  }));
+
+  const rows: SizeGuideDataRow[] = (dto.rows || []).map((r, idx) => ({
+    id: `row-${idx + 1}`,
+    cells: r as Record<string, string>,
+    order: idx + 1,
+  }));
+
+  return {
+    id: dto.id,
+    name: dto.title,
+    description: dto.description || undefined,
+    columns,
+    rows,
+    createdAt: dto.created_at || new Date().toISOString(),
+    updatedAt: dto.updated_at || new Date().toISOString(),
+    isActive: true,
+  };
+}
 
 const STORAGE_KEY_TEMPLATES = "admin_sizeguide_templates_v1";
 
@@ -433,6 +460,53 @@ export function normalizeSizeGuide(
 }
 
 class SizeGuideService {
+  async fetchTemplatesFromApi(): Promise<SizeGuideTemplate[]> {
+    try {
+      const res = await sizeGuideApiService.listTemplates();
+      if (res && Array.isArray(res.templates) && res.templates.length > 0) {
+        const templates = res.templates.map(mapDtoToSizeGuideTemplate);
+        saveStoredTemplates(templates);
+        return templates;
+      }
+    } catch (err) {
+      console.warn("fetchTemplatesFromApi error:", err);
+    }
+    return getSizeGuideTemplates();
+  }
+
+  async createTemplateApi(data: {
+    title: string;
+    description?: string;
+    columns: string[];
+    rows: Record<string, unknown>[];
+  }): Promise<SizeGuideTemplate | null> {
+    try {
+      const res = await sizeGuideApiService.createTemplate(data);
+      if (res && res.template) {
+        const tpl = mapDtoToSizeGuideTemplate(res.template);
+        const existing = getStoredTemplates();
+        saveStoredTemplates([tpl, ...existing]);
+        return tpl;
+      }
+    } catch (err) {
+      console.warn("createTemplateApi error:", err);
+    }
+    return null;
+  }
+
+  async fetchProductSizeGuideFromApi(productId: string): Promise<SizeGuide | null> {
+    try {
+      const res = await sizeGuideApiService.getStoreProductSizeGuide(productId);
+      if (res && res.size_guide) {
+        const tpl = mapDtoToSizeGuideTemplate(res.size_guide);
+        return cloneTemplateToSizeGuide(tpl, productId);
+      }
+    } catch (err) {
+      console.warn("fetchProductSizeGuideFromApi error:", err);
+    }
+    return this.getSizeGuideForProduct(productId);
+  }
+
   getSizeGuideForProduct(productId: string): SizeGuide | null {
     if (typeof localStorage === "undefined") return null;
     try {
