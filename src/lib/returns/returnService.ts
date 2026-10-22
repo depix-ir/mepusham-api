@@ -15,7 +15,6 @@ import {
   checkItemEligibility,
 } from "./eligibility";
 import { isValidStateTransition, isActionRequiredByAdmin } from "./stateMachine";
-import { mockInitialReturnRequests } from "@/data/mockReturnData";
 import { authService } from "@/lib/auth/authService";
 import { addInventoryHistoryLog } from "@/lib/inventory/inventoryService";
 import { storeSettingsService } from "@/lib/store-settings/storeSettingsService";
@@ -24,6 +23,8 @@ const RETURNS_STORAGE_KEY = "mepusham_returns_v1";
 const PRODUCTS_STORAGE_KEY = "admin_store_products_v1";
 
 export class ReturnService {
+  private memoryRequests: ReturnRequest[] | null = null;
+
   /* ================= GET ALL REQUESTS ================= */
 
   getReturnRequests(
@@ -629,22 +630,25 @@ export class ReturnService {
   /* ================= HELPER METHODS & PERSISTENCE ================= */
 
   private loadAllRequests(isHydrated?: boolean): ReturnRequest[] {
-    const activeHydration = isHydrated ?? (typeof window !== "undefined");
-    if (!activeHydration) return mockInitialReturnRequests;
+    const activeHydration = isHydrated ?? (typeof window !== "undefined" || typeof localStorage !== "undefined");
+    if (this.memoryRequests !== null) return this.memoryRequests;
+    if (!activeHydration) return [];
     try {
-      const stored = localStorage.getItem(RETURNS_STORAGE_KEY);
+      const stored = typeof localStorage !== "undefined" ? localStorage.getItem(RETURNS_STORAGE_KEY) : null;
       if (!stored) {
-        localStorage.setItem(RETURNS_STORAGE_KEY, JSON.stringify(mockInitialReturnRequests));
-        return mockInitialReturnRequests;
+        return [];
       }
-      return JSON.parse(stored);
+      const parsed = JSON.parse(stored);
+      this.memoryRequests = parsed;
+      return parsed;
     } catch {
-      return mockInitialReturnRequests;
+      return this.memoryRequests ?? [];
     }
   }
 
   private persistRequests(requests: ReturnRequest[]): void {
-    if (typeof window === "undefined") return;
+    this.memoryRequests = requests;
+    if (typeof localStorage === "undefined") return;
     try {
       localStorage.setItem(RETURNS_STORAGE_KEY, JSON.stringify(requests));
     } catch (e) {

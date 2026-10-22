@@ -8,6 +8,39 @@ import { accountService } from "@/lib/account/accountService";
 describe("Golden Product End-to-End Consistency & Snapshot Integrity Test", () => {
   beforeEach(() => {
     catalogRepository.resetToDefaults();
+    const goldenProduct = {
+      id: "prod-shirt-10-featured",
+      slug: "golden-shirt-10",
+      title: "پیراهن تک‌شاخ",
+      description: "توضیحات محصول تک‌شاخ",
+      category: { id: "cat-shirt", name: "پیراهن", slug: "shirt" },
+      brand: { id: "brand-zara", name: "زارا", slug: "zara" },
+      images: [{ id: "img-1", url: "/images/product-1.webp", isMain: true, sortOrder: 1 }],
+      options: [
+        {
+          id: "opt-color",
+          name: "رنگ",
+          type: "color" as const,
+          values: [{ id: "val-black", label: "مشکی", value: "#000000", sortOrder: 1 }],
+        },
+      ],
+      variants: [
+        {
+          id: "var-101",
+          sku: "SKU-GOLD-101",
+          optionValues: [{ optionId: "opt-color", valueId: "val-black" }],
+          pricing: { price: 1500000 },
+          inventory: { stock: 10, isAvailable: true },
+          status: "active" as const,
+        },
+      ],
+      inventory: { totalStock: 10, hasAvailableVariants: true },
+      pricing: { minPrice: 1500000 },
+      status: "active" as const,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    catalogRepository.saveProducts([goldenProduct]);
   });
 
   test("Admin update propagates to Listing, Search, PDP, Cart, while preserving historical Order snapshots", async () => {

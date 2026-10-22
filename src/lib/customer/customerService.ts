@@ -2,7 +2,6 @@ import { accountService } from "@/lib/account/accountService";
 import { supportService } from "@/lib/support/supportService";
 import { returnService } from "@/lib/returns/returnService";
 import { authService } from "@/lib/auth/authService";
-import { mockDefaultUser } from "@/data/mockAccountData";
 import { Order, UserAddress } from "@/types/account";
 import { ReturnRequest } from "@/types/return";
 import { SupportTicket } from "@/types/support";
@@ -139,28 +138,30 @@ class CustomerService {
     const statuses = this.getStoredStatuses(isHydrated);
     const profiles = this.getStoredProfiles(isHydrated);
 
-    // 1. Current Auth User / Default Mock User
-    const currentUser = authService.getCurrentUser() || mockDefaultUser;
-    const currentPhone = normalizePhone(currentUser.phone);
-    if (currentPhone) {
-      const profileOverride = profiles[currentPhone] || profiles[currentUser.id];
-      const firstName = profileOverride?.firstName || currentUser.firstName || "کاربر";
-      const lastName = profileOverride?.lastName || currentUser.lastName || "";
-      const phone = profileOverride?.phone || currentUser.phone;
+    // 1. Current Auth User
+    const currentUser = authService.getCurrentUser();
+    if (currentUser && currentUser.phone) {
+      const currentPhone = normalizePhone(currentUser.phone);
+      if (currentPhone) {
+        const profileOverride = profiles[currentPhone] || profiles[currentUser.id];
+        const firstName = profileOverride?.firstName || currentUser.firstName || "کاربر";
+        const lastName = profileOverride?.lastName || currentUser.lastName || "";
+        const phone = profileOverride?.phone || currentUser.phone;
 
-      map.set(currentPhone, {
-        id: currentUser.id || `user-${currentPhone}`,
-        phone,
-        firstName,
-        lastName,
-        fullName: `${firstName} ${lastName}`.trim(),
-        createdAt: currentUser.createdAt || "۱۴۰۳/۰۵/۱۰",
-        status: statuses[currentPhone] || statuses[currentUser.id] || "active",
-        ordersCount: 0,
-        totalSpent: 0,
-        returnsCount: 0,
-        ticketsCount: 0,
-      });
+        map.set(currentPhone, {
+          id: currentUser.id || `user-${currentPhone}`,
+          phone,
+          firstName,
+          lastName,
+          fullName: `${firstName} ${lastName}`.trim(),
+          createdAt: currentUser.createdAt || "۱۴۰۳/۰۵/۱۰",
+          status: statuses[currentPhone] || statuses[currentUser.id] || "active",
+          ordersCount: 0,
+          totalSpent: 0,
+          returnsCount: 0,
+          ticketsCount: 0,
+        });
+      }
     }
 
     // 2. Discover Customers from Orders

@@ -19,13 +19,17 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-import { mockInitialOrders, mockInitialTickets } from "@/data/mockAccountData";
+import { accountService } from "@/lib/account/accountService";
+import { supportService } from "@/lib/support/supportService";
 import { catalogRepository } from "@/lib/repositories/catalogRepository";
 import { formatPrice } from "@/lib/formatting/currency";
 import { Badge } from "@/components/ui/Badge";
 
 export default function AdminDashboardPage() {
-  // 1. Calculate Order Stats from mockInitialOrders
+  const orders = useMemo(() => accountService.getOrders(), []);
+  const tickets = useMemo(() => supportService.getTickets(), []);
+
+  // 1. Calculate Order Stats dynamically
   const orderStats = useMemo(() => {
     let pendingCount = 0;
     let processingCount = 0;
@@ -33,7 +37,7 @@ export default function AdminDashboardPage() {
     let deliveredCount = 0;
     let totalRevenue = 0;
 
-    mockInitialOrders.forEach((order) => {
+    orders.forEach((order) => {
       if (order.status === "pending") pendingCount++;
       else if (order.status === "processing") processingCount++;
       else if (order.status === "shipped") shippedCount++;
@@ -45,14 +49,14 @@ export default function AdminDashboardPage() {
     });
 
     return {
-      totalOrders: mockInitialOrders.length,
+      totalOrders: orders.length,
       pendingCount,
       processingCount,
       shippedCount,
       deliveredCount,
       totalRevenue,
     };
-  }, []);
+  }, [orders]);
 
   // 2. Calculate Products Stats & Low-stock items
   const productStats = useMemo(() => {
@@ -104,7 +108,7 @@ export default function AdminDashboardPage() {
       title: "تیکت‌های پشتیبانی",
       href: "/admin/support",
       icon: Ticket,
-      count: `${mockInitialTickets.length} تیکت`,
+      count: `${tickets.length} تیکت`,
     },
   ];
 
@@ -324,34 +328,42 @@ export default function AdminDashboardPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/60">
-                {mockInitialOrders.slice(0, 5).map((order) => {
-                  const statusInfo = orderStatusMap[order.status] || {
-                    label: order.status,
-                    variant: "secondary",
-                  };
+                {orders.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="py-6 text-center text-muted-foreground">
+                      هیچ سفارشی ثبت نشده است.
+                    </td>
+                  </tr>
+                ) : (
+                  orders.slice(0, 5).map((order) => {
+                    const statusInfo = orderStatusMap[order.status] || {
+                      label: order.status,
+                      variant: "secondary",
+                    };
 
-                  return (
-                    <tr key={order.id} className="hover:bg-surface-subtle transition-colors">
-                      <td className="py-2.5 font-bold text-foreground dir-ltr text-right">
-                        #{order.orderNumber}
-                      </td>
-                      <td className="py-2.5 text-foreground">
-                        {order.shippingAddress.recipientName}
-                      </td>
-                      <td className="py-2.5 text-muted-foreground text-[11px]">
-                        {order.createdAt}
-                      </td>
-                      <td className="py-2.5 font-semibold text-foreground">
-                        {formatPrice(order.payableTotal, true)}
-                      </td>
-                      <td className="py-2.5">
-                        <Badge variant={statusInfo.variant} size="sm">
-                          {statusInfo.label}
-                        </Badge>
-                      </td>
-                    </tr>
-                  );
-                })}
+                    return (
+                      <tr key={order.id} className="hover:bg-surface-subtle transition-colors">
+                        <td className="py-2.5 font-bold text-foreground dir-ltr text-right">
+                          #{order.orderNumber}
+                        </td>
+                        <td className="py-2.5 text-foreground">
+                          {order.shippingAddress?.recipientName || "نامشخص"}
+                        </td>
+                        <td className="py-2.5 text-muted-foreground text-[11px]">
+                          {order.createdAt}
+                        </td>
+                        <td className="py-2.5 font-semibold text-foreground">
+                          {formatPrice(order.payableTotal, true)}
+                        </td>
+                        <td className="py-2.5">
+                          <Badge variant={statusInfo.variant} size="sm">
+                            {statusInfo.label}
+                          </Badge>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
               </tbody>
             </table>
           </div>
@@ -439,35 +451,38 @@ export default function AdminDashboardPage() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {mockInitialTickets.slice(0, 4).map((ticket) => (
-            <div
-              key={ticket.id}
-              className="p-3 rounded-md bg-surface-subtle border border-border/60 flex flex-col justify-between gap-2"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-foreground truncate">
-                  {ticket.subject}
-                </span>
-                <span className="text-[10px] text-muted-foreground shrink-0 dir-ltr">
-                  #{ticket.ticketNumber}
-                </span>
+        {tickets.length === 0 ? (
+          <p className="text-xs text-muted-foreground py-4 text-center">
+            هیچ تیکت پشتیبانی ثبت نشده است.
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {tickets.slice(0, 4).map((ticket) => (
+              <div
+                key={ticket.id}
+                className="p-3 rounded-md bg-surface-subtle border border-border/60 flex flex-col justify-between gap-2"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-foreground truncate">
+                    {ticket.subject}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground shrink-0 dir-ltr">
+                    #{ticket.ticketNumber}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-1 border-t border-border/40">
+                  <span>به‌روزرسانی: {ticket.updatedAt}</span>
+                  <Badge
+                    variant={ticket.status === "new" || (ticket.status as string) === "waiting-support" ? "warning" : "secondary"}
+                    size="sm"
+                  >
+                    {ticket.status === "new" || (ticket.status as string) === "waiting-support" ? "در انتظار پاسخ" : "پاسخ داده‌شده"}
+                  </Badge>
+                </div>
               </div>
-              <p className="text-[11px] text-muted-foreground line-clamp-1">
-                {ticket.messages[ticket.messages.length - 1]?.text}
-              </p>
-              <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-1 border-t border-border/40">
-                <span>به‌روزرسانی: {ticket.updatedAt}</span>
-                <Badge
-                  variant={ticket.status === "waiting-support" ? "warning" : "secondary"}
-                  size="sm"
-                >
-                  {ticket.status === "waiting-support" ? "در انتظار پاسخ" : "پاسخ داده‌شده"}
-                </Badge>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

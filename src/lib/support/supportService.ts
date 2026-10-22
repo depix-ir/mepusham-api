@@ -9,10 +9,6 @@ import {
   SupportAttachment,
 } from "@/types/support";
 import {
-  mockInitialTickets,
-  mockInitialMessages,
-  mockInitialActivities,
-  mockInitialQuickReplies,
   AUTOMATIC_RESPONSE_TEMPLATE,
 } from "@/data/mockSupportData";
 import { authService } from "@/lib/auth/authService";
@@ -772,7 +768,7 @@ class SupportService {
   /* ================= STORAGE PERSISTENCE ================= */
 
   private readStoredTickets(isHydrated?: boolean): SupportTicket[] {
-    return loadStorage<SupportTicket[]>(TICKETS_KEY, mockInitialTickets, isHydrated);
+    return loadStorage<SupportTicket[]>(TICKETS_KEY, [], isHydrated);
   }
 
   private persistTickets(tickets: SupportTicket[]): void {
@@ -782,7 +778,7 @@ class SupportService {
   private readStoredMessages(): Record<string, SupportMessage[]> {
     return loadStorage<Record<string, SupportMessage[]>>(
       MESSAGES_KEY,
-      mockInitialMessages
+      {}
     );
   }
 
@@ -793,7 +789,7 @@ class SupportService {
   private readStoredActivities(): Record<string, SupportActivity[]> {
     return loadStorage<Record<string, SupportActivity[]>>(
       ACTIVITIES_KEY,
-      mockInitialActivities
+      {}
     );
   }
 
@@ -802,7 +798,7 @@ class SupportService {
   }
 
   private readStoredQuickReplies(): QuickReply[] {
-    return loadStorage<QuickReply[]>(QUICK_REPLIES_KEY, mockInitialQuickReplies);
+    return loadStorage<QuickReply[]>(QUICK_REPLIES_KEY, []);
   }
 
   private persistQuickReplies(quickReplies: QuickReply[]): void {

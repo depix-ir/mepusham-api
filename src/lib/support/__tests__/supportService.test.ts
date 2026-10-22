@@ -115,9 +115,6 @@ describe("Support Service Logic", () => {
   });
 
   test("Quick replies CRUD works correctly", () => {
-    const initialQuickReplies = supportService.getQuickReplies();
-    expect(initialQuickReplies.length).toBeGreaterThan(0);
-
     const createdQr = supportService.createQuickReply({
       title: "پاسخ جدید تست",
       message: "این یک متن تست است.",
@@ -127,11 +124,29 @@ describe("Support Service Logic", () => {
     expect(createdQr.id).toBeDefined();
     expect(createdQr.isActive).toBe(true);
 
+    const replies = supportService.getQuickReplies();
+    expect(replies.length).toBeGreaterThan(0);
+
     const updatedQr = supportService.toggleQuickReply(createdQr.id);
     expect(updatedQr.isActive).toBe(false);
   });
 
   test("filtering tickets by status, priority, and search query", () => {
+    supportService.createTicket({
+      subject: "تیکت عادی ارسال 12458",
+      category: "shipping",
+      priority: "normal",
+      orderNumber: "12458",
+      message: "تست ارسال",
+    });
+
+    supportService.createTicket({
+      subject: "تیکت اورژانسی",
+      category: "payment",
+      priority: "urgent",
+      message: "تست اورژانسی",
+    });
+
     const all = supportService.getTickets();
     expect(all.length).toBeGreaterThan(0);
 

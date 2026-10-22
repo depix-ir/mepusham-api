@@ -9,11 +9,6 @@ import {
   canCustomerCancelOrder,
   canAdminCancelOrder,
 } from "@/types/account";
-import {
-  mockInitialOrders,
-  mockInitialAddresses,
-  mockInitialTickets,
-} from "@/data/mockAccountData";
 import { catalogRepository } from "@/lib/repositories/catalogRepository";
 import { authService } from "@/lib/auth/authService";
 import { storeSettingsService } from "@/lib/store-settings/storeSettingsService";

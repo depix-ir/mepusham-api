@@ -5,7 +5,6 @@ import { accountService } from "@/lib/account/accountService";
 import { returnService } from "@/lib/returns/returnService";
 import { canAccessRoute } from "@/lib/admin-auth/permissions";
 import { ROUTE_PERMISSIONS } from "@/lib/admin-auth/permissions";
-import { mockInitialOrders } from "@/data/mockAccountData";
 
 describe("Store Settings & Address Domain Tests", () => {
   beforeEach(() => {
@@ -155,12 +154,27 @@ describe("Store Settings & Address Domain Tests", () => {
     const defaultReturn = storeSettingsService.getDefaultReturnAddress();
     expect(defaultReturn).toBeDefined();
 
-    const sampleOrder = mockInitialOrders[0];
+    const order = accountService.createOrder({
+      customer: {
+        firstName: "مهدی",
+        lastName: "موسوی",
+        phone: "09121234567",
+        province: "تهران",
+        city: "تهران",
+        address: "آدرس",
+        postalCode: "1234567890",
+      },
+      shipping: { methodId: "post-1", price: 30000, title: "پست" },
+      items: [{ productId: "p-1", quantity: 1, unitPrice: 100000 }],
+      pricing: { itemsSubtotal: 100000, shippingCost: 30000, payableTotal: 130000 },
+    });
+    const deliveredOrder = accountService.updateOrderStatus(order.id, "delivered");
+
     const newReturn = returnService.createReturnRequest({
-      order: sampleOrder,
+      order: deliveredOrder,
       items: [
         {
-          orderItemId: sampleOrder.items[0].id,
+          orderItemId: deliveredOrder.items[0].id,
           quantity: 1,
           reason: "size_issue",
         },
@@ -173,31 +187,34 @@ describe("Store Settings & Address Domain Tests", () => {
     expect(newReturn.storeReturnAddress?.postalCode).toBe(defaultReturn?.postalCode!);
   });
 
-  test("8. Immutable Snapshot: Changing Store Settings later does NOT mutate historical shipments or returns", () => {
+  test("8. Immutable Snapshot: Changing Store Settings later does NOT mutate historical shipments or returns", async () => {
+    // Small delay to ensure timestamp separation for order item IDs
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
     // Create Order with Address A
     const defaultShippingA = storeSettingsService.getDefaultShippingAddress();
     const orderA = accountService.createOrder({
       customer: {
         firstName: "امیر",
         lastName: "احمدی",
-        phone: "09120000000",
+        phone: "09120000001",
         province: "تهران",
         city: "تهران",
         address: "خیابان انقلاب",
         postalCode: "1111111111",
       },
       shipping: { methodId: "post-1", price: 30000, title: "پست" },
-      items: [{ productId: "p-1", quantity: 1, unitPrice: 100000 }],
+      items: [{ productId: "p-8", quantity: 1, unitPrice: 100000 }],
       pricing: { itemsSubtotal: 100000, shippingCost: 30000, payableTotal: 130000 },
     });
 
     const snapshotShippingA = orderA.originAddress?.recipientName;
 
     // Create Return Request with Address A
-    const sampleOrder = mockInitialOrders[0];
+    const deliveredOrderA = accountService.updateOrderStatus(orderA.id, "delivered");
     const returnA = returnService.createReturnRequest({
-      order: sampleOrder,
-      items: [{ orderItemId: sampleOrder.items[0].id, quantity: 1, reason: "damaged" }],
+      order: deliveredOrderA,
+      items: [{ orderItemId: deliveredOrderA.items[0].id, quantity: 1, reason: "damaged" }],
       reason: "damaged",
     });
 

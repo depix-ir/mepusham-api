@@ -5,11 +5,6 @@ import {
   GetBlogPostsOptions,
   PaginatedBlogPostsResult,
 } from "@/types/blog";
-import {
-  initialBlogPosts,
-  initialBlogCategories,
-  initialBlogTags,
-} from "@/data/blogData";
 
 export const STORAGE_KEY_BLOG_POSTS = "mepusham_blog_posts_v1";
 export const STORAGE_KEY_BLOG_CATEGORIES = "mepusham_blog_categories_v1";
@@ -62,7 +57,7 @@ class MockBlogRepository implements IBlogRepository {
   getAllPostsRaw(options?: { isHydrated?: boolean }): BlogPost[] {
     const isHydrated = options?.isHydrated ?? (typeof window !== "undefined");
     if (!isHydrated) {
-      return this.memoryPosts ?? initialBlogPosts;
+      return this.memoryPosts ?? [];
     }
     if (this.memoryPosts !== null) {
       return this.memoryPosts;
@@ -74,12 +69,11 @@ class MockBlogRepository implements IBlogRepository {
         this.memoryPosts = parsed;
         return parsed;
       }
-      localStorage.setItem(STORAGE_KEY_BLOG_POSTS, JSON.stringify(initialBlogPosts));
-      this.memoryPosts = initialBlogPosts;
-      return initialBlogPosts;
+      this.memoryPosts = [];
+      return [];
     } catch (e) {
       console.error("MockBlogRepository: Failed to get posts:", e);
-      return this.memoryPosts ?? initialBlogPosts;
+      return this.memoryPosts ?? [];
     }
   }
 
@@ -194,7 +188,7 @@ class MockBlogRepository implements IBlogRepository {
   getCategories(options?: { isHydrated?: boolean }): BlogCategory[] {
     const isHydrated = options?.isHydrated ?? (typeof window !== "undefined");
     if (!isHydrated) {
-      return this.memoryCategories ?? initialBlogCategories;
+      return this.memoryCategories ?? [];
     }
     if (this.memoryCategories !== null) {
       return this.memoryCategories;
@@ -206,12 +200,11 @@ class MockBlogRepository implements IBlogRepository {
         this.memoryCategories = parsed;
         return parsed;
       }
-      localStorage.setItem(STORAGE_KEY_BLOG_CATEGORIES, JSON.stringify(initialBlogCategories));
-      this.memoryCategories = initialBlogCategories;
-      return initialBlogCategories;
+      this.memoryCategories = [];
+      return [];
     } catch (e) {
       console.error("MockBlogRepository: Failed to get categories:", e);
-      return this.memoryCategories ?? initialBlogCategories;
+      return this.memoryCategories ?? [];
     }
   }
 
@@ -238,7 +231,7 @@ class MockBlogRepository implements IBlogRepository {
   getTags(options?: { isHydrated?: boolean }): BlogTag[] {
     const isHydrated = options?.isHydrated ?? (typeof window !== "undefined");
     if (!isHydrated) {
-      return this.memoryTags ?? initialBlogTags;
+      return this.memoryTags ?? [];
     }
     if (this.memoryTags !== null) {
       return this.memoryTags;
@@ -250,12 +243,11 @@ class MockBlogRepository implements IBlogRepository {
         this.memoryTags = parsed;
         return parsed;
       }
-      localStorage.setItem(STORAGE_KEY_BLOG_TAGS, JSON.stringify(initialBlogTags));
-      this.memoryTags = initialBlogTags;
-      return initialBlogTags;
+      this.memoryTags = [];
+      return [];
     } catch (e) {
       console.error("MockBlogRepository: Failed to get tags:", e);
-      return this.memoryTags ?? initialBlogTags;
+      return this.memoryTags ?? [];
     }
   }
 
@@ -280,9 +272,9 @@ class MockBlogRepository implements IBlogRepository {
   }
 
   resetToDefaults(): void {
-    this.memoryPosts = initialBlogPosts;
-    this.memoryCategories = initialBlogCategories;
-    this.memoryTags = initialBlogTags;
+    this.memoryPosts = [];
+    this.memoryCategories = [];
+    this.memoryTags = [];
     if (typeof window !== "undefined") {
       try {
         localStorage.removeItem(STORAGE_KEY_BLOG_POSTS);

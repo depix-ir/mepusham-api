@@ -1,6 +1,4 @@
 import { Product, ProductCategory, ProductBrand } from "@/types/product";
-import { products as initialProducts } from "@/data/products";
-import { categories as initialCategories, brands as initialBrands } from "@/data/common";
 import { categoriesApiService, CategoryDto } from "@/lib/services/categories";
 import { brandsApiService, BrandDto } from "@/lib/services/brands";
 
@@ -71,7 +69,7 @@ class MockCatalogRepository implements ICatalogRepository {
   getProducts(options?: { isHydrated?: boolean }): Product[] {
     const isHydrated = options?.isHydrated ?? (typeof window !== "undefined");
     if (!isHydrated) {
-      return this.memoryProducts ?? initialProducts;
+      return this.memoryProducts ?? [];
     }
     if (this.memoryProducts !== null) {
       return this.memoryProducts;
@@ -83,12 +81,11 @@ class MockCatalogRepository implements ICatalogRepository {
         this.memoryProducts = parsed;
         return parsed;
       }
-      localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(initialProducts));
-      this.memoryProducts = initialProducts;
-      return initialProducts;
+      this.memoryProducts = [];
+      return [];
     } catch (e) {
       console.error("MockCatalogRepository: Failed to get products:", e);
-      return this.memoryProducts ?? initialProducts;
+      return this.memoryProducts ?? [];
     }
   }
 
@@ -123,7 +120,7 @@ class MockCatalogRepository implements ICatalogRepository {
       return this.memoryCategories;
     }
     if (!isHydrated) {
-      return initialCategories;
+      return [];
     }
     try {
       const stored = localStorage.getItem(STORAGE_KEY_CATEGORIES);
@@ -132,10 +129,11 @@ class MockCatalogRepository implements ICatalogRepository {
         this.memoryCategories = parsed;
         return parsed;
       }
-      return initialCategories;
+      this.memoryCategories = [];
+      return [];
     } catch (e) {
       console.error("MockCatalogRepository: Failed to get categories:", e);
-      return initialCategories;
+      return this.memoryCategories ?? [];
     }
   }
 
@@ -167,7 +165,7 @@ class MockCatalogRepository implements ICatalogRepository {
       return this.memoryBrands;
     }
     if (!isHydrated) {
-      return initialBrands;
+      return [];
     }
     try {
       const stored = localStorage.getItem(STORAGE_KEY_BRANDS);
@@ -176,10 +174,11 @@ class MockCatalogRepository implements ICatalogRepository {
         this.memoryBrands = parsed;
         return parsed;
       }
-      return initialBrands;
+      this.memoryBrands = [];
+      return [];
     } catch (e) {
       console.error("MockCatalogRepository: Failed to get brands:", e);
-      return initialBrands;
+      return this.memoryBrands ?? [];
     }
   }
 
@@ -206,9 +205,9 @@ class MockCatalogRepository implements ICatalogRepository {
   }
 
   resetToDefaults(): void {
-    this.memoryProducts = initialProducts;
-    this.memoryCategories = initialCategories;
-    this.memoryBrands = initialBrands;
+    this.memoryProducts = [];
+    this.memoryCategories = [];
+    this.memoryBrands = [];
     if (typeof window !== "undefined") {
       try {
         localStorage.removeItem(STORAGE_KEY_PRODUCTS);

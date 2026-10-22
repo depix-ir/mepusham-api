@@ -82,21 +82,71 @@ describe("AUD-001 Customer Resource Ownership & IDOR Protection Tests", () => {
       mode: "login",
     });
 
-    // ret-1024 in mock data belongs to customer 09121112233
-    const req = returnService.getReturnRequestByIdForCustomer("ret-1024");
+    const order = accountService.createOrder({
+      customerId: user.id,
+      customer: {
+        firstName: "علی",
+        lastName: "رضایی",
+        phone: user.phone,
+        province: "تهران",
+        city: "تهران",
+        address: "خیابان آزادی",
+        postalCode: "1234567890",
+      },
+      shipping: { methodId: "post", price: 35000, title: "پست پیشتاز" },
+      items: [{ productId: "prod-bag-01", quantity: 1, unitPrice: 1500000 }],
+      pricing: { itemsSubtotal: 1500000, shippingCost: 35000, payableTotal: 1535000 },
+    });
+    const deliveredOrder = accountService.updateOrderStatus(order.id, "delivered");
+
+    const createdReq = returnService.createReturnRequest({
+      order: deliveredOrder,
+      items: [{ orderItemId: deliveredOrder.items[0].id, quantity: 1, reason: "defect" }],
+      reason: "defect",
+    });
+
+    const req = returnService.getReturnRequestByIdForCustomer(createdReq.id);
     expect(req).toBeDefined();
     expect(req?.customerPhone).toBe(user.phone);
   });
 
   it("4. Customer A accesses Customer B return -> DENY", async () => {
+    // User A creates return
+    const userA = await authService.verifyOtp({
+      phone: "09121112233",
+      code: "123456",
+      mode: "login",
+    });
+    const orderA = accountService.createOrder({
+      customerId: userA.id,
+      customer: {
+        firstName: "علی",
+        lastName: "رضایی",
+        phone: userA.phone,
+        province: "تهران",
+        city: "تهران",
+        address: "خیابان آزادی",
+        postalCode: "1234567890",
+      },
+      shipping: { methodId: "post", price: 35000, title: "پست پیشتاز" },
+      items: [{ productId: "prod-bag-01", quantity: 1, unitPrice: 1500000 }],
+      pricing: { itemsSubtotal: 1500000, shippingCost: 35000, payableTotal: 1535000 },
+    });
+    const deliveredOrderA = accountService.updateOrderStatus(orderA.id, "delivered");
+    const returnA = returnService.createReturnRequest({
+      order: deliveredOrderA,
+      items: [{ orderItemId: deliveredOrderA.items[0].id, quantity: 1, reason: "defect" }],
+      reason: "defect",
+    });
+
+    // User B attempts access
     await authService.verifyOtp({
       phone: "09129999999",
       code: "123456",
       mode: "login",
     });
 
-    // ret-1024 belongs to 09121112233
-    const req = returnService.getReturnRequestByIdForCustomer("ret-1024");
+    const req = returnService.getReturnRequestByIdForCustomer(returnA.id);
     expect(req).toBeUndefined();
   });
 
@@ -107,20 +157,41 @@ describe("AUD-001 Customer Resource Ownership & IDOR Protection Tests", () => {
       mode: "login",
     });
 
-    // ticket-1001 belongs to 09123456789
-    const ticket = supportService.getTicketByIdForCustomer("ticket-1001");
+    const createdTicket = supportService.createTicket({
+      customerId: user.id,
+      customerName: `${user.firstName} ${user.lastName}`,
+      customerPhone: user.phone,
+      subject: "تست تیکت",
+      category: "other",
+      message: "پیام تست",
+    });
+
+    const ticket = supportService.getTicketByIdForCustomer(createdTicket.id);
     expect(ticket).toBeDefined();
     expect(ticket?.customerPhone).toBe(user.phone);
   });
 
   it("6. Customer A accesses Customer B ticket -> DENY", async () => {
+    const userA = await authService.verifyOtp({
+      phone: "09123456789",
+      code: "123456",
+      mode: "login",
+    });
+    const ticketA = supportService.createTicket({
+      customerId: userA.id,
+      customerPhone: userA.phone,
+      subject: "تیکت کاربر A",
+      category: "other",
+      message: "پیام A",
+    });
+
     await authService.verifyOtp({
       phone: "09128888888",
       code: "123456",
       mode: "login",
     });
 
-    const ticket = supportService.getTicketByIdForCustomer("ticket-1001");
+    const ticket = supportService.getTicketByIdForCustomer(ticketA.id);
     expect(ticket).toBeUndefined();
   });
 
@@ -133,10 +204,8 @@ describe("AUD-001 Customer Resource Ownership & IDOR Protection Tests", () => {
   });
 
   it("8. Admin -> Allowed according to Admin permissions", async () => {
-    await authService.loginAdmin("admin", "admin123");
-
-    // Create order to ensure fresh state
-    const order = accountService.createOrder({
+    // Create customer resource
+    const customerOrder = accountService.createOrder({
       customerId: "c_admin_test",
       customer: {
         firstName: "تست",
@@ -151,9 +220,24 @@ describe("AUD-001 Customer Resource Ownership & IDOR Protection Tests", () => {
       items: [{ productId: "prod-bag-01", quantity: 1, unitPrice: 1500000 }],
       pricing: { itemsSubtotal: 1500000, shippingCost: 35000, payableTotal: 1535000 },
     });
+    const deliveredCustomerOrder = accountService.updateOrderStatus(customerOrder.id, "delivered");
+    const customerReturn = returnService.createReturnRequest({
+      order: deliveredCustomerOrder,
+      items: [{ orderItemId: deliveredCustomerOrder.items[0].id, quantity: 1, reason: "defect" }],
+      reason: "defect",
+    });
+    const customerTicket = supportService.createTicket({
+      customerId: "c_admin_test",
+      customerPhone: "09127776655",
+      subject: "تست ادمین",
+      category: "other",
+      message: "سلام",
+    });
 
-    expect(accountService.getOrderByIdForCustomer(order.id)).toBeDefined();
-    expect(returnService.getReturnRequestByIdForCustomer("ret-1024")).toBeDefined();
-    expect(supportService.getTicketByIdForCustomer("ticket-1001")).toBeDefined();
+    await authService.loginAdmin("admin", "admin123");
+
+    expect(accountService.getOrderByIdForCustomer(customerOrder.id)).toBeDefined();
+    expect(returnService.getReturnRequestByIdForCustomer(customerReturn.id)).toBeDefined();
+    expect(supportService.getTicketByIdForCustomer(customerTicket.id)).toBeDefined();
   });
 });
