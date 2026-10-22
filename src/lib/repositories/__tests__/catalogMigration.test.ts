@@ -116,7 +116,23 @@ describe("Catalog Migration Integration Tests (Brands & Categories)", () => {
     expect(catalogRepository.fetchCategoriesFromApi()).rejects.toThrow(ApiError);
   });
 
-  test("5. Correctly maps CategoryDto and BrandDto with null optional fields", () => {
+  test("5. Handles network failure gracefully without returning mock fallbacks in production", async () => {
+    global.fetch = mock(async () => {
+      throw new Error("Network connection lost");
+    }) as typeof fetch;
+
+    // Reset memory state so no memory cache exists
+    catalogRepository.saveCategories([]);
+    catalogRepository.saveBrands([]);
+
+    expect(catalogRepository.fetchCategoriesFromApi()).rejects.toThrow("Network connection lost");
+    expect(catalogRepository.getCategories()).toEqual([]);
+
+    expect(catalogRepository.fetchBrandsFromApi()).rejects.toThrow("Network connection lost");
+    expect(catalogRepository.getBrands()).toEqual([]);
+  });
+
+  test("6. Correctly maps CategoryDto and BrandDto with null optional fields", () => {
     const categoryDto = {
       id: "cat-2",
       name: "کفش",

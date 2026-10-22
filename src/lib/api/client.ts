@@ -36,12 +36,20 @@ function getAuthToken(): string | null {
     const adminSessionRaw = storage.getItem("mepusham_admin_session_v1");
     if (adminSessionRaw) {
       const parsed = JSON.parse(adminSessionRaw);
-      if (parsed?.token) return parsed.token;
+      if (parsed?.expiresAt && new Date(parsed.expiresAt) < new Date()) {
+        storage.removeItem("mepusham_admin_session_v1");
+      } else if (parsed?.token) {
+        return parsed.token;
+      }
     }
     const customerSessionRaw = storage.getItem("mepusham_auth_session_v1");
     if (customerSessionRaw) {
       const parsed = JSON.parse(customerSessionRaw);
-      if (parsed?.token) return parsed.token;
+      if (parsed?.expiresAt && new Date(parsed.expiresAt) < new Date()) {
+        storage.removeItem("mepusham_auth_session_v1");
+      } else if (parsed?.token) {
+        return parsed.token;
+      }
     }
   } catch (e) {
     console.error("Error reading auth token from storage", e);

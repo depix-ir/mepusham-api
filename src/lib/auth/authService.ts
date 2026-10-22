@@ -5,7 +5,6 @@ import {
   VerifyOtpParams,
 } from "@/types/auth";
 import { normalizeDigits, isValidIranianMobile } from "@/lib/checkout/validation";
-import { mockDefaultUser } from "@/data/mockAccountData";
 import { authApiService } from "@/lib/services/auth";
 
 const AUTH_STORAGE_KEY = "mepusham_auth_session_v1";
@@ -154,6 +153,10 @@ class AuthService {
       const stored = storage.getItem(AUTH_STORAGE_KEY);
       if (!stored) return null;
       const session: AuthSession = JSON.parse(stored);
+      if (session && session.expiresAt && new Date(session.expiresAt) < new Date()) {
+        storage.removeItem(AUTH_STORAGE_KEY);
+        return null;
+      }
       if (session && session.user && session.user.phone) {
         return session.user;
       }

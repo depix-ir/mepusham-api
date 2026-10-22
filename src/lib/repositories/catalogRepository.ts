@@ -123,7 +123,7 @@ class MockCatalogRepository implements ICatalogRepository {
       return this.memoryCategories;
     }
     if (!isHydrated) {
-      return initialCategories;
+      return [];
     }
     try {
       const stored = localStorage.getItem(STORAGE_KEY_CATEGORIES);
@@ -132,18 +132,25 @@ class MockCatalogRepository implements ICatalogRepository {
         this.memoryCategories = parsed;
         return parsed;
       }
-      return initialCategories;
+      return [];
     } catch (e) {
-      console.error("MockCatalogRepository: Failed to get categories:", e);
-      return initialCategories;
+      console.error("CatalogRepository: Failed to get categories:", e);
+      return [];
     }
   }
 
   async fetchCategoriesFromApi(): Promise<ProductCategory[]> {
-    const response = await categoriesApiService.listPublicCategories({ limit: 100 });
-    const mapped = (response?.categories || []).map(mapCategoryDtoToProductCategory);
-    this.saveCategories(mapped);
-    return mapped;
+    try {
+      const response = await categoriesApiService.listPublicCategories({ limit: 100 });
+      const mapped = (response?.categories || []).map(mapCategoryDtoToProductCategory);
+      this.saveCategories(mapped);
+      return mapped;
+    } catch (err) {
+      if (this.memoryCategories === null) {
+        this.memoryCategories = [];
+      }
+      throw err;
+    }
   }
 
   saveCategories(categories: ProductCategory[]): void {
@@ -167,7 +174,7 @@ class MockCatalogRepository implements ICatalogRepository {
       return this.memoryBrands;
     }
     if (!isHydrated) {
-      return initialBrands;
+      return [];
     }
     try {
       const stored = localStorage.getItem(STORAGE_KEY_BRANDS);
@@ -176,18 +183,25 @@ class MockCatalogRepository implements ICatalogRepository {
         this.memoryBrands = parsed;
         return parsed;
       }
-      return initialBrands;
+      return [];
     } catch (e) {
-      console.error("MockCatalogRepository: Failed to get brands:", e);
-      return initialBrands;
+      console.error("CatalogRepository: Failed to get brands:", e);
+      return [];
     }
   }
 
   async fetchBrandsFromApi(): Promise<ProductBrand[]> {
-    const response = await brandsApiService.listPublicBrands({ limit: 100 });
-    const mapped = (response?.brands || []).map(mapBrandDtoToProductBrand);
-    this.saveBrands(mapped);
-    return mapped;
+    try {
+      const response = await brandsApiService.listPublicBrands({ limit: 100 });
+      const mapped = (response?.brands || []).map(mapBrandDtoToProductBrand);
+      this.saveBrands(mapped);
+      return mapped;
+    } catch (err) {
+      if (this.memoryBrands === null) {
+        this.memoryBrands = [];
+      }
+      throw err;
+    }
   }
 
   saveBrands(brands: ProductBrand[]): void {
