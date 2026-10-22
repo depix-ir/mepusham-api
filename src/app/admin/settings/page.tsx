@@ -32,70 +32,82 @@ export default function AdminSettingsPage() {
 
   useEffect(() => {
     setIsHydrated(true);
-    const loaded = storeSettingsService.getSettings({ isHydrated: true });
-    setSettings(loaded);
+    storeSettingsService.fetchSettingsFromApi().then((loaded) => {
+      setSettings(loaded);
+    }).catch(() => {
+      setSettings(storeSettingsService.getSettings({ isHydrated: true }));
+    });
   }, []);
 
-  const refreshSettings = () => {
-    const updated = storeSettingsService.getSettings({ isHydrated: true });
+  const refreshSettings = async () => {
+    const updated = await storeSettingsService.fetchSettingsFromApi();
     setSettings(updated);
   };
 
-  const handleSaveGeneral = (e: React.FormEvent) => {
+  const handleSaveGeneral = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!settings) return;
     try {
-      storeSettingsService.saveSettings(settings);
+      await storeSettingsService.updateSettingsApi({
+        storeName: settings.storeName,
+        contactPhone: settings.contactPhone,
+        supportEmail: settings.supportEmail,
+        address: settings.address,
+        taxRate: settings.taxRate,
+        enableSmsNotifications: settings.enableSmsNotifications,
+        enableEmailNotifications: settings.enableEmailNotifications,
+        returnWindowDays: settings.returnWindowDays,
+        autoApproveReturns: settings.autoApproveReturns,
+      });
       showToast("تنظیمات عمومی با موفقیت ذخیره شد.", "success");
     } catch {
-      showToast("خطا در ذخیره‌سازی تنظیمات.", "error");
+      storeSettingsService.saveSettings(settings);
+      showToast("تنظیمات عمومی به صورت محلی ذخیره شد.", "success");
     }
   };
 
-  const handleSaveAddress = (
+  const handleSaveAddress = async (
     addressData: Omit<StoreAddress, "id"> & { id?: string }
   ) => {
     try {
       if (addressData.id) {
-        storeSettingsService.updateAddress(addressData.id, addressData, {
-          isHydrated: true,
-        });
+        await storeSettingsService.updateAddressApi(addressData.id, addressData);
         showToast("آدرس فروشگاه با موفقیت به‌روزرسانی شد.", "success");
       } else {
-        storeSettingsService.addAddress(addressData, { isHydrated: true });
+        await storeSettingsService.addAddressApi(addressData);
         showToast("آدرس جدید فروشگاه ثبت شد.", "success");
       }
-      refreshSettings();
+      await refreshSettings();
     } catch (err: any) {
       showToast(err.message || "خطا در ذخیره‌سازی آدرس.", "error");
     }
   };
 
-  const handleDeleteAddress = (id: string) => {
+  const handleDeleteAddress = async (id: string) => {
     try {
-      storeSettingsService.deleteAddress(id, { isHydrated: true });
+      await storeSettingsService.deleteAddressApi(id);
       showToast("آدرس حذف گردید.", "info");
-      refreshSettings();
+      await refreshSettings();
     } catch (err: any) {
       showToast(err.message || "خطا در حذف آدرس.", "error");
     }
   };
 
-  const handleSetDefaultShipping = (id: string) => {
+  const handleSetDefaultShipping = async (id: string) => {
     try {
-      storeSettingsService.setDefaultShippingAddress(id, { isHydrated: true });
+      await storeSettingsService.setDefaultShippingAddressApi(id);
       showToast("آدرس پیش‌فرض مبدا ارسال تغییر یافت.", "success");
-      refreshSettings();
+      await refreshSettings();
     } catch (err: any) {
       showToast(err.message || "خطا در تغییر آدرس پیش‌فرض ارسال.", "error");
     }
   };
 
-  const handleSetDefaultReturn = (id: string) => {
+  const handleSetDefaultReturn = async (id: string) => {
     try {
-      storeSettingsService.setDefaultReturnAddress(id, { isHydrated: true });
+      await storeSettingsService.setDefaultReturnAddressApi(id);
       showToast("آدرس پیش‌فرض مقصد مرجوعی تغییر یافت.", "success");
-      refreshSettings();
+      await refreshSettings();
     } catch (err: any) {
       showToast(err.message || "خطا در تغییر آدرس پیش‌فرض مرجوعی.", "error");
     }
