@@ -45,29 +45,21 @@ export default function PaymentPage() {
     }
   }, [isAuthenticated, isAuthLoading, payload, router, showToast]);
 
-  const handleSimulatePayment = () => {
+  const [paymentError, setPaymentError] = useState<string | null>(null);
+
+  const handleInitiatePayment = async () => {
     if (!payload || isProcessing) return;
     setIsProcessing(true);
+    setPaymentError(null);
 
-    setTimeout(() => {
-      // Create new Order snapshot in accountService single source of truth
-      const createdOrder = accountService.createOrder(payload);
-
-      // CRITICAL: Decrement inventory stock upon successful payment/order placement
-      decrementStockForOrderItems(payload.items);
-
-      // Clear cart & clear temporary checkout payload
-      clearCart();
-      try {
-        sessionStorage.removeItem("pending_checkout_payload");
-      } catch {
-        // ignore
-      }
-
-      showToast("پرداخت با موفقیت انجام شد.", "success");
-      // Redirect to Order Confirmation post-purchase view
-      router.push(`/order-confirmation/${createdOrder.id}`);
-    }, 1000);
+    // Production constraint: Fake payment success simulation and artificial delays are removed.
+    // Real payment status must be validated via authoritative server backend API response.
+    // Since payment gateway endpoints (e.g. /store/payment-collections, callback, webhook)
+    // are missing from openAPI.yml, report the blocking gap explicitly.
+    const gapErrorMessage = "ارسال درخواست پرداخت مسدود است: درگاه پرداخت واقعی و متدهای Callback/Webhook Verification در قرارداد OpenAPI (openAPI.yml) تعریف نشده‌اند.";
+    setPaymentError(gapErrorMessage);
+    showToast(gapErrorMessage, "error");
+    setIsProcessing(false);
   };
 
   if (isAuthLoading || !payload || !isAuthenticated) {
@@ -143,14 +135,24 @@ export default function PaymentPage() {
                 </div>
               </div>
 
+              {paymentError && (
+                <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs flex items-start gap-2.5">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-red-600 mt-0.5" />
+                  <div className="space-y-1">
+                    <p className="font-bold text-red-900">مانع درگاه پرداخت (Backend Gap):</p>
+                    <p className="text-red-700 leading-relaxed">{paymentError}</p>
+                  </div>
+                </div>
+              )}
+
               <button
                 type="button"
-                onClick={handleSimulatePayment}
+                onClick={handleInitiatePayment}
                 disabled={isProcessing}
-                className="w-full h-11 rounded-xl bg-emerald-600 text-white font-bold text-xs flex items-center justify-center gap-2 hover:bg-emerald-700 disabled:opacity-50 transition-all shadow-md cursor-pointer"
+                className="w-full h-11 rounded-xl bg-primary text-primary-foreground font-bold text-xs flex items-center justify-center gap-2 hover:bg-primary/90 disabled:opacity-50 transition-all shadow-md cursor-pointer"
               >
                 <ShieldCheck className="w-4 h-4" />
-                <span>{isProcessing ? "در حال پردازش..." : "پرداخت آزمایشی موفق"}</span>
+                <span>{isProcessing ? "در حال بررسی ارتباط با درگاه..." : "انتقال به درگاه پرداخت شتاب"}</span>
               </button>
 
               <button
