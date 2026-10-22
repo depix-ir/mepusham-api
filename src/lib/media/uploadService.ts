@@ -76,14 +76,53 @@ export async function uploadMediaFile(
       };
     }
   } catch (err) {
-    console.warn("uploadMediaFile API call error, falling back to local object URL:", err);
+    console.warn("uploadMediaFile API error:", err);
+  }
+
+  // Local object URL for frontend preview
+  const objectUrl = URL.createObjectURL(file);
+  createdObjectUrls.add(objectUrl);
+
+  return {
+    id: `media-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    url: objectUrl,
+    name: file.name,
+    size: file.size,
+    type: file.type,
+  };
+}
+
+export async function uploadStoreReviewMediaFile(
+  file: File,
+  options?: UploadOptions
+): Promise<UploadResult> {
+  const validation = validateImageFile(file, options);
+  if (!validation.valid) {
+    throw new Error(validation.error || "فایل غیرمجاز است.");
+  }
+
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    const apiRes = await mediaApiService.uploadStoreReviewMedia(formData);
+    if (apiRes && apiRes.url) {
+      return {
+        id: `review-media-${Date.now()}`,
+        url: apiRes.url,
+        name: file.name,
+        size: file.size,
+        type: file.type,
+      };
+    }
+  } catch (err) {
+    console.warn("uploadStoreReviewMediaFile API error:", err);
   }
 
   const objectUrl = URL.createObjectURL(file);
   createdObjectUrls.add(objectUrl);
 
   return {
-    id: `media-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    id: `review-media-${Date.now()}`,
     url: objectUrl,
     name: file.name,
     size: file.size,

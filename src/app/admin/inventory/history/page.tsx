@@ -39,30 +39,30 @@ export default function InventoryHistoryPage() {
   const [searchQuery, setSearchQuery] = useState("");
 
   React.useEffect(() => {
-    inventoryApiService.getGlobalInventoryHistory({ limit: 100 }).then((res) => {
-      if (res && res.transactions && res.transactions.length > 0) {
-        const apiLogs: InventoryHistoryLog[] = res.transactions.map((t) => ({
-          id: t.id,
-          productId: t.inventory_item_id,
-          productTitle: "محصول انبار",
-          variantId: t.inventory_item_id,
-          variantDisplay: t.inventory_item_id,
-          sku: t.inventory_item_id,
-          previousStock: 0,
-          changeAmount: t.quantity_change,
-          newStock: t.quantity_change,
-          reason: t.description || t.type,
-          actor: "سیستم / ادمین",
-          timestamp: t.created_at || new Date().toISOString(),
-        }));
-        setLogs(apiLogs);
-      } else {
-        setLogs(getInventoryHistoryLogs({ isHydrated: true }));
-      }
-    }).catch((err) => {
-      console.warn("Failed to fetch global inventory history from API, using local history logs:", err);
-      setLogs(getInventoryHistoryLogs({ isHydrated: true }));
-    });
+    inventoryApiService
+      .getGlobalInventoryHistory({ limit: 100 })
+      .then((res) => {
+        if (res && res.transactions && res.transactions.length > 0) {
+          const apiLogs: InventoryHistoryLog[] = res.transactions.map((t) => ({
+            id: t.id,
+            productId: t.inventory_item_id,
+            productTitle: "محصول انبار",
+            variantId: t.inventory_item_id,
+            variantDisplay: t.inventory_item_id,
+            sku: t.inventory_item_id,
+            previousStock: 0,
+            changeAmount: t.quantity_change,
+            newStock: t.quantity_change,
+            reason: t.description || t.type,
+            actor: "سیستم / ادمین",
+            timestamp: t.created_at || new Date().toISOString(),
+          }));
+          setLogs(apiLogs);
+        }
+      })
+      .catch((err) => {
+        console.warn("Failed to fetch global inventory history from API:", err);
+      });
   }, []);
 
   const filteredLogs = useMemo(() => {

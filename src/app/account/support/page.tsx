@@ -18,11 +18,11 @@ export default function AccountSupportPage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isError, setIsError] = useState<boolean>(false);
 
-  const loadTickets = useCallback(() => {
+  const loadTickets = useCallback(async () => {
     setIsLoading(true);
     setIsError(false);
     try {
-      const data = supportService.getTickets();
+      const data = await supportService.fetchStoreTicketsFromApi();
       setTickets(data);
     } catch {
       setIsError(true);
