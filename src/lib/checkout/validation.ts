@@ -21,11 +21,26 @@ export function normalizeDigits(input: string): string {
 }
 
 /**
+ * Normalizes Iranian phone numbers to 09XXXXXXXXX format.
+ */
+export function normalizeIranianPhone(phone: string): string {
+  let normalized = normalizeDigits(phone).replace(/[\s-]/g, "");
+  if (normalized.startsWith("+98")) {
+    normalized = "0" + normalized.slice(3);
+  } else if (normalized.startsWith("0098")) {
+    normalized = "0" + normalized.slice(4);
+  } else if (normalized.startsWith("98") && normalized.length === 12) {
+    normalized = "0" + normalized.slice(2);
+  }
+  return normalized;
+}
+
+/**
  * Validates Iranian mobile numbers.
  * Accepted normalized format: 09XXXXXXXXX (11 digits starting with 09)
  */
 export function isValidIranianMobile(phone: string): boolean {
-  const normalized = normalizeDigits(phone).replace(/[\s-]/g, "");
+  const normalized = normalizeIranianPhone(phone);
   return /^09\d{9}$/.test(normalized);
 }
 
@@ -47,7 +62,7 @@ export function validateCustomerForm(customer: CustomerInformation): {
 } {
   const errors: CheckoutFormErrors = {};
 
-  const normalizedPhone = normalizeDigits(customer.phone).replace(/[\s-]/g, "");
+  const normalizedPhone = normalizeIranianPhone(customer.phone);
   const normalizedPostalCode = normalizeDigits(customer.postalCode).replace(/[\s-]/g, "");
 
   if (!customer.firstName.trim()) {
