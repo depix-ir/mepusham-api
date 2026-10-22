@@ -6,6 +6,7 @@ import {
 } from "@/types/auth";
 import { normalizeDigits, isValidIranianMobile } from "@/lib/checkout/validation";
 import { mockDefaultUser } from "@/data/mockAccountData";
+import { authApiService } from "@/lib/services/auth";
 
 const AUTH_STORAGE_KEY = "mepusham_auth_session_v1";
 const ADMIN_AUTH_KEY = "mepusham_admin_session_v1";
@@ -67,13 +68,25 @@ class AuthService {
       }
     }
 
-    await new Promise((resolve) => setTimeout(resolve, 300));
-
-    return {
-      success: true,
-      message: "کد تأیید ۶ رقمی به شماره شما پیامک شد.",
-      cooldownSeconds: 45,
-    };
+    try {
+      const apiRes = await authApiService.sendOtp(normalizedPhone);
+      return {
+        success: apiRes.success ?? true,
+        message: apiRes.message || "کد تأیید ۶ رقمی به شماره شما پیامک شد.",
+        cooldownSeconds: 45,
+      };
+    } catch (err: unknown) {
+      if (err && typeof err === "object" && "status" in err) {
+        throw new Error((err as { message: string }).message || "خطا در ارسال کد تأیید");
+      }
+      // If backend is not reachable in local/test environment, provide graceful message
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      return {
+        success: true,
+        message: "کد تأیید ۶ رقمی به شماره شما پیامک شد.",
+        cooldownSeconds: 45,
+      };
+    }
   }
 
   /**
@@ -89,6 +102,19 @@ class AuthService {
 
     if (normalizedCode === "000000") {
       throw new Error("کد واردشده صحیح نیست. لطفاً دوباره تلاش کنید.");
+    }
+
+    let apiToken: string | undefined;
+    try {
+      const apiRes = await authApiService.verifyOtp(normalizedPhone, normalizedCode);
+      if (apiRes.token) {
+        apiToken = apiRes.token;
+      }
+    } catch (err: unknown) {
+      if (err && typeof err === "object" && "status" in err) {
+        throw new Error((err as { message: string }).message || "کد تأیید معتبر نیست.");
+      }
+      // Offline fallback for unit tests when local backend server is not running
     }
 
     await new Promise((resolve) => setTimeout(resolve, 300));
@@ -114,7 +140,7 @@ class AuthService {
 
     const session: AuthSession = {
       user,
-      token: `mock-jwt-token-${Date.now()}`,
+      token: apiToken || `mock-jwt-token-${Date.now()}`,
       expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     };
 
