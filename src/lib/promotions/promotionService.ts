@@ -4,11 +4,6 @@ import {
   FreeShippingRule,
   getPromotionStatus,
 } from "@/types/promotion";
-import {
-  INITIAL_DISCOUNTS,
-  INITIAL_CAMPAIGNS,
-  INITIAL_FREE_SHIPPING_RULES,
-} from "@/data/mockPromotionData";
 
 export { getPromotionStatus } from "@/types/promotion";
 
@@ -63,7 +58,7 @@ function saveStorage<T>(key: string, data: T): void {
 export function getDiscounts(): ProductDiscount[] {
   return loadStorage<ProductDiscount[]>(
     STORAGE_KEYS.DISCOUNTS,
-    INITIAL_DISCOUNTS
+    []
   );
 }
 
@@ -126,7 +121,7 @@ export function deleteDiscount(id: string): boolean {
 // ==========================================
 
 export function getCampaigns(): Campaign[] {
-  return loadStorage<Campaign[]>(STORAGE_KEYS.CAMPAIGNS, INITIAL_CAMPAIGNS);
+  return loadStorage<Campaign[]>(STORAGE_KEYS.CAMPAIGNS, []);
 }
 
 export function getCampaign(id: string): Campaign | undefined {
@@ -190,7 +185,7 @@ export function deleteCampaign(id: string): boolean {
 export function getFreeShippingRules(): FreeShippingRule[] {
   return loadStorage<FreeShippingRule[]>(
     STORAGE_KEYS.FREE_SHIPPING,
-    INITIAL_FREE_SHIPPING_RULES
+    []
   );
 }
 

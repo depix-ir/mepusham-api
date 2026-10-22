@@ -5,7 +5,6 @@ import {
   VerifyOtpParams,
 } from "@/types/auth";
 import { normalizeDigits, isValidIranianMobile } from "@/lib/checkout/validation";
-import { mockDefaultUser } from "@/data/mockAccountData";
 import { authApiService } from "@/lib/services/auth";
 
 const AUTH_STORAGE_KEY = "mepusham_auth_session_v1";

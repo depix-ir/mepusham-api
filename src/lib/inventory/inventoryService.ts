@@ -257,7 +257,7 @@ export function isDuplicateVariant(
  */
 export function getInventoryHistoryLogs(options?: { isHydrated?: boolean }): InventoryHistoryLog[] {
   const isHydrated = options?.isHydrated ?? (typeof window !== "undefined");
-  if (!isHydrated) return getInitialMockHistory();
+  if (!isHydrated) return [];
   try {
     const stored = localStorage.getItem(HISTORY_STORAGE_KEY);
     if (stored) {
@@ -266,7 +266,7 @@ export function getInventoryHistoryLogs(options?: { isHydrated?: boolean }): Inv
   } catch (e) {
     console.error("Error reading inventory history log:", e);
   }
-  return getInitialMockHistory();
+  return [];
 }
 
 export function addInventoryHistoryLog(
@@ -285,52 +285,4 @@ export function addInventoryHistoryLog(
   } catch (e) {
     console.error("Error saving inventory history log:", e);
   }
-}
-
-function getInitialMockHistory(): InventoryHistoryLog[] {
-  const now = new Date();
-  return [
-    {
-      id: "hist_1",
-      timestamp: new Date(now.getTime() - 1000 * 60 * 30).toISOString(),
-      productId: "prod_1",
-      productTitle: "کت کیف دوشی رز",
-      variantId: "v_1",
-      variantDisplay: "مشکی / S",
-      sku: "ROSE-BLK-S",
-      previousStock: 5,
-      changeAmount: 5,
-      newStock: 10,
-      reason: "ورود کالا",
-      actor: "مدیر سیستم",
-    },
-    {
-      id: "hist_2",
-      timestamp: new Date(now.getTime() - 1000 * 60 * 120).toISOString(),
-      productId: "prod_2",
-      productTitle: "کفش چرم مجلسی",
-      variantId: "v_2",
-      variantDisplay: "عسلی / 38",
-      sku: "SHO-HS-38",
-      previousStock: 2,
-      changeAmount: -1,
-      newStock: 1,
-      reason: "فروش آنلاین",
-      actor: "سیستم",
-    },
-    {
-      id: "hist_3",
-      timestamp: new Date(now.getTime() - 1000 * 60 * 300).toISOString(),
-      productId: "prod_3",
-      productTitle: "شومیز لینن تابستانه",
-      variantId: "v_3",
-      variantDisplay: "سفید / L",
-      sku: "SHOM-WHT-L",
-      previousStock: 0,
-      changeAmount: 12,
-      newStock: 12,
-      reason: "اصلاح دستی",
-      actor: "مدیر سیستم",
-    },
-  ];
 }

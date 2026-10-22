@@ -157,19 +157,70 @@ describe("Return Reason Policy Configuration", () => {
 
 describe("Return Service Lookup & ID Normalization", () => {
   const { returnService } = require("../returnService");
+  const { accountService } = require("@/lib/account/accountService");
 
   test("Retrieves return request by clean ID, prefix ID, or request number insensitive to case", () => {
-    const byCleanId = returnService.getReturnRequestById("1025");
-    const byPrefixId = returnService.getReturnRequestById("ret-1025");
-    const byUpperReqNum = returnService.getReturnRequestById("RET-1025");
+    const order = accountService.createOrder({
+      customerId: "cust-test-1025",
+      customer: {
+        firstName: "مهدی",
+        lastName: "موسوی",
+        phone: "09121234567",
+        province: "تهران",
+        city: "تهران",
+        address: "خیابان شریعتی",
+        postalCode: "1234567890",
+      },
+      shipping: { methodId: "post", price: 35000, title: "پست پیشتاز" },
+      items: [{ productId: "prod-bag-01", quantity: 1, unitPrice: 1500000 }],
+      pricing: { itemsSubtotal: 1500000, shippingCost: 35000, payableTotal: 1535000 },
+    });
+    const deliveredOrder = accountService.updateOrderStatus(order.id, "delivered");
+
+    const createdReq = returnService.createReturnRequest({
+      order: deliveredOrder,
+      items: [{ orderItemId: deliveredOrder.items[0].id, quantity: 1, reason: "defect" }],
+      reason: "defect",
+    });
+
+    const reqId = createdReq.id;
+    const reqNum = createdReq.requestNumber;
+    const cleanNum = reqNum.replace(/^RET-/, "");
+
+    const byCleanId = returnService.getReturnRequestById(cleanNum);
+    const byPrefixId = returnService.getReturnRequestById(reqId);
+    const byUpperReqNum = returnService.getReturnRequestById(reqNum);
 
     expect(byCleanId).toBeDefined();
     expect(byPrefixId).toBeDefined();
     expect(byUpperReqNum).toBeDefined();
-    expect(byCleanId?.id).toBe("ret-1025");
+    expect(byCleanId?.id).toBe(reqId);
   });
 
   test("Filters customer return requests correctly by phone", () => {
+    const order = accountService.createOrder({
+      customerId: "cust-test-1025",
+      customer: {
+        firstName: "مهدی",
+        lastName: "موسوی",
+        phone: "09121234567",
+        province: "تهران",
+        city: "تهران",
+        address: "خیابان شریعتی",
+        postalCode: "1234567890",
+      },
+      shipping: { methodId: "post", price: 35000, title: "پست پیشتاز" },
+      items: [{ productId: "prod-bag-01", quantity: 1, unitPrice: 1500000 }],
+      pricing: { itemsSubtotal: 1500000, shippingCost: 35000, payableTotal: 1535000 },
+    });
+    const deliveredOrder = accountService.updateOrderStatus(order.id, "delivered");
+
+    returnService.createReturnRequest({
+      order: deliveredOrder,
+      items: [{ orderItemId: deliveredOrder.items[0].id, quantity: 1, reason: "defect" }],
+      reason: "defect",
+    });
+
     const customerReturns = returnService.getReturnRequestsForCustomer("09121234567");
     expect(Array.isArray(customerReturns)).toBe(true);
     expect(customerReturns.length).toBeGreaterThan(0);
