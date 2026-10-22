@@ -6,6 +6,26 @@ import { supportService } from "@/lib/support/supportService";
 
 describe("AUD-001 Customer Resource Ownership & IDOR Protection Tests", () => {
   beforeEach(async () => {
+    global.fetch = (async (url: string | URL | Request, init?: RequestInit) => {
+      const urlStr = String(url);
+      if (urlStr.includes("/auth/phone/verify")) {
+        const body = JSON.parse(String(init?.body || "{}"));
+        return new Response(
+          JSON.stringify({
+            token: `token-${Date.now()}`,
+            customer: {
+              id: `user-${body.phone}`,
+              phone: body.phone,
+              first_name: "کاربر",
+              last_name: "تست",
+            },
+          }),
+          { status: 200, headers: { "Content-Type": "application/json" } }
+        );
+      }
+      return new Response(JSON.stringify({}), { status: 200, headers: { "Content-Type": "application/json" } });
+    }) as typeof fetch;
+
     await authService.logoutAdmin();
     await authService.logout();
   });

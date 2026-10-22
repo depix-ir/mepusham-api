@@ -54,8 +54,10 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
   const [brands, setBrands] = useState<ProductBrand[]>(() => catalogRepository.getBrands({ isHydrated: false }));
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Safely load from repository after hydration & subscribe to repository updates
+  // Safely load from repository & API after hydration, subscribe to repository updates
   useEffect(() => {
+    let isMounted = true;
+
     const syncFromRepo = () => {
       try {
         const repoProducts = catalogRepository.getProducts({ isHydrated: true });
@@ -68,13 +70,29 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
       } catch (e) {
         console.error("Failed to sync products state from repository:", e);
       } finally {
-        setIsLoaded(true);
+        if (isMounted) setIsLoaded(true);
       }
     };
 
-    syncFromRepo();
+    async function initCatalog() {
+      try {
+        await Promise.allSettled([
+          catalogRepository.fetchCategoriesFromApi(),
+          catalogRepository.fetchBrandsFromApi(),
+        ]);
+      } catch (e) {
+        console.error("Failed to fetch catalog from API:", e);
+      } finally {
+        syncFromRepo();
+      }
+    }
+
+    initCatalog();
     const unsubscribe = catalogRepository.subscribe(syncFromRepo);
-    return () => unsubscribe();
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
   }, []);
 
   // Save to repository whenever state changes after initial load
