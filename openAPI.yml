@@ -1,0 +1,2133 @@
+openapi: 3.0.0
+info:
+  title: Depix E-Commerce Backend API (Medusa v2)
+  version: 2.21.2
+  description: Comprehensive OpenAPI 3.0 specification for Depix E-Commerce backend services including Store, Admin, Auth, Notifications, Inventory Audit, Support Tickets, Size Guides, Product Videos, Brands, Categories, and Store Settings.
+servers:
+  - url: http://localhost:9000
+    description: Local Medusa Backend
+  - url: http://localhost/api/medusa
+    description: Nginx Reverse Proxy Gateway
+
+security:
+  - bearerAuth: []
+  - cookieAuth: []
+
+paths:
+  # ---------------------------------------------------------------------------
+  # BRANDS MANAGEMENT
+  # ---------------------------------------------------------------------------
+  /store/brands:
+    get:
+      summary: List Public Brands
+      operationId: listPublicBrands
+      description: Retrieve a paginated list of publicly active brands.
+      tags:
+        - Store Brands
+      security: []
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 20
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of active brands.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - brands
+                  - count
+                  - offset
+                  - limit
+                properties:
+                  brands:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Brand'
+                  count:
+                    type: integer
+                  offset:
+                    type: integer
+                  limit:
+                    type: integer
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /store/brands/{id}:
+    get:
+      summary: Get Public Brand
+      operationId: getPublicBrand
+      description: Retrieve public details of an active brand by ID or slug.
+      tags:
+        - Store Brands
+      security: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Active brand details.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - brand
+                properties:
+                  brand:
+                    $ref: '#/components/schemas/Brand'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /admin/brands:
+    get:
+      summary: List Admin Brands
+      operationId: listAdminBrands
+      description: Retrieve a list of all brands including inactive ones.
+      tags:
+        - Admin Brands
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: is_active
+          in: query
+          schema:
+            type: boolean
+        - name: q
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Paginated brand list for admin.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - brands
+                  - count
+                  - offset
+                  - limit
+                properties:
+                  brands:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Brand'
+                  count:
+                    type: integer
+                  offset:
+                    type: integer
+                  limit:
+                    type: integer
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      summary: Create Brand
+      operationId: createAdminBrand
+      description: Create a new brand. Enforces slug uniqueness.
+      tags:
+        - Admin Brands
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - slug
+              properties:
+                name:
+                  type: string
+                slug:
+                  type: string
+                description:
+                  type: string
+                logo_id:
+                  type: string
+                is_active:
+                  type: boolean
+                  default: true
+                metadata:
+                  type: object
+      responses:
+        '201':
+          description: Brand created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - brand
+                properties:
+                  brand:
+                    $ref: '#/components/schemas/Brand'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /admin/brands/{id}:
+    get:
+      summary: Get Admin Brand Details
+      operationId: getAdminBrand
+      tags:
+        - Admin Brands
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Brand details.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - brand
+                properties:
+                  brand:
+                    $ref: '#/components/schemas/Brand'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      summary: Update Brand
+      operationId: updateAdminBrand
+      tags:
+        - Admin Brands
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                slug:
+                  type: string
+                description:
+                  type: string
+                logo_id:
+                  type: string
+                is_active:
+                  type: boolean
+                metadata:
+                  type: object
+      responses:
+        '200':
+          description: Brand updated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - brand
+                properties:
+                  brand:
+                    $ref: '#/components/schemas/Brand'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      summary: Delete Brand
+      operationId: deleteAdminBrand
+      description: Safely deletes brand if not referenced by products.
+      tags:
+        - Admin Brands
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Brand deleted successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - id
+                  - object
+                  - deleted
+                properties:
+                  id:
+                    type: string
+                  object:
+                    type: string
+                    example: brand
+                  deleted:
+                    type: boolean
+                    example: true
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ---------------------------------------------------------------------------
+  # CATEGORIES MANAGEMENT
+  # ---------------------------------------------------------------------------
+  /store/categories:
+    get:
+      summary: List Public Categories
+      operationId: listPublicCategories
+      tags:
+        - Store Categories
+      security: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: parent_category_id
+          in: query
+          schema:
+            type: string
+        - name: q
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of active, publishable categories.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - categories
+                  - count
+                  - offset
+                  - limit
+                properties:
+                  categories:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Category'
+                  count:
+                    type: integer
+                  offset:
+                    type: integer
+                  limit:
+                    type: integer
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /store/categories/{id}:
+    get:
+      summary: Get Public Category
+      operationId: getPublicCategory
+      tags:
+        - Store Categories
+      security: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Public category details.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - category
+                properties:
+                  category:
+                    $ref: '#/components/schemas/Category'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /admin/categories:
+    get:
+      summary: List Admin Categories
+      operationId: listAdminCategories
+      tags:
+        - Admin Categories
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          schema:
+            type: integer
+        - name: is_active
+          in: query
+          schema:
+            type: boolean
+        - name: parent_category_id
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of categories for admin.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - categories
+                  - count
+                  - offset
+                  - limit
+                properties:
+                  categories:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Category'
+                  count:
+                    type: integer
+                  offset:
+                    type: integer
+                  limit:
+                    type: integer
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      summary: Create Category
+      operationId: createAdminCategory
+      tags:
+        - Admin Categories
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                slug:
+                  type: string
+                description:
+                  type: string
+                image_id:
+                  type: string
+                is_active:
+                  type: boolean
+                display_order:
+                  type: integer
+                parent_category_id:
+                  type: string
+      responses:
+        '201':
+          description: Category created.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - category
+                properties:
+                  category:
+                    $ref: '#/components/schemas/Category'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /admin/categories/{id}:
+    get:
+      summary: Get Admin Category
+      operationId: getAdminCategory
+      tags:
+        - Admin Categories
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Category details.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - category
+                properties:
+                  category:
+                    $ref: '#/components/schemas/Category'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      summary: Update Category
+      operationId: updateAdminCategory
+      tags:
+        - Admin Categories
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                slug:
+                  type: string
+                description:
+                  type: string
+                image_id:
+                  type: string
+                is_active:
+                  type: boolean
+                display_order:
+                  type: integer
+                parent_category_id:
+                  type: string
+      responses:
+        '200':
+          description: Category updated.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - category
+                properties:
+                  category:
+                    $ref: '#/components/schemas/Category'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      summary: Delete Category
+      operationId: deleteAdminCategory
+      tags:
+        - Admin Categories
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Category deleted, products preserved.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - id
+                  - object
+                  - deleted
+                properties:
+                  id:
+                    type: string
+                  object:
+                    type: string
+                    example: category
+                  deleted:
+                    type: boolean
+                    example: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ---------------------------------------------------------------------------
+  # MEDIA LIBRARY
+  # ---------------------------------------------------------------------------
+  /admin/media/upload:
+    post:
+      summary: Upload Media File
+      operationId: uploadAdminMedia
+      description: Uploads a media file with buffer magic-byte MIME validation, size limit enforcement, and dimensions calculation.
+      tags:
+        - Admin Media
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        '201':
+          description: Media uploaded successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - media
+                properties:
+                  media:
+                    $ref: '#/components/schemas/Media'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /admin/media:
+    get:
+      summary: List Media Library
+      operationId: listAdminMedia
+      tags:
+        - Admin Media
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          schema:
+            type: integer
+        - name: q
+          in: query
+          schema:
+            type: string
+        - name: mime_type
+          in: query
+          schema:
+            type: string
+        - name: uploaded_by_id
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Paginated media library.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - media
+                  - count
+                  - offset
+                  - limit
+                properties:
+                  media:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Media'
+                  count:
+                    type: integer
+                  offset:
+                    type: integer
+                  limit:
+                    type: integer
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /admin/media/{id}:
+    get:
+      summary: Get Media Metadata
+      operationId: getAdminMedia
+      tags:
+        - Admin Media
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Media details.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - media
+                properties:
+                  media:
+                    $ref: '#/components/schemas/Media'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      summary: Delete Media
+      operationId: deleteAdminMedia
+      description: Deletes media from DB and disk if not referenced by brands, categories, or products.
+      tags:
+        - Admin Media
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Media deleted successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - id
+                  - object
+                  - deleted
+                properties:
+                  id:
+                    type: string
+                  object:
+                    type: string
+                    example: media
+                  deleted:
+                    type: boolean
+                    example: true
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /store/reviews/media:
+    post:
+      summary: Upload Customer Review Image
+      operationId: uploadStoreReviewMedia
+      tags:
+        - Store Reviews
+      security: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Image uploaded for review attachment.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - url
+                properties:
+                  url:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  # ---------------------------------------------------------------------------
+  # STORE SETTINGS & STORE ADDRESSES
+  # ---------------------------------------------------------------------------
+  /admin/settings:
+    get:
+      summary: Get Store Settings
+      operationId: getStoreSettings
+      description: Retrieve global store settings, notification toggles, return window parameters, tax rates, and associated store addresses.
+      tags:
+        - Admin Store Settings
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current store settings object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreSettings'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    patch:
+      summary: Update Store Settings
+      operationId: updateStoreSettings
+      description: Update editable store settings attributes (e.g., storeName, supportEmail, taxRate, returnWindowDays, notification toggles). Rejects server-managed fields.
+      tags:
+        - Admin Store Settings
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                storeName:
+                  type: string
+                contactPhone:
+                  type: string
+                supportEmail:
+                  type: string
+                address:
+                  type: string
+                taxRate:
+                  type: number
+                enableSmsNotifications:
+                  type: boolean
+                enableEmailNotifications:
+                  type: boolean
+                returnWindowDays:
+                  type: integer
+                autoApproveReturns:
+                  type: boolean
+                defaultShippingAddressId:
+                  type: string
+                  nullable: true
+                defaultReturnAddressId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Updated store settings object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreSettings'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /admin/settings/addresses:
+    get:
+      summary: List Store Addresses
+      operationId: listStoreAddresses
+      description: Retrieve all configured store physical addresses alongside current default shipping/return ID pointers.
+      tags:
+        - Admin Store Settings
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of store addresses with default pointers.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - addresses
+                  - defaultShippingAddressId
+                  - defaultReturnAddressId
+                properties:
+                  addresses:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/StoreAddress'
+                  defaultShippingAddressId:
+                    type: string
+                    nullable: true
+                  defaultReturnAddressId:
+                    type: string
+                    nullable: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      summary: Create Store Address
+      operationId: createStoreAddress
+      description: Create a new physical store address with Iranian 10-digit postal code and phone validation.
+      tags:
+        - Admin Store Settings
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - recipientName
+                - phone
+                - province
+                - city
+                - address
+                - postalCode
+              properties:
+                title:
+                  type: string
+                recipientName:
+                  type: string
+                phone:
+                  type: string
+                province:
+                  type: string
+                city:
+                  type: string
+                address:
+                  type: string
+                plaque:
+                  type: string
+                  nullable: true
+                floor:
+                  type: string
+                  nullable: true
+                postalCode:
+                  type: string
+      responses:
+        '201':
+          description: Store address created.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - address
+                properties:
+                  address:
+                    $ref: '#/components/schemas/StoreAddress'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /admin/settings/addresses/{id}:
+    patch:
+      summary: Update Store Address
+      operationId: updateStoreAddress
+      description: Update fields of an existing store address.
+      tags:
+        - Admin Store Settings
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                recipientName:
+                  type: string
+                phone:
+                  type: string
+                province:
+                  type: string
+                city:
+                  type: string
+                address:
+                  type: string
+                plaque:
+                  type: string
+                  nullable: true
+                floor:
+                  type: string
+                  nullable: true
+                postalCode:
+                  type: string
+      responses:
+        '200':
+          description: Updated store address.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - address
+                properties:
+                  address:
+                    $ref: '#/components/schemas/StoreAddress'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      summary: Delete Store Address
+      operationId: deleteStoreAddress
+      description: Delete a store address and automatically reassign defaults if necessary.
+      tags:
+        - Admin Store Settings
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Address deletion response.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - deleted
+                  - id
+                properties:
+                  deleted:
+                    type: boolean
+                    example: true
+                  id:
+                    type: string
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /admin/settings/default-shipping-address:
+    put:
+      summary: Set Default Shipping Address
+      operationId: setDefaultShippingAddress
+      description: Set the active default shipping origin address ID for store dispatch.
+      tags:
+        - Admin Store Settings
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - addressId
+              properties:
+                addressId:
+                  type: string
+      responses:
+        '200':
+          description: Updated store settings with new default shipping address.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreSettings'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /admin/settings/default-return-address:
+    put:
+      summary: Set Default Return Address
+      operationId: setDefaultReturnAddress
+      description: Set the active default return destination address ID for customer returns.
+      tags:
+        - Admin Store Settings
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - addressId
+              properties:
+                addressId:
+                  type: string
+      responses:
+        '200':
+          description: Updated store settings with new default return address.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreSettings'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ---------------------------------------------------------------------------
+  # IN-APP NOTIFICATIONS MANAGEMENT
+  # ---------------------------------------------------------------------------
+  /store/notifications:
+    get:
+      summary: List Customer Notifications
+      operationId: listStoreNotifications
+      description: Retrieve paginated notifications for the authenticated customer.
+      tags:
+        - Store Notifications
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: is_read
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Paginated notification list.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - notifications
+                  - count
+                  - offset
+                  - limit
+                properties:
+                  notifications:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Notification'
+                  count:
+                    type: integer
+                  offset:
+                    type: integer
+                  limit:
+                    type: integer
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /store/notifications/unread-count:
+    get:
+      summary: Get Unread Notification Count
+      operationId: getStoreUnreadNotificationCount
+      description: Retrieve total unread notifications count for badge indicators.
+      tags:
+        - Store Notifications
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Unread notification count.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - count
+                properties:
+                  count:
+                    type: integer
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /store/notifications/read-all:
+    post:
+      summary: Mark All Notifications As Read
+      operationId: markAllStoreNotificationsAsRead
+      description: Mark all unread notifications for current customer as read.
+      tags:
+        - Store Notifications
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Success response.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /store/notifications/{id}/read:
+    post:
+      summary: Mark Single Notification As Read
+      operationId: markSingleStoreNotificationAsRead
+      description: Mark a specific notification as read by ID.
+      tags:
+        - Store Notifications
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Updated notification object.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - notification
+                properties:
+                  notification:
+                    $ref: '#/components/schemas/Notification'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ---------------------------------------------------------------------------
+  # INVENTORY MANAGEMENT & AUDIT TRAIL
+  # ---------------------------------------------------------------------------
+  /admin/inventory/history:
+    get:
+      summary: Get Global Inventory Transaction History
+      operationId: getGlobalInventoryHistory
+      description: Retrieve paginated audit trail of inventory balance adjustments and transactions across all products.
+      tags:
+        - Admin Inventory
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: location_id
+          in: query
+          schema:
+            type: string
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [adjustment, sale, return, transfer, reservation]
+      responses:
+        '200':
+          description: Paginated transaction list.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - transactions
+                  - count
+                  - offset
+                  - limit
+                properties:
+                  transactions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/InventoryTransaction'
+                  count:
+                    type: integer
+                  offset:
+                    type: integer
+                  limit:
+                    type: integer
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /admin/inventory/low-stock:
+    get:
+      summary: Get Low Stock Items Alert
+      operationId: getLowStockInventoryAlerts
+      description: Retrieve inventory items operating below low stock threshold levels.
+      tags:
+        - Admin Inventory
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: threshold
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: List of low stock inventory items.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - items
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ---------------------------------------------------------------------------
+  # CUSTOMER SUPPORT TICKETING
+  # ---------------------------------------------------------------------------
+  /store/tickets:
+    get:
+      summary: List Customer Support Tickets
+      operationId: listStoreTickets
+      description: Retrieve support tickets created by or associated with the logged-in customer.
+      tags:
+        - Store Support Tickets
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+      responses:
+        '200':
+          description: List of tickets.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - tickets
+                properties:
+                  tickets:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Ticket'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      summary: Create Customer Support Ticket
+      operationId: createStoreTicket
+      description: Open a new customer support ticket with atomic TKT-YYYY-XXXXXX ticket number generation.
+      tags:
+        - Store Support Tickets
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - category_id
+                - subject
+                - message
+              properties:
+                category_id:
+                  type: string
+                subject:
+                  type: string
+                message:
+                  type: string
+                order_id:
+                  type: string
+                product_id:
+                  type: string
+                priority:
+                  type: string
+                  enum: [low, normal, high, urgent]
+                  default: normal
+      responses:
+        '201':
+          description: Support ticket created.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - ticket
+                properties:
+                  ticket:
+                    $ref: '#/components/schemas/Ticket'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /admin/tickets:
+    get:
+      summary: List Admin Support Tickets
+      operationId: listAdminTickets
+      description: Retrieve paginated support tickets with status and priority filtering for customer service operators.
+      tags:
+        - Admin Support Tickets
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [open, in_progress, resolved, closed]
+        - name: priority
+          in: query
+          schema:
+            type: string
+            enum: [low, normal, high, urgent]
+        - name: assigned_to_id
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Paginated ticket list for admin.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - tickets
+                  - count
+                properties:
+                  tickets:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Ticket'
+                  count:
+                    type: integer
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ---------------------------------------------------------------------------
+  # SIZE GUIDES MANAGEMENT
+  # ---------------------------------------------------------------------------
+  /admin/size-guides/templates:
+    get:
+      summary: List Size Guide Templates
+      operationId: listAdminSizeGuideTemplates
+      description: Retrieve reusable size guide layout templates.
+      tags:
+        - Admin Size Guides
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Size guide templates list.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - templates
+                properties:
+                  templates:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SizeGuideTemplate'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      summary: Create Size Guide Template
+      operationId: createAdminSizeGuideTemplate
+      description: Create a size guide template with measurement matrices.
+      tags:
+        - Admin Size Guides
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - columns
+                - rows
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                columns:
+                  type: array
+                  items:
+                    type: string
+                rows:
+                  type: array
+                  items:
+                    type: object
+      responses:
+        '201':
+          description: Template created.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - template
+                properties:
+                  template:
+                    $ref: '#/components/schemas/SizeGuideTemplate'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /store/products/{id}/size-guide:
+    get:
+      summary: Get Product Size Guide
+      operationId: getStoreProductSizeGuide
+      description: Retrieve size guide assigned to a product.
+      tags:
+        - Store Size Guides
+      security: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Size guide template object.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - size_guide
+                properties:
+                  size_guide:
+                    $ref: '#/components/schemas/SizeGuideTemplate'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ---------------------------------------------------------------------------
+  # MARGIN REPORTING
+  # ---------------------------------------------------------------------------
+  /admin/reports/margin:
+    get:
+      summary: Get Margin Analysis Report
+      operationId: getAdminMarginReport
+      description: Retrieve financial margin analysis aggregating Gross Sales, COGS, Discounts, Shipping, Tax, Net Sales, Gross Profit, and Gross Margin percentage across date ranges and product breakdowns.
+      tags:
+        - Admin Reports
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: group_by
+          in: query
+          schema:
+            type: string
+            enum: [day, week, month, product, variant, category]
+            default: day
+      responses:
+        '200':
+          description: Financial margin report.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - summary
+                  - breakdown
+                properties:
+                  summary:
+                    type: object
+                    required:
+                      - gross_sales
+                      - net_sales
+                      - cogs
+                      - gross_profit
+                      - gross_margin_percentage
+                    properties:
+                      gross_sales:
+                        type: number
+                      discounts:
+                        type: number
+                      taxes:
+                        type: number
+                      shipping:
+                        type: number
+                      refunds:
+                        type: number
+                      net_sales:
+                        type: number
+                      cogs:
+                        type: number
+                      gross_profit:
+                        type: number
+                      gross_margin_percentage:
+                        type: number
+                  breakdown:
+                    type: array
+                    items:
+                      type: object
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ---------------------------------------------------------------------------
+  # PHONE OTP AUTHENTICATION
+  # ---------------------------------------------------------------------------
+  /auth/phone/send-otp:
+    post:
+      summary: Send Phone OTP Code
+      operationId: sendPhoneOtpCode
+      description: Dispatch verification OTP code to customer's Iranian mobile number (`09...` or `+989...`).
+      tags:
+        - Authentication
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - phone
+              properties:
+                phone:
+                  type: string
+                  example: "09123456789"
+      responses:
+        '200':
+          description: OTP code sent successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /auth/phone/verify:
+    post:
+      summary: Verify Phone OTP Code
+      operationId: verifyPhoneOtpCode
+      description: Verify OTP code and issue JWT session token for customer.
+      tags:
+        - Authentication
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - phone
+                - code
+              properties:
+                phone:
+                  type: string
+                  example: "09123456789"
+                code:
+                  type: string
+                  example: "123456"
+      responses:
+        '200':
+          description: Authentication successful.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - token
+                  - customer
+                properties:
+                  token:
+                    type: string
+                  customer:
+                    type: object
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: connect.sid
+
+  responses:
+    BadRequest:
+      description: Invalid request parameters or body schema validation failure.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: Missing or invalid authentication bearer token / session cookie.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Requested resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+    ErrorResponse:
+      type: object
+      required:
+        - message
+        - type
+      properties:
+        message:
+          type: string
+        type:
+          type: string
+        code:
+          type: string
+
+    Brand:
+      type: object
+      required:
+        - id
+        - name
+        - slug
+        - is_active
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+          nullable: true
+        logo_id:
+          type: string
+          nullable: true
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Category:
+      type: object
+      required:
+        - id
+        - name
+        - slug
+        - is_active
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+          nullable: true
+        image_id:
+          type: string
+          nullable: true
+        is_active:
+          type: boolean
+        display_order:
+          type: integer
+        parent_category_id:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Media:
+      type: object
+      required:
+        - id
+        - original_filename
+        - file_key
+        - url
+      properties:
+        id:
+          type: string
+        original_filename:
+          type: string
+        file_key:
+          type: string
+        mime_type:
+          type: string
+        file_size:
+          type: integer
+        storage_provider:
+          type: string
+        url:
+          type: string
+        width:
+          type: integer
+          nullable: true
+        height:
+          type: integer
+          nullable: true
+        uploaded_by_id:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    StoreAddress:
+      type: object
+      required:
+        - id
+        - title
+        - recipientName
+        - phone
+        - province
+        - city
+        - address
+        - postalCode
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        recipientName:
+          type: string
+        recipient_name:
+          type: string
+        phone:
+          type: string
+        province:
+          type: string
+        city:
+          type: string
+        address:
+          type: string
+        plaque:
+          type: string
+          nullable: true
+        floor:
+          type: string
+          nullable: true
+        postalCode:
+          type: string
+        postal_code:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    StoreSettings:
+      type: object
+      required:
+        - id
+        - storeName
+        - contactPhone
+        - supportEmail
+        - address
+        - taxRate
+        - enableSmsNotifications
+        - enableEmailNotifications
+        - returnWindowDays
+        - autoApproveReturns
+        - addresses
+      properties:
+        id:
+          type: string
+        storeName:
+          type: string
+        contactPhone:
+          type: string
+        supportEmail:
+          type: string
+        address:
+          type: string
+        taxRate:
+          type: number
+        enableSmsNotifications:
+          type: boolean
+        enableEmailNotifications:
+          type: boolean
+        returnWindowDays:
+          type: integer
+        autoApproveReturns:
+          type: boolean
+        defaultShippingAddressId:
+          type: string
+          nullable: true
+        defaultReturnAddressId:
+          type: string
+          nullable: true
+        addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/StoreAddress'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Notification:
+      type: object
+      required:
+        - id
+        - receiver_id
+        - channel
+        - template
+        - data
+      properties:
+        id:
+          type: string
+        receiver_id:
+          type: string
+        channel:
+          type: string
+        template:
+          type: string
+        data:
+          type: object
+        read_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+
+    InventoryTransaction:
+      type: object
+      required:
+        - id
+        - inventory_item_id
+        - location_id
+        - quantity_change
+        - type
+      properties:
+        id:
+          type: string
+        inventory_item_id:
+          type: string
+        location_id:
+          type: string
+        quantity_change:
+          type: integer
+        type:
+          type: string
+          enum: [adjustment, sale, return, transfer, reservation]
+        description:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+
+    Ticket:
+      type: object
+      required:
+        - id
+        - ticket_number
+        - customer_id
+        - category_id
+        - subject
+        - status
+        - priority
+      properties:
+        id:
+          type: string
+        ticket_number:
+          type: string
+          example: "TKT-2026-000123"
+        customer_id:
+          type: string
+        category_id:
+          type: string
+        subject:
+          type: string
+        status:
+          type: string
+          enum: [open, in_progress, resolved, closed]
+        priority:
+          type: string
+          enum: [low, normal, high, urgent]
+        order_id:
+          type: string
+          nullable: true
+        product_id:
+          type: string
+          nullable: true
+        assigned_to_id:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    SizeGuideTemplate:
+      type: object
+      required:
+        - id
+        - title
+        - columns
+        - rows
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        columns:
+          type: array
+          items:
+            type: string
+        rows:
+          type: array
+          items:
+            type: object
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
